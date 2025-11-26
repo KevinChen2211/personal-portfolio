@@ -301,11 +301,26 @@ export default function Home() {
 
   useEffect(() => {
     setIsClient(true);
-    setShowIntro(true);
+
+    // Check if user has already seen the intro in this session
+    const hasSeenIntro = sessionStorage.getItem("hasSeenIntro");
+
+    // Check if user is navigating back from another page
+    const isNavigatingBack =
+      typeof window !== "undefined" &&
+      document.referrer !== "" &&
+      document.referrer.includes(window.location.origin) &&
+      !document.referrer.endsWith(window.location.pathname);
+
+    // Only show intro on first visit, not when navigating back
+    if (!hasSeenIntro && !isNavigatingBack) {
+      setShowIntro(true);
+    }
   }, []);
 
   const handleIntroComplete = () => {
     setShowIntro(false);
+    sessionStorage.setItem("hasSeenIntro", "true");
   };
 
   if (!isClient) {

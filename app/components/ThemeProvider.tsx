@@ -12,23 +12,50 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  // Initialize theme - always start with "light" to match server render
+  // Then update on client side to prevent hydration mismatch
   const [theme, setTheme] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    // Check system preference on mount
-    const systemPrefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-    setTheme(systemPrefersDark ? "dark" : "light");
+    // Read theme from localStorage or system preference after mount
+    try {
+      const savedTheme = localStorage.getItem("theme") as Theme | null;
+      if (savedTheme) {
+        setTheme(savedTheme);
+        return;
+      }
+      const systemPrefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+      setTheme(systemPrefersDark ? "dark" : "light");
+    } catch {
+      // Fallback to light if there's an error
+      setTheme("light");
+    }
   }, []);
 
+  useEffect(() => {
+    if (!mounted) return;
+    // Update body background color when theme changes
+    const palette = theme === "dark" 
+      ? { background: "#0a0a0f" }
+      : { background: "#3c2414" };
+    document.body.style.backgroundColor = palette.background;
+  }, [theme, mounted]);
+
   const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+    setTheme((prev) => {
+      const newTheme = prev === "light" ? "dark" : "light";
+      try {
+        localStorage.setItem("theme", newTheme);
+      } catch {}
+      return newTheme;
+    });
   };
 
-  // Always provide context value, even before mounting
+  // Always provide context value
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
