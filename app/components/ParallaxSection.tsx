@@ -19,16 +19,33 @@ export default function ParallaxSection({
   useEffect(() => {
     const handleScroll = () => {
       if (!sectionRef.current) return;
-      const rect = sectionRef.current.getBoundingClientRect();
-      const scrollY = window.scrollY || window.pageYOffset;
-      const offset = (scrollY - rect.top) * speed;
+
+      // Get the scroll container instead of window
+      const container = document.querySelector(
+        '[class*="hide-scrollbar"]'
+      ) as HTMLElement;
+
+      if (!container) return;
+
+      const containerScrollTop = container.scrollTop;
+      const containerRect = container.getBoundingClientRect();
+      const sectionRect = sectionRef.current.getBoundingClientRect();
+
+      // Calculate offset relative to container
+      const sectionTopRelativeToContainer =
+        sectionRect.top - containerRect.top + containerScrollTop;
+      const offset =
+        (containerScrollTop - sectionTopRelativeToContainer) * speed;
+
       setTransform(`translateY(${offset}px)`);
     };
 
-    window.addEventListener("scroll", handleScroll);
-    handleScroll();
-
-    return () => window.removeEventListener("scroll", handleScroll);
+    const container = document.querySelector('[class*="hide-scrollbar"]');
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+      handleScroll();
+      return () => container.removeEventListener("scroll", handleScroll);
+    }
   }, [speed]);
 
   return (
@@ -37,4 +54,3 @@ export default function ParallaxSection({
     </section>
   );
 }
-
