@@ -4,12 +4,18 @@ import React, { useEffect, useState, useMemo, useRef } from "react";
 import IntroAnimation from "./components/IntroAnimation";
 import SmoothScrollContainer from "./components/SmoothScrollContainer";
 import ScrollIndicator from "./components/ScrollIndicator";
-import { activePalette } from "./color-palettes";
+import ThemeToggle from "./components/ThemeToggle";
+import { getActivePalette } from "./color-palettes";
+import { useTheme } from "./components/ThemeProvider";
 import Link from "next/link";
 import { useScrollAnimation } from "./components/useScrollAnimation";
 
 // Gradient Background Component
-const GradientBackground = () => {
+const GradientBackground = ({
+  palette,
+}: {
+  palette: ReturnType<typeof getActivePalette>;
+}) => {
   const shapes = useMemo(() => {
     return Array.from({ length: 20 }, (_, i) => ({
       id: i,
@@ -40,10 +46,10 @@ const GradientBackground = () => {
       <div
         className="absolute inset-0 opacity-40"
         style={{
-          background: `radial-gradient(circle at 20% 50%, ${activePalette.primary}50 0%, transparent 50%),
-                      radial-gradient(circle at 80% 80%, ${activePalette.secondary}50 0%, transparent 50%),
-                      radial-gradient(circle at 40% 20%, ${activePalette.accent}40 0%, transparent 50%),
-                      linear-gradient(135deg, ${activePalette.primary}20 0%, ${activePalette.secondary}20 50%, ${activePalette.accent}20 100%)`,
+          background: `radial-gradient(circle at 20% 50%, ${palette.primary}50 0%, transparent 50%),
+                      radial-gradient(circle at 80% 80%, ${palette.secondary}50 0%, transparent 50%),
+                      radial-gradient(circle at 40% 20%, ${palette.accent}40 0%, transparent 50%),
+                      linear-gradient(135deg, ${palette.primary}20 0%, ${palette.secondary}20 50%, ${palette.accent}20 100%)`,
         }}
       />
 
@@ -51,7 +57,7 @@ const GradientBackground = () => {
       <div
         className="absolute w-96 h-96 rounded-full blur-3xl opacity-20"
         style={{
-          background: `radial-gradient(circle, ${activePalette.primary} 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${palette.primary} 0%, transparent 70%)`,
           top: "20%",
           left: "10%",
           animation: "float 20s ease-in-out infinite",
@@ -60,7 +66,7 @@ const GradientBackground = () => {
       <div
         className="absolute w-96 h-96 rounded-full blur-3xl opacity-20"
         style={{
-          background: `radial-gradient(circle, ${activePalette.secondary} 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${palette.secondary} 0%, transparent 70%)`,
           top: "60%",
           right: "15%",
           animation: "float 25s ease-in-out infinite reverse",
@@ -76,9 +82,9 @@ const GradientBackground = () => {
             width: `${shape.size}px`,
             height: `${shape.size}px`,
             left: `${shape.left}%`,
-            background: `radial-gradient(circle, ${
-              activePalette.primary
-            }${Math.floor(shape.opacity * 100)} 0%, transparent 70%)`,
+            background: `radial-gradient(circle, ${palette.primary}${Math.floor(
+              shape.opacity * 100
+            )} 0%, transparent 70%)`,
             opacity: shape.opacity,
             animation: `floatUpSlow ${shape.duration}s linear infinite`,
             animationDelay: `${shape.delay}s`,
@@ -99,10 +105,10 @@ const GradientBackground = () => {
             left: `${shape.left}%`,
             borderRadius: shape.shape === "circle" ? "50%" : "8px",
             background: `linear-gradient(135deg, ${
-              activePalette.secondary
-            }${Math.floor(shape.opacity * 100)}, ${
-              activePalette.accent
-            }${Math.floor(shape.opacity * 50)})`,
+              palette.secondary
+            }${Math.floor(shape.opacity * 100)}, ${palette.accent}${Math.floor(
+              shape.opacity * 50
+            )})`,
             opacity: shape.opacity,
             animation: `floatUpSlow ${shape.duration}s linear infinite`,
             animationDelay: `${shape.delay}s`,
@@ -156,7 +162,13 @@ const Section = React.forwardRef<
 Section.displayName = "Section";
 
 // Animated Project Card Component
-const AnimatedProjectCard = ({ project }: { project: number }) => {
+const AnimatedProjectCard = ({
+  project,
+  palette,
+}: {
+  project: number;
+  palette: ReturnType<typeof getActivePalette>;
+}) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const { isVisible: cardVisible } = useScrollAnimation(cardRef, {
     threshold: 0.1,
@@ -167,8 +179,8 @@ const AnimatedProjectCard = ({ project }: { project: number }) => {
       ref={cardRef}
       className="p-6 rounded-lg transition-all duration-500 hover:scale-105"
       style={{
-        backgroundColor: activePalette.surface,
-        border: `1px solid ${activePalette.border}`,
+        backgroundColor: palette.surface,
+        border: `1px solid ${palette.border}`,
         opacity: cardVisible ? 1 : 0,
         transform: `translateY(${cardVisible ? 0 : 50}px)`,
         transitionDelay: `${project * 100}ms`,
@@ -177,20 +189,18 @@ const AnimatedProjectCard = ({ project }: { project: number }) => {
       <div
         className="h-48 rounded-md mb-4 flex items-center justify-center"
         style={{
-          backgroundColor: activePalette.border,
+          backgroundColor: palette.border,
         }}
       >
-        <span style={{ color: activePalette.textSecondary }}>
-          Project {project}
-        </span>
+        <span style={{ color: palette.textSecondary }}>Project {project}</span>
       </div>
       <h3
         className="text-xl font-semibold mb-2"
-        style={{ color: activePalette.text }}
+        style={{ color: palette.text }}
       >
         Project Title {project}
       </h3>
-      <p style={{ color: activePalette.textSecondary }}>
+      <p style={{ color: palette.textSecondary }}>
         Brief description of the project and its key features. Placeholder
         content for project showcase.
       </p>
@@ -199,7 +209,13 @@ const AnimatedProjectCard = ({ project }: { project: number }) => {
 };
 
 // Animated Blog Post Component
-const AnimatedBlogPost = ({ post }: { post: number }) => {
+const AnimatedBlogPost = ({
+  post,
+  palette,
+}: {
+  post: number;
+  palette: ReturnType<typeof getActivePalette>;
+}) => {
   const articleRef = useRef<HTMLElement>(null);
   const { isVisible: articleVisible } = useScrollAnimation(articleRef, {
     threshold: 0.1,
@@ -210,8 +226,8 @@ const AnimatedBlogPost = ({ post }: { post: number }) => {
       ref={articleRef}
       className="p-4 sm:p-6 rounded-lg transition-all duration-500 hover:scale-[1.02]"
       style={{
-        backgroundColor: activePalette.surface,
-        border: `1px solid ${activePalette.border}`,
+        backgroundColor: palette.surface,
+        border: `1px solid ${palette.border}`,
         opacity: articleVisible ? 1 : 0,
         transform: `translateX(${articleVisible ? 0 : -30}px)`,
         transitionDelay: `${post * 150}ms`,
@@ -219,7 +235,7 @@ const AnimatedBlogPost = ({ post }: { post: number }) => {
     >
       <div
         className="text-sm mb-2 font-medium"
-        style={{ color: activePalette.primary }}
+        style={{ color: palette.primary }}
       >
         {new Date().toLocaleDateString("en-US", {
           year: "numeric",
@@ -229,13 +245,13 @@ const AnimatedBlogPost = ({ post }: { post: number }) => {
       </div>
       <h3
         className="text-lg sm:text-xl font-semibold mb-2"
-        style={{ color: activePalette.text }}
+        style={{ color: palette.text }}
       >
         Blog Post Title {post}
       </h3>
       <p
         className="text-sm sm:text-base line-clamp-2"
-        style={{ color: activePalette.textSecondary }}
+        style={{ color: palette.textSecondary }}
       >
         This is a placeholder for blog post content. Here you would write about
         your thoughts, experiences, and insights on software development,
@@ -249,9 +265,11 @@ const AnimatedBlogPost = ({ post }: { post: number }) => {
 const AnimatedSkillBadge = ({
   skill,
   index,
+  palette,
 }: {
   skill: string;
   index: number;
+  palette: ReturnType<typeof getActivePalette>;
 }) => {
   const skillRef = useRef<HTMLSpanElement>(null);
   const { isVisible: skillVisible } = useScrollAnimation(skillRef, {
@@ -263,8 +281,8 @@ const AnimatedSkillBadge = ({
       ref={skillRef}
       className="px-4 py-2 rounded-full text-sm transition-all duration-500 hover:scale-110"
       style={{
-        backgroundColor: activePalette.border,
-        color: activePalette.text,
+        backgroundColor: palette.border,
+        color: palette.text,
         opacity: skillVisible ? 1 : 0,
         transform: `scale(${skillVisible ? 1 : 0})`,
         transitionDelay: `${index * 50}ms`,
@@ -276,6 +294,8 @@ const AnimatedSkillBadge = ({
 };
 
 export default function Home() {
+  const { theme } = useTheme();
+  const palette = getActivePalette(theme);
   const [showIntro, setShowIntro] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
@@ -298,11 +318,12 @@ export default function Home() {
       <div
         className="relative"
         style={{
-          backgroundColor: activePalette.background,
-          color: activePalette.text,
+          backgroundColor: palette.background,
+          color: palette.text,
         }}
       >
-        <GradientBackground />
+        <GradientBackground palette={palette} />
+        <ThemeToggle />
         <ScrollIndicator />
         <SmoothScrollContainer>
           {/* Home Section */}
@@ -313,7 +334,7 @@ export default function Home() {
                   showIntro ? "opacity-0" : "opacity-100"
                 }`}
                 style={{
-                  color: activePalette.text,
+                  color: palette.text,
                   transitionDelay: showIntro ? "1.5s" : "0s",
                 }}
               >
@@ -321,13 +342,13 @@ export default function Home() {
               </h1>
               <p
                 className="text-xl sm:text-2xl mb-8 transition-all duration-700"
-                style={{ color: activePalette.textSecondary }}
+                style={{ color: palette.textSecondary }}
               >
                 Software Engineer & Creative Developer
               </p>
               <p
                 className="text-lg sm:text-xl max-w-2xl mx-auto transition-all duration-700"
-                style={{ color: activePalette.textSecondary }}
+                style={{ color: palette.textSecondary }}
               >
                 Building digital experiences that blend functionality with
                 elegant design.
@@ -340,13 +361,17 @@ export default function Home() {
             <div className="max-w-6xl w-full">
               <h2
                 className="text-5xl sm:text-6xl font-bold mb-12 text-center"
-                style={{ color: activePalette.text }}
+                style={{ color: palette.text }}
               >
                 Projects
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3].map((project) => (
-                  <AnimatedProjectCard key={project} project={project} />
+                  <AnimatedProjectCard
+                    key={project}
+                    project={project}
+                    palette={palette}
+                  />
                 ))}
               </div>
               <div className="mt-12 text-center">
@@ -354,8 +379,8 @@ export default function Home() {
                   href="/projects"
                   className="inline-block px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
                   style={{
-                    backgroundColor: activePalette.primary,
-                    color: activePalette.text,
+                    backgroundColor: palette.primary,
+                    color: palette.text,
                   }}
                 >
                   Find out more
@@ -369,13 +394,13 @@ export default function Home() {
             <div className="max-w-4xl w-full h-full flex flex-col justify-center py-8">
               <h2
                 className="text-4xl sm:text-5xl font-bold mb-6 text-center flex-shrink-0"
-                style={{ color: activePalette.text }}
+                style={{ color: palette.text }}
               >
                 Blog
               </h2>
               <div className="space-y-4 flex-1 min-h-0 overflow-hidden">
                 {[1, 2, 3].map((post) => (
-                  <AnimatedBlogPost key={post} post={post} />
+                  <AnimatedBlogPost key={post} post={post} palette={palette} />
                 ))}
               </div>
               <div className="mt-6 text-center flex-shrink-0">
@@ -383,8 +408,8 @@ export default function Home() {
                   href="/blog"
                   className="inline-block px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
                   style={{
-                    backgroundColor: activePalette.primary,
-                    color: activePalette.text,
+                    backgroundColor: palette.primary,
+                    color: palette.text,
                   }}
                 >
                   Find out more
@@ -398,20 +423,20 @@ export default function Home() {
             <div className="max-w-4xl w-full">
               <h2
                 className="text-5xl sm:text-6xl font-bold mb-12 text-center"
-                style={{ color: activePalette.text }}
+                style={{ color: palette.text }}
               >
                 About Me
               </h2>
               <div
                 className="p-8 rounded-lg"
                 style={{
-                  backgroundColor: activePalette.surface,
-                  border: `1px solid ${activePalette.border}`,
+                  backgroundColor: palette.surface,
+                  border: `1px solid ${palette.border}`,
                 }}
               >
                 <p
                   className="text-lg mb-6 leading-relaxed"
-                  style={{ color: activePalette.textSecondary }}
+                  style={{ color: palette.textSecondary }}
                 >
                   I'm a software engineer passionate about creating meaningful
                   digital experiences. With a focus on clean code, elegant
@@ -420,7 +445,7 @@ export default function Home() {
                 </p>
                 <p
                   className="text-lg mb-6 leading-relaxed"
-                  style={{ color: activePalette.textSecondary }}
+                  style={{ color: palette.textSecondary }}
                 >
                   My expertise spans full-stack development, with particular
                   interest in modern web technologies, performance optimization,
@@ -429,7 +454,7 @@ export default function Home() {
                 <div className="mt-8">
                   <h3
                     className="text-xl font-semibold mb-4"
-                    style={{ color: activePalette.text }}
+                    style={{ color: palette.text }}
                   >
                     Skills & Technologies
                   </h3>
@@ -446,6 +471,7 @@ export default function Home() {
                         key={skill}
                         skill={skill}
                         index={index}
+                        palette={palette}
                       />
                     ))}
                   </div>
@@ -456,8 +482,8 @@ export default function Home() {
                   href="/about"
                   className="inline-block px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
                   style={{
-                    backgroundColor: activePalette.primary,
-                    color: activePalette.text,
+                    backgroundColor: palette.primary,
+                    color: palette.text,
                   }}
                 >
                   Find out more
@@ -471,13 +497,13 @@ export default function Home() {
             <div className="max-w-2xl w-full text-center">
               <h2
                 className="text-5xl sm:text-6xl font-bold mb-12"
-                style={{ color: activePalette.text }}
+                style={{ color: palette.text }}
               >
                 Get In Touch
               </h2>
               <p
                 className="text-xl mb-12"
-                style={{ color: activePalette.textSecondary }}
+                style={{ color: palette.textSecondary }}
               >
                 I'm always open to discussing new projects, creative ideas, or
                 opportunities to be part of your vision.
@@ -489,8 +515,8 @@ export default function Home() {
                   rel="noreferrer"
                   className="px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
                   style={{
-                    backgroundColor: activePalette.primary,
-                    color: activePalette.text,
+                    backgroundColor: palette.primary,
+                    color: palette.text,
                   }}
                 >
                   LinkedIn
@@ -499,9 +525,9 @@ export default function Home() {
                   href="mailto:contact@kevinchen.com"
                   className="px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
                   style={{
-                    backgroundColor: activePalette.surface,
-                    color: activePalette.text,
-                    border: `2px solid ${activePalette.primary}`,
+                    backgroundColor: palette.surface,
+                    color: palette.text,
+                    border: `2px solid ${palette.primary}`,
                   }}
                 >
                   Email Me
@@ -512,8 +538,8 @@ export default function Home() {
                   href="/contact"
                   className="inline-block px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
                   style={{
-                    backgroundColor: activePalette.primary,
-                    color: activePalette.text,
+                    backgroundColor: palette.primary,
+                    color: palette.text,
                   }}
                 >
                   Find out more

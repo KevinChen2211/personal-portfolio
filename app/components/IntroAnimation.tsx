@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { activePalette } from "../color-palettes";
+import { getActivePalette, colorPalettes } from "../color-palettes";
+import { useTheme } from "./ThemeProvider";
 
 interface IntroAnimationProps {
   onComplete: () => void;
 }
 
 export default function IntroAnimation({ onComplete }: IntroAnimationProps) {
+  const { theme } = useTheme();
+  const palette = getActivePalette(theme);
   const [progress, setProgress] = useState(0);
   const [showText, setShowText] = useState(false);
   const [textRevealed, setTextRevealed] = useState(false);
@@ -64,7 +67,7 @@ export default function IntroAnimation({ onComplete }: IntroAnimationProps) {
     <div
       className="fixed inset-0 z-50 flex flex-col items-center justify-center"
       style={{
-        backgroundColor: activePalette.background,
+        backgroundColor: palette.background,
       }}
     >
       {/* Animated particles background */}
@@ -78,7 +81,7 @@ export default function IntroAnimation({ onComplete }: IntroAnimationProps) {
               top: `${particle.y}%`,
               width: `${particle.size}px`,
               height: `${particle.size}px`,
-              background: `radial-gradient(circle, ${activePalette.primary} 0%, transparent 70%)`,
+              background: `radial-gradient(circle, ${palette.primary} 0%, transparent 70%)`,
               opacity: particle.opacity,
               animation: `particleFloat ${particle.duration}s ease-in-out infinite`,
               animationDelay: `${particle.delay}s`,
@@ -96,13 +99,15 @@ export default function IntroAnimation({ onComplete }: IntroAnimationProps) {
               showText ? "opacity-100" : "opacity-0"
             }`}
             style={{
-              color: activePalette.text,
+              color: palette.text,
               letterSpacing: "0.05em",
             }}
           >
             <span
               className={`inline-block transition-all duration-700 ${
-                textRevealed ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+                textRevealed
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-8 opacity-0"
               }`}
               style={{ transitionDelay: "0ms" }}
             >
@@ -111,7 +116,9 @@ export default function IntroAnimation({ onComplete }: IntroAnimationProps) {
             <span className="mx-2" />
             <span
               className={`inline-block transition-all duration-700 ${
-                textRevealed ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+                textRevealed
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-8 opacity-0"
               }`}
               style={{ transitionDelay: "150ms" }}
             >
@@ -125,20 +132,23 @@ export default function IntroAnimation({ onComplete }: IntroAnimationProps) {
               textRevealed ? "opacity-30" : "opacity-0"
             }`}
             style={{
-              background: `radial-gradient(circle, ${activePalette.primary} 0%, transparent 70%)`,
+              background: `radial-gradient(circle, ${palette.primary} 0%, transparent 70%)`,
               transform: "scale(1.5)",
             }}
           />
         </div>
 
         {/* Progress bar */}
-        <div className="w-64 sm:w-80 h-1 bg-opacity-20 rounded-full overflow-hidden" style={{ backgroundColor: activePalette.border }}>
+        <div
+          className="w-64 sm:w-80 h-1 bg-opacity-20 rounded-full overflow-hidden"
+          style={{ backgroundColor: palette.border }}
+        >
           <div
             className="h-full rounded-full transition-all duration-300 ease-out"
             style={{
               width: `${progress}%`,
-              background: `linear-gradient(90deg, ${activePalette.primary}, ${activePalette.secondary})`,
-              boxShadow: `0 0 20px ${activePalette.primary}40`,
+              background: `linear-gradient(90deg, ${palette.primary}, ${palette.secondary})`,
+              boxShadow: `0 0 20px ${palette.primary}40`,
             }}
           />
         </div>
@@ -150,7 +160,7 @@ export default function IntroAnimation({ onComplete }: IntroAnimationProps) {
               key={i}
               className="w-2 h-2 rounded-full"
               style={{
-                backgroundColor: activePalette.primary,
+                backgroundColor: palette.primary,
                 animation: `pulse 1.4s ease-in-out infinite`,
                 animationDelay: `${i * 0.2}s`,
               }}
@@ -158,7 +168,6 @@ export default function IntroAnimation({ onComplete }: IntroAnimationProps) {
           ))}
         </div>
       </div>
-
     </div>
   );
 }

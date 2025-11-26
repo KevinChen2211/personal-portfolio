@@ -2,12 +2,13 @@
  * COLOR PALETTE SELECTION
  *
  * To switch between color palettes, change the activePalette export at the bottom:
- * - palette1: Modern Dark Minimal (Deep Blue & Warm Gray) - Currently Active
+ * - palette1: Modern Dark Minimal (Deep Blue & Warm Gray)
  * - palette2: Warm Minimal (Cream & Sage)
  * - palette3: Cool Minimal (Slate & Cyan)
  * - palette4: Earthy Minimal (Beige & Terracotta)
+ * - mochaMousse: Mocha Mousse (Rich Browns & Cream)
  *
- * Example: Change `colorPalettes.palette1` to `colorPalettes.palette2` to switch themes
+ * Example: Change `colorPalettes.palette1` to `colorPalettes.mochaMousse` to switch themes
  */
 
 export const colorPalettes = {
@@ -24,45 +25,25 @@ export const colorPalettes = {
     border: "#1e293b",
   },
 
-  // Palette 2: Warm Minimal (Cream & Sage)
-  palette2: {
-    name: "Warm Minimal",
-    background: "#faf9f6",
-    surface: "#ffffff",
-    primary: "#10b981", // Emerald
-    secondary: "#84cc16", // Lime
-    accent: "#f59e0b", // Amber
-    text: "#1f2937",
-    textSecondary: "#6b7280",
-    border: "#e5e7eb",
-  },
-
-  // Palette 3: Cool Minimal (Slate & Cyan)
-  palette3: {
-    name: "Cool Minimal",
-    background: "#0f172a",
-    surface: "#1e293b",
-    primary: "#06b6d4", // Cyan
-    secondary: "#3b82f6", // Blue
-    accent: "#8b5cf6", // Purple
-    text: "#f1f5f9",
-    textSecondary: "#94a3b8",
-    border: "#334155",
-  },
-
-  // Palette 4: Earthy Minimal (Beige & Terracotta)
-  palette4: {
-    name: "Earthy Minimal",
-    background: "#fefbf7",
-    surface: "#ffffff",
-    primary: "#d97706", // Amber
-    secondary: "#dc2626", // Red
-    accent: "#ea580c", // Orange
-    text: "#292524",
-    textSecondary: "#78716c",
-    border: "#d6d3d1",
+  // Mocha Mousse: Rich Browns & Cream
+  mochaMousse: {
+    name: "Mocha Mousse",
+    background: "#3c2414", // Deep mocha brown
+    surface: "#4a2c1a", // Rich brown
+    primary: "#d4a574", // Mocha cream
+    secondary: "#b8865b", // Caramel
+    accent: "#e6c99f", // Light mousse
+    text: "#f5e6d3", // Cream text
+    textSecondary: "#c9a882", // Muted cream
+    border: "#5a3a28", // Darker brown border
   },
 };
 
-// Set the active palette here (palette1, palette2, palette3, or palette4)
-export const activePalette = colorPalettes.palette1;
+// Get active palette based on theme
+// Default: mochaMousse (light), palette1 (dark)
+export function getActivePalette(theme: "light" | "dark" = "light") {
+  return theme === "dark" ? colorPalettes.palette1 : colorPalettes.mochaMousse;
+}
+
+// Default export for backward compatibility (will be overridden by ThemeProvider)
+export const activePalette = colorPalettes.mochaMousse;
