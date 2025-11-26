@@ -42,7 +42,14 @@ export default function ScrollIndicator() {
   }, []);
 
   // Section names corresponding to each index
-  const sectionNames = ["Home", "Projects", "Blog", "About", "Contact"];
+  const sectionNames = [
+    "Home",
+    "Projects",
+    "Blog",
+    "Gallery",
+    "About",
+    "Contact",
+  ];
 
   const scrollToSection = (index: number) => {
     const container = document.querySelector(

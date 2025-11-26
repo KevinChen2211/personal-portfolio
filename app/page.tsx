@@ -161,49 +161,177 @@ const Section = React.forwardRef<
 
 Section.displayName = "Section";
 
-// Animated Project Card Component
+// Animated Project Card Component with mouse tracking hover effect
 const AnimatedProjectCard = ({
   project,
   palette,
+  cardIndex,
+  totalCards,
 }: {
   project: number;
   palette: ReturnType<typeof getActivePalette>;
+  cardIndex: number;
+  totalCards: number;
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const { isVisible: cardVisible } = useScrollAnimation(cardRef, {
     threshold: 0.1,
   });
 
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isNearby, setIsNearby] = useState(false);
+
+  useEffect(() => {
+    const card = cardRef.current;
+    const container = document.getElementById("project-cards");
+    if (!card || !container) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const cardRect = card.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+
+      // Mouse position relative to card
+      const x = e.clientX - cardRect.left;
+      const y = e.clientY - cardRect.top;
+
+      // Mouse position relative to container
+      const containerX = e.clientX - containerRect.left;
+      const containerY = e.clientY - containerRect.top;
+
+      // Card center relative to container
+      const cardCenterX =
+        cardRect.left - containerRect.left + cardRect.width / 2;
+      const cardCenterY =
+        cardRect.top - containerRect.top + cardRect.height / 2;
+
+      // Calculate distance from mouse to card center
+      const distance = Math.sqrt(
+        Math.pow(containerX - cardCenterX, 2) +
+          Math.pow(containerY - cardCenterY, 2)
+      );
+
+      // Proximity threshold (adjust based on card size and gap)
+      const proximityThreshold = 250; // pixels
+
+      // Check if mouse is inside card or nearby
+      const isInside =
+        x >= 0 && x <= cardRect.width && y >= 0 && y <= cardRect.height;
+
+      const isClose = distance < proximityThreshold;
+
+      setIsNearby(isInside || isClose);
+
+      if (isInside || isClose) {
+        setMousePosition({ x, y });
+        card.style.setProperty("--mouse-x", `${x}px`);
+        card.style.setProperty("--mouse-y", `${y}px`);
+      }
+    };
+
+    container.addEventListener("mousemove", handleMouseMove);
+
+    const handleMouseLeave = () => {
+      setIsNearby(false);
+    };
+
+    container.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      container.removeEventListener("mousemove", handleMouseMove);
+      container.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, [cardIndex, totalCards]);
+
+  // Convert hex to rgba for gradient effect
+  const hexToRgba = (hex: string, alpha: number) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+
+  // Use white/light color for the gradient effect (works on both themes)
+  const gradientColor1 = "rgba(255, 255, 255, 0.06)";
+  const gradientColor2 = "rgba(255, 255, 255, 0.4)";
+
   return (
     <div
       ref={cardRef}
-      className="p-6 rounded-lg transition-all duration-500 hover:scale-105"
-      style={{
-        backgroundColor: palette.surface,
-        border: `1px solid ${palette.border}`,
-        opacity: cardVisible ? 1 : 0,
-        transform: `translateY(${cardVisible ? 0 : 50}px)`,
-        transitionDelay: `${project * 100}ms`,
-      }}
+      className="project-card relative rounded-lg cursor-pointer"
+      style={
+        {
+          opacity: cardVisible ? 1 : 0,
+          transform: `translateY(${cardVisible ? 0 : 50}px)`,
+          transitionDelay: `${project * 100}ms`,
+          transition: "opacity 0.5s ease-out, transform 0.5s ease-out",
+          backgroundColor: "rgba(255, 255, 255, 0.1)",
+          borderRadius: "10px",
+          position: "relative",
+          minHeight: "300px",
+          "--mouse-x": "0px",
+          "--mouse-y": "0px",
+        } as React.CSSProperties & { "--mouse-x": string; "--mouse-y": string }
+      }
     >
+      {/* Gradient overlay - outer glow */}
       <div
-        className="h-48 rounded-md mb-4 flex items-center justify-center"
+        className={`card-gradient-before absolute inset-0 rounded-lg pointer-events-none transition-opacity duration-500 ${
+          isNearby ? "card-nearby" : ""
+        }`}
         style={{
-          backgroundColor: palette.border,
+          background: `radial-gradient(800px circle at ${mousePosition.x}px ${mousePosition.y}px, ${gradientColor1}, transparent 40%)`,
+          borderRadius: "inherit",
+          opacity: 0,
+          zIndex: 3,
+        }}
+      />
+
+      {/* Gradient overlay - inner bright spot */}
+      <div
+        className={`card-gradient-after absolute inset-0 rounded-lg pointer-events-none transition-opacity duration-500 ${
+          isNearby ? "card-nearby" : ""
+        }`}
+        style={{
+          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, ${gradientColor2}, transparent 40%)`,
+          borderRadius: "inherit",
+          opacity: 0,
+          zIndex: 1,
+        }}
+      />
+
+      {/* Card content - inset to show border/gradient */}
+      <div
+        className="relative p-6 rounded-lg flex flex-col"
+        style={{
+          backgroundColor: palette.surface,
+          borderRadius: "inherit",
+          position: "absolute",
+          inset: "1px",
+          zIndex: 2,
+          minHeight: "calc(100% - 2px)",
         }}
       >
-        <span style={{ color: palette.textSecondary }}>Project {project}</span>
+        <div
+          className="h-48 rounded-md mb-4 flex items-center justify-center"
+          style={{
+            backgroundColor: palette.border,
+          }}
+        >
+          <span style={{ color: palette.textSecondary }}>
+            Project {project}
+          </span>
+        </div>
+        <h3
+          className="text-xl font-semibold mb-2"
+          style={{ color: palette.text }}
+        >
+          Project Title {project}
+        </h3>
+        <p style={{ color: palette.textSecondary }}>
+          Brief description of the project and its key features. Placeholder
+          content for project showcase.
+        </p>
       </div>
-      <h3
-        className="text-xl font-semibold mb-2"
-        style={{ color: palette.text }}
-      >
-        Project Title {project}
-      </h3>
-      <p style={{ color: palette.textSecondary }}>
-        Brief description of the project and its key features. Placeholder
-        content for project showcase.
-      </p>
     </div>
   );
 };
@@ -380,12 +508,17 @@ export default function Home() {
               >
                 Projects
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                id="project-cards"
+              >
                 {[1, 2, 3].map((project) => (
                   <AnimatedProjectCard
                     key={project}
                     project={project}
                     palette={palette}
+                    cardIndex={project - 1}
+                    totalCards={3}
                   />
                 ))}
               </div>
@@ -430,6 +563,34 @@ export default function Home() {
                   Find out more
                 </Link>
               </div>
+            </div>
+          </Section>
+
+          {/* Gallery Section */}
+          <Section>
+            <div className="max-w-4xl w-full text-center">
+              <h2
+                className="text-5xl sm:text-6xl font-bold mb-12"
+                style={{ color: palette.text }}
+              >
+                Gallery
+              </h2>
+              <p
+                className="text-xl mb-12"
+                style={{ color: palette.textSecondary }}
+              >
+                Explore my photography and visual work.
+              </p>
+              <Link
+                href="/gallery"
+                className="inline-block px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
+                style={{
+                  backgroundColor: palette.primary,
+                  color: palette.text,
+                }}
+              >
+                Find out more
+              </Link>
             </div>
           </Section>
 

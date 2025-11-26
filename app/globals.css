@@ -126,3 +126,14 @@ html {
     transform: translateX(0);
   }
 }
+
+/* Project card hover effect - card glows when hovered or nearby */
+.project-card:hover .card-gradient-before,
+.project-card .card-nearby.card-gradient-before {
+  opacity: 1 !important;
+}
+
+.project-card:hover .card-gradient-after,
+.project-card .card-nearby.card-gradient-after {
+  opacity: 1 !important;
+}
