@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import IntroAnimation from "./components/IntroAnimation";
 import SmoothScrollContainer from "./components/SmoothScrollContainer";
+import ScrollIndicator from "./components/ScrollIndicator";
 import { activePalette } from "./color-palettes";
 import Link from "next/link";
+import { useScrollAnimation } from "./components/useScrollAnimation";
 
 // Gradient Background Component
 const GradientBackground = () => {
@@ -114,7 +116,7 @@ const GradientBackground = () => {
   );
 };
 
-// Section component
+// Section component with scroll animations
 const Section = React.forwardRef<
   HTMLElement,
   {
@@ -122,10 +124,29 @@ const Section = React.forwardRef<
     className?: string;
   }
 >(({ children, className = "" }, ref) => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const { isVisible, scrollProgress } = useScrollAnimation(sectionRef, {
+    threshold: 0.2,
+  });
+
   return (
     <section
-      ref={ref}
+      ref={(node) => {
+        sectionRef.current = node;
+        if (typeof ref === "function") {
+          ref(node);
+        } else if (ref) {
+          (ref as React.MutableRefObject<HTMLElement | null>).current = node;
+        }
+      }}
       className={`h-screen snap-start flex items-center justify-center px-6 sm:px-10 relative z-10 overflow-hidden ${className}`}
+      style={{
+        opacity: isVisible ? 1 : 0.3,
+        transform: `translateY(${isVisible ? 0 : 30}px) scale(${
+          isVisible ? 1 : 0.95
+        })`,
+        transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
+      }}
     >
       {children}
     </section>
@@ -133,6 +154,126 @@ const Section = React.forwardRef<
 });
 
 Section.displayName = "Section";
+
+// Animated Project Card Component
+const AnimatedProjectCard = ({ project }: { project: number }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const { isVisible: cardVisible } = useScrollAnimation(cardRef, {
+    threshold: 0.1,
+  });
+
+  return (
+    <div
+      ref={cardRef}
+      className="p-6 rounded-lg transition-all duration-500 hover:scale-105"
+      style={{
+        backgroundColor: activePalette.surface,
+        border: `1px solid ${activePalette.border}`,
+        opacity: cardVisible ? 1 : 0,
+        transform: `translateY(${cardVisible ? 0 : 50}px)`,
+        transitionDelay: `${project * 100}ms`,
+      }}
+    >
+      <div
+        className="h-48 rounded-md mb-4 flex items-center justify-center"
+        style={{
+          backgroundColor: activePalette.border,
+        }}
+      >
+        <span style={{ color: activePalette.textSecondary }}>
+          Project {project}
+        </span>
+      </div>
+      <h3
+        className="text-xl font-semibold mb-2"
+        style={{ color: activePalette.text }}
+      >
+        Project Title {project}
+      </h3>
+      <p style={{ color: activePalette.textSecondary }}>
+        Brief description of the project and its key features. Placeholder
+        content for project showcase.
+      </p>
+    </div>
+  );
+};
+
+// Animated Blog Post Component
+const AnimatedBlogPost = ({ post }: { post: number }) => {
+  const articleRef = useRef<HTMLElement>(null);
+  const { isVisible: articleVisible } = useScrollAnimation(articleRef, {
+    threshold: 0.1,
+  });
+
+  return (
+    <article
+      ref={articleRef}
+      className="p-4 sm:p-6 rounded-lg transition-all duration-500 hover:scale-[1.02]"
+      style={{
+        backgroundColor: activePalette.surface,
+        border: `1px solid ${activePalette.border}`,
+        opacity: articleVisible ? 1 : 0,
+        transform: `translateX(${articleVisible ? 0 : -30}px)`,
+        transitionDelay: `${post * 150}ms`,
+      }}
+    >
+      <div
+        className="text-sm mb-2 font-medium"
+        style={{ color: activePalette.primary }}
+      >
+        {new Date().toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })}
+      </div>
+      <h3
+        className="text-lg sm:text-xl font-semibold mb-2"
+        style={{ color: activePalette.text }}
+      >
+        Blog Post Title {post}
+      </h3>
+      <p
+        className="text-sm sm:text-base line-clamp-2"
+        style={{ color: activePalette.textSecondary }}
+      >
+        This is a placeholder for blog post content. Here you would write about
+        your thoughts, experiences, and insights on software development,
+        design, or other topics of interest.
+      </p>
+    </article>
+  );
+};
+
+// Animated Skill Badge Component
+const AnimatedSkillBadge = ({
+  skill,
+  index,
+}: {
+  skill: string;
+  index: number;
+}) => {
+  const skillRef = useRef<HTMLSpanElement>(null);
+  const { isVisible: skillVisible } = useScrollAnimation(skillRef, {
+    threshold: 0.1,
+  });
+
+  return (
+    <span
+      ref={skillRef}
+      className="px-4 py-2 rounded-full text-sm transition-all duration-500 hover:scale-110"
+      style={{
+        backgroundColor: activePalette.border,
+        color: activePalette.text,
+        opacity: skillVisible ? 1 : 0,
+        transform: `scale(${skillVisible ? 1 : 0})`,
+        transitionDelay: `${index * 50}ms`,
+      }}
+    >
+      {skill}
+    </span>
+  );
+};
 
 export default function Home() {
   const [showIntro, setShowIntro] = useState(false);
@@ -162,6 +303,7 @@ export default function Home() {
         }}
       >
         <GradientBackground />
+        <ScrollIndicator />
         <SmoothScrollContainer>
           {/* Home Section */}
           <Section>
@@ -204,35 +346,7 @@ export default function Home() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3].map((project) => (
-                  <div
-                    key={project}
-                    className="p-6 rounded-lg transition-all duration-300 hover:scale-105"
-                    style={{
-                      backgroundColor: activePalette.surface,
-                      border: `1px solid ${activePalette.border}`,
-                    }}
-                  >
-                    <div
-                      className="h-48 rounded-md mb-4 flex items-center justify-center"
-                      style={{
-                        backgroundColor: activePalette.border,
-                      }}
-                    >
-                      <span style={{ color: activePalette.textSecondary }}>
-                        Project {project}
-                      </span>
-                    </div>
-                    <h3
-                      className="text-xl font-semibold mb-2"
-                      style={{ color: activePalette.text }}
-                    >
-                      Project Title {project}
-                    </h3>
-                    <p style={{ color: activePalette.textSecondary }}>
-                      Brief description of the project and its key features.
-                      Placeholder content for project showcase.
-                    </p>
-                  </div>
+                  <AnimatedProjectCard key={project} project={project} />
                 ))}
               </div>
               <div className="mt-12 text-center">
@@ -261,40 +375,7 @@ export default function Home() {
               </h2>
               <div className="space-y-4 flex-1 min-h-0 overflow-hidden">
                 {[1, 2, 3].map((post) => (
-                  <article
-                    key={post}
-                    className="p-4 sm:p-6 rounded-lg transition-all duration-300 hover:scale-[1.02]"
-                    style={{
-                      backgroundColor: activePalette.surface,
-                      border: `1px solid ${activePalette.border}`,
-                    }}
-                  >
-                    <div
-                      className="text-sm mb-2 font-medium"
-                      style={{ color: activePalette.primary }}
-                    >
-                      {new Date().toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </div>
-                    <h3
-                      className="text-lg sm:text-xl font-semibold mb-2"
-                      style={{ color: activePalette.text }}
-                    >
-                      Blog Post Title {post}
-                    </h3>
-                    <p
-                      className="text-sm sm:text-base line-clamp-2"
-                      style={{ color: activePalette.textSecondary }}
-                    >
-                      This is a placeholder for blog post content. Here you
-                      would write about your thoughts, experiences, and insights
-                      on software development, design, or other topics of
-                      interest.
-                    </p>
-                  </article>
+                  <AnimatedBlogPost key={post} post={post} />
                 ))}
               </div>
               <div className="mt-6 text-center flex-shrink-0">
@@ -360,17 +441,12 @@ export default function Home() {
                       "Node.js",
                       "Python",
                       "Design",
-                    ].map((skill) => (
-                      <span
+                    ].map((skill, index) => (
+                      <AnimatedSkillBadge
                         key={skill}
-                        className="px-4 py-2 rounded-full text-sm"
-                        style={{
-                          backgroundColor: activePalette.border,
-                          color: activePalette.text,
-                        }}
-                      >
-                        {skill}
-                      </span>
+                        skill={skill}
+                        index={index}
+                      />
                     ))}
                   </div>
                 </div>
@@ -443,31 +519,6 @@ export default function Home() {
                   Find out more
                 </Link>
               </div>
-            </div>
-          </Section>
-
-          {/* Duplicate section for infinite loop */}
-          <Section className="duplicate">
-            <div className="max-w-4xl w-full text-center">
-              <h1
-                className="text-6xl sm:text-8xl font-bold mb-6"
-                style={{ color: activePalette.text }}
-              >
-                Kevin Chen
-              </h1>
-              <p
-                className="text-xl sm:text-2xl mb-8"
-                style={{ color: activePalette.textSecondary }}
-              >
-                Software Engineer & Creative Developer
-              </p>
-              <p
-                className="text-lg sm:text-xl max-w-2xl mx-auto"
-                style={{ color: activePalette.textSecondary }}
-              >
-                Building digital experiences that blend functionality with
-                elegant design.
-              </p>
             </div>
           </Section>
         </SmoothScrollContainer>

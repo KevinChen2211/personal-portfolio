@@ -54,66 +54,24 @@ export default function SmoothScrollContainer({
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
 
-      const nonDuplicateSections = container.querySelectorAll(
-        "section:not(.duplicate)"
-      );
-      const totalSections = nonDuplicateSections.length;
+      const sections = container.querySelectorAll("section");
+      const totalSections = sections.length;
       const viewportHeight = container.clientHeight;
       const currentScroll = container.scrollTop;
 
       if (isScrollingRef.current) return;
 
-      const duplicateSection = container.querySelector(
-        "section.duplicate"
-      ) as HTMLElement;
-      let isInDuplicate = false;
-      let duplicateTop = 0;
-      if (duplicateSection) {
-        duplicateTop = duplicateSection.offsetTop;
-        isInDuplicate = container.scrollTop >= duplicateTop;
-      }
-
-      let justReset = false;
-
-      if (isInDuplicate && duplicateSection) {
-        const distanceIntoDuplicate = container.scrollTop - duplicateTop;
-
-        if (e.deltaY > 0) {
-          const scrollDelta = e.deltaY * 0.5;
-          const newScroll = container.scrollTop + scrollDelta;
-
-          if (distanceIntoDuplicate + scrollDelta >= viewportHeight * 0.5) {
-            container.scrollTop = 0;
-            scrollAccumulatorRef.current = 0;
-            justReset = true;
-          } else {
-            container.scrollTop = newScroll;
-            scrollAccumulatorRef.current = 0;
-            return;
-          }
-        } else {
-          smoothScrollTo((totalSections - 1) * viewportHeight);
-          scrollAccumulatorRef.current = 0;
-          return;
-        }
-      }
-
-      const actualScroll = justReset ? 0 : container.scrollTop;
       scrollAccumulatorRef.current += e.deltaY;
 
-      const currentIndex = Math.floor(actualScroll / viewportHeight);
+      const currentIndex = Math.floor(currentScroll / viewportHeight);
       const currentSectionTop = currentIndex * viewportHeight;
       const currentSectionBottom = (currentIndex + 1) * viewportHeight;
-      const distanceFromTop = actualScroll - currentSectionTop;
-      const distanceFromBottom = currentSectionBottom - actualScroll;
+      const distanceFromTop = currentScroll - currentSectionTop;
+      const distanceFromBottom = currentSectionBottom - currentScroll;
       const SCROLL_THRESHOLD = 500;
 
       const scrollDelta = e.deltaY * 0.5;
-      let newScroll = actualScroll + scrollDelta;
-
-      if (justReset) {
-        container.scrollTop = 0;
-      }
+      let newScroll = currentScroll + scrollDelta;
 
       const isNearTop = distanceFromTop < 100 && e.deltaY < 0;
       const isNearBottom = distanceFromBottom < 100 && e.deltaY > 0;
@@ -128,16 +86,15 @@ export default function SmoothScrollContainer({
         let nextIndex: number;
 
         if (e.deltaY > 0) {
+          // Scrolling down - prevent going past last section
           if (clampedIndex >= totalSections - 1) {
-            if (duplicateSection) {
-              smoothScrollTo(duplicateTop);
-            }
             scrollAccumulatorRef.current = 0;
             return;
           } else {
             nextIndex = clampedIndex + 1;
           }
         } else {
+          // Scrolling up
           if (clampedIndex <= 0) {
             scrollAccumulatorRef.current = 0;
             return;
@@ -150,9 +107,11 @@ export default function SmoothScrollContainer({
         smoothScrollTo(targetScroll);
         scrollAccumulatorRef.current = 0;
       } else {
+        // Prevent scrolling past the last section
+        const maxScroll = (totalSections - 1) * viewportHeight;
         newScroll = Math.max(
           currentSectionTop,
-          Math.min(currentSectionBottom, newScroll)
+          Math.min(Math.min(currentSectionBottom, maxScroll), newScroll)
         );
         container.scrollTop = newScroll;
       }
