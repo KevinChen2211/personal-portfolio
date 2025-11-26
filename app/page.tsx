@@ -499,6 +499,80 @@ export default function Home() {
             </div>
           </Section>
 
+          {/* About Me Section */}
+          <Section>
+            <div className="max-w-4xl w-full">
+              <h2
+                className="text-5xl sm:text-6xl font-bold mb-12 text-center"
+                style={{ color: palette.text }}
+              >
+                About Me
+              </h2>
+              <div
+                className="p-8 rounded-lg"
+                style={{
+                  backgroundColor: palette.surface,
+                  border: `1px solid ${palette.border}`,
+                }}
+              >
+                <p
+                  className="text-lg mb-6 leading-relaxed"
+                  style={{ color: palette.textSecondary }}
+                >
+                  I'm a software engineer passionate about creating meaningful
+                  digital experiences. With a focus on clean code, elegant
+                  design, and user-centered thinking, I build applications that
+                  solve real problems.
+                </p>
+                <p
+                  className="text-lg mb-6 leading-relaxed"
+                  style={{ color: palette.textSecondary }}
+                >
+                  My expertise spans full-stack development, with particular
+                  interest in modern web technologies, performance optimization,
+                  and creating intuitive user interfaces.
+                </p>
+                <div className="mt-8">
+                  <h3
+                    className="text-xl font-semibold mb-4"
+                    style={{ color: palette.text }}
+                  >
+                    Skills & Technologies
+                  </h3>
+                  <div className="flex flex-wrap gap-3">
+                    {[
+                      "React",
+                      "TypeScript",
+                      "Next.js",
+                      "Node.js",
+                      "Python",
+                      "Design",
+                    ].map((skill, index) => (
+                      <AnimatedSkillBadge
+                        key={skill}
+                        skill={skill}
+                        index={index}
+                        palette={palette}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="mt-8 text-center">
+                <Link
+                  href="/about"
+                  className="inline-block px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
+                  style={{
+                    backgroundColor: palette.primary,
+                    color: palette.text,
+                  }}
+                >
+                  Find out more
+                </Link>
+              </div>
+            </div>
+          </Section>
+
           {/* Projects Section */}
           <Section>
             <div className="max-w-6xl w-full">
@@ -594,80 +668,6 @@ export default function Home() {
             </div>
           </Section>
 
-          {/* About Me Section */}
-          <Section>
-            <div className="max-w-4xl w-full">
-              <h2
-                className="text-5xl sm:text-6xl font-bold mb-12 text-center"
-                style={{ color: palette.text }}
-              >
-                About Me
-              </h2>
-              <div
-                className="p-8 rounded-lg"
-                style={{
-                  backgroundColor: palette.surface,
-                  border: `1px solid ${palette.border}`,
-                }}
-              >
-                <p
-                  className="text-lg mb-6 leading-relaxed"
-                  style={{ color: palette.textSecondary }}
-                >
-                  I'm a software engineer passionate about creating meaningful
-                  digital experiences. With a focus on clean code, elegant
-                  design, and user-centered thinking, I build applications that
-                  solve real problems.
-                </p>
-                <p
-                  className="text-lg mb-6 leading-relaxed"
-                  style={{ color: palette.textSecondary }}
-                >
-                  My expertise spans full-stack development, with particular
-                  interest in modern web technologies, performance optimization,
-                  and creating intuitive user interfaces.
-                </p>
-                <div className="mt-8">
-                  <h3
-                    className="text-xl font-semibold mb-4"
-                    style={{ color: palette.text }}
-                  >
-                    Skills & Technologies
-                  </h3>
-                  <div className="flex flex-wrap gap-3">
-                    {[
-                      "React",
-                      "TypeScript",
-                      "Next.js",
-                      "Node.js",
-                      "Python",
-                      "Design",
-                    ].map((skill, index) => (
-                      <AnimatedSkillBadge
-                        key={skill}
-                        skill={skill}
-                        index={index}
-                        palette={palette}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="mt-8 text-center">
-                <Link
-                  href="/about"
-                  className="inline-block px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
-                  style={{
-                    backgroundColor: palette.primary,
-                    color: palette.text,
-                  }}
-                >
-                  Find out more
-                </Link>
-              </div>
-            </div>
-          </Section>
-
           {/* Contact Section */}
           <Section>
             <div className="max-w-2xl w-full text-center">
@@ -697,28 +697,17 @@ export default function Home() {
                 >
                   LinkedIn
                 </Link>
-                <a
-                  href="mailto:contact@kevinchen.com"
-                  className="px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
-                  style={{
-                    backgroundColor: palette.surface,
-                    color: palette.text,
-                    border: `2px solid ${palette.primary}`,
-                  }}
-                >
-                  Email Me
-                </a>
-              </div>
-              <div className="mt-12">
                 <Link
-                  href="/contact"
-                  className="inline-block px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
+                  href="https://github.com/KevinChen2211"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
                   style={{
                     backgroundColor: palette.primary,
                     color: palette.text,
                   }}
                 >
-                  Find out more
+                  GitHub
                 </Link>
               </div>
             </div>

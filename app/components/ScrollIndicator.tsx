@@ -44,10 +44,10 @@ export default function ScrollIndicator() {
   // Section names corresponding to each index
   const sectionNames = [
     "Home",
+    "About",
     "Projects",
     "Blog",
     "Gallery",
-    "About",
     "Contact",
   ];
 
