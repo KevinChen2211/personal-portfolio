@@ -72,13 +72,16 @@ export default function SmoothScrollContainer({
       const currentSectionBottom = (currentIndex + 1) * viewportHeight;
       const distanceFromTop = currentScroll - currentSectionTop;
       const distanceFromBottom = currentSectionBottom - currentScroll;
-      const SCROLL_THRESHOLD = 100; // Very low threshold for easy section navigation
+      const SCROLL_THRESHOLD = 50; // Lower threshold - less scroll needed to snap
+      const EDGE_DETECTION_DISTANCE = 200; // Larger distance for easier detection
 
       const scrollDelta = e.deltaY * 0.5;
       let newScroll = currentScroll + scrollDelta;
 
-      const isNearTop = distanceFromTop < 50 && e.deltaY < 0;
-      const isNearBottom = distanceFromBottom < 50 && e.deltaY > 0;
+      const isNearTop =
+        distanceFromTop < EDGE_DETECTION_DISTANCE && e.deltaY < 0;
+      const isNearBottom =
+        distanceFromBottom < EDGE_DETECTION_DISTANCE && e.deltaY > 0;
       const hasEnoughScroll =
         Math.abs(scrollAccumulatorRef.current) >= SCROLL_THRESHOLD;
 
