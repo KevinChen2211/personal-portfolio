@@ -1,35 +1,13 @@
 "use client";
 
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import IntroAnimation from "./components/IntroAnimation";
 import SmoothScrollContainer from "./components/SmoothScrollContainer";
 import { activePalette } from "./color-palettes";
 import Link from "next/link";
 
-// Gradient Background Component with Parallax
+// Gradient Background Component
 const GradientBackground = () => {
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const container = document.querySelector(
-        '[class*="hide-scrollbar"]'
-      ) as HTMLElement;
-      if (container) {
-        // Use actual scroll position - parallax multipliers are small enough to prevent excessive movement
-        setScrollY(container.scrollTop);
-      }
-    };
-
-    const container = document.querySelector('[class*="hide-scrollbar"]');
-    if (container) {
-      container.addEventListener("scroll", handleScroll);
-      handleScroll();
-      return () => container.removeEventListener("scroll", handleScroll);
-    }
-  }, []);
-
-  // Generate shapes that move up infinitely - memoized to prevent regeneration on scroll
   const shapes = useMemo(() => {
     return Array.from({ length: 20 }, (_, i) => ({
       id: i,
@@ -41,7 +19,6 @@ const GradientBackground = () => {
     }));
   }, []);
 
-  // Memoize additional shapes to prevent regeneration
   const additionalShapes = useMemo(() => {
     return Array.from({ length: 15 }, (_, i) => ({
       id: `shape-${i}`,
@@ -57,7 +34,7 @@ const GradientBackground = () => {
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-      {/* Persistent gradient background - very subtle parallax */}
+      {/* Gradient background */}
       <div
         className="absolute inset-0 opacity-40"
         style={{
@@ -65,16 +42,15 @@ const GradientBackground = () => {
                       radial-gradient(circle at 80% 80%, ${activePalette.secondary}50 0%, transparent 50%),
                       radial-gradient(circle at 40% 20%, ${activePalette.accent}40 0%, transparent 50%),
                       linear-gradient(135deg, ${activePalette.primary}20 0%, ${activePalette.secondary}20 50%, ${activePalette.accent}20 100%)`,
-          transform: `translateY(${scrollY * 0.02}px)`,
         }}
       />
 
-      {/* Animated gradient orbs - very subtle parallax */}
+      {/* Animated gradient orbs */}
       <div
         className="absolute w-96 h-96 rounded-full blur-3xl opacity-20"
         style={{
           background: `radial-gradient(circle, ${activePalette.primary} 0%, transparent 70%)`,
-          top: `${20 + scrollY * 0.005}%`,
+          top: "20%",
           left: "10%",
           animation: "float 20s ease-in-out infinite",
         }}
@@ -83,13 +59,13 @@ const GradientBackground = () => {
         className="absolute w-96 h-96 rounded-full blur-3xl opacity-20"
         style={{
           background: `radial-gradient(circle, ${activePalette.secondary} 0%, transparent 70%)`,
-          top: `${60 + scrollY * 0.003}%`,
+          top: "60%",
           right: "15%",
           animation: "float 25s ease-in-out infinite reverse",
         }}
       />
 
-      {/* Infinite upward-moving shapes - move at constant speed regardless of scroll */}
+      {/* Floating shapes */}
       {shapes.map((shape) => (
         <div
           key={shape.id}
@@ -110,7 +86,7 @@ const GradientBackground = () => {
         />
       ))}
 
-      {/* Additional geometric shapes - slower, constant speed */}
+      {/* Additional geometric shapes */}
       {additionalShapes.map((shape) => (
         <div
           key={shape.id}
@@ -138,27 +114,17 @@ const GradientBackground = () => {
   );
 };
 
-// Section component - no parallax to prevent overlapping
+// Section component
 const Section = React.forwardRef<
   HTMLElement,
   {
     children: React.ReactNode;
     className?: string;
-    parallaxSpeed?: number;
   }
->(({ children, className = "", parallaxSpeed = 0.3 }, ref) => {
-  const sectionRef = useRef<HTMLElement>(null);
-
+>(({ children, className = "" }, ref) => {
   return (
     <section
-      ref={(node) => {
-        sectionRef.current = node;
-        if (typeof ref === "function") {
-          ref(node);
-        } else if (ref) {
-          (ref as React.MutableRefObject<HTMLElement | null>).current = node;
-        }
-      }}
+      ref={ref}
       className={`h-screen snap-start flex items-center justify-center px-6 sm:px-10 relative z-10 overflow-hidden ${className}`}
     >
       {children}
@@ -171,11 +137,9 @@ Section.displayName = "Section";
 export default function Home() {
   const [showIntro, setShowIntro] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const homeSectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     setIsClient(true);
-    // Show intro animation on every refresh (landing page only)
     setShowIntro(true);
   }, []);
 
@@ -197,11 +161,10 @@ export default function Home() {
           color: activePalette.text,
         }}
       >
-        {/* Futuristic Gradient Background with Parallax */}
         <GradientBackground />
         <SmoothScrollContainer>
           {/* Home Section */}
-          <Section ref={homeSectionRef}>
+          <Section>
             <div className="max-w-4xl w-full text-center">
               <h1
                 className={`text-6xl sm:text-8xl font-bold mb-6 transition-opacity duration-1000 ${
@@ -483,7 +446,7 @@ export default function Home() {
             </div>
           </Section>
 
-          {/* Duplicate sections for infinite loop effect */}
+          {/* Duplicate section for infinite loop */}
           <Section className="duplicate">
             <div className="max-w-4xl w-full text-center">
               <h1
