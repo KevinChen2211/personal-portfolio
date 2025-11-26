@@ -13,7 +13,9 @@ export default function ScrollIndicator() {
   const [hoveredSection, setHoveredSection] = useState<number | null>(null);
 
   useEffect(() => {
-    const container = document.querySelector('[class*="hide-scrollbar"]') as HTMLElement;
+    const container = document.querySelector(
+      '[class*="hide-scrollbar"]'
+    ) as HTMLElement;
     if (!container) return;
 
     const updateProgress = () => {
@@ -21,12 +23,12 @@ export default function ScrollIndicator() {
       const viewportHeight = container.clientHeight;
       const scrollTop = container.scrollTop;
       const totalHeight = sections.length * viewportHeight;
-      
+
       setTotalSections(sections.length);
-      
+
       const progress = (scrollTop / totalHeight) * 100;
       setScrollProgress(Math.min(100, Math.max(0, progress)));
-      
+
       const sectionIndex = Math.floor(scrollTop / viewportHeight);
       setCurrentSection(Math.min(sectionIndex, sections.length - 1));
     };
@@ -40,24 +42,20 @@ export default function ScrollIndicator() {
   }, []);
 
   // Section names corresponding to each index
-  const sectionNames = [
-    "Home",
-    "Projects",
-    "Blog",
-    "About",
-    "Contact",
-  ];
+  const sectionNames = ["Home", "Projects", "Blog", "About", "Contact"];
 
   const scrollToSection = (index: number) => {
-    const container = document.querySelector('[class*="hide-scrollbar"]') as HTMLElement;
+    const container = document.querySelector(
+      '[class*="hide-scrollbar"]'
+    ) as HTMLElement;
     if (!container) return;
-    
+
     const viewportHeight = container.clientHeight;
     const targetScroll = index * viewportHeight;
-    
+
     // Use smoothScrollTo if available, otherwise use native smooth scroll
     const smoothScrollTo = (container as any).smoothScrollTo;
-    if (smoothScrollTo && typeof smoothScrollTo === 'function') {
+    if (smoothScrollTo && typeof smoothScrollTo === "function") {
       smoothScrollTo(targetScroll);
     } else {
       container.scrollTo({
@@ -79,19 +77,19 @@ export default function ScrollIndicator() {
           transition: "height 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       />
-      
+
       {Array.from({ length: totalSections }, (_, index) => {
         const isActive = currentSection === index;
         const isHovered = hoveredSection === index;
         const sectionName = sectionNames[index] || `Section ${index + 1}`;
-        
+
         return (
           <div
             key={index}
             className="relative flex items-center justify-center"
             style={{
-              padding: "8px",
-              margin: "-8px",
+              padding: "16px",
+              margin: "-16px",
             }}
             onMouseEnter={() => setHoveredSection(index)}
             onMouseLeave={() => setHoveredSection(null)}
@@ -102,12 +100,14 @@ export default function ScrollIndicator() {
               style={{
                 width: isActive ? "16px" : isHovered ? "14px" : "12px",
                 height: isActive ? "16px" : isHovered ? "14px" : "12px",
-                backgroundColor: isActive || isHovered ? palette.primary : palette.border,
+                backgroundColor:
+                  isActive || isHovered ? palette.primary : palette.border,
                 transform: `scale(${isActive ? 1.2 : isHovered ? 1.1 : 1})`,
                 opacity: isActive ? 1 : isHovered ? 0.8 : 0.5,
-                boxShadow: isActive || isHovered 
-                  ? `0 0 ${isActive ? '16px' : '12px'} ${palette.primary}60`
-                  : 'none',
+                boxShadow:
+                  isActive || isHovered
+                    ? `0 0 ${isActive ? "16px" : "12px"} ${palette.primary}60`
+                    : "none",
                 transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
               }}
               aria-label={`Go to ${sectionName}`}
@@ -134,4 +134,3 @@ export default function ScrollIndicator() {
     </div>
   );
 }
-
