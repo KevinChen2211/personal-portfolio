@@ -1,14 +1,9 @@
 /**
  * COLOR PALETTE SELECTION
  *
- * To switch between color palettes, change the activePalette export at the bottom:
- * - palette1: Modern Dark Minimal (Deep Blue & Warm Gray)
- * - palette2: Warm Minimal (Cream & Sage)
- * - palette3: Cool Minimal (Slate & Cyan)
- * - palette4: Earthy Minimal (Beige & Terracotta)
- * - mochaMousse: Mocha Mousse (Rich Browns & Cream)
- *
- * Example: Change `colorPalettes.palette1` to `colorPalettes.mochaMousse` to switch themes
+ * Available palettes:
+ * - palette1: Modern Dark Minimal (Deep Blue & Warm Gray) - used for dark mode
+ * - mochaMousse: Mocha Mousse (Rich Browns & Cream) - used for light mode (default)
  */
 
 export const colorPalettes = {
@@ -44,6 +39,3 @@ export const colorPalettes = {
 export function getActivePalette(theme: "light" | "dark" = "light") {
   return theme === "dark" ? colorPalettes.palette1 : colorPalettes.mochaMousse;
 }
-
-// Default export for backward compatibility (will be overridden by ThemeProvider)
-export const activePalette = colorPalettes.mochaMousse;

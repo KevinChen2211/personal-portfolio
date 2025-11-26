@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { getActivePalette, colorPalettes } from "../color-palettes";
+import { getActivePalette } from "../color-palettes";
 import { useTheme } from "./ThemeProvider";
 
 interface IntroAnimationProps {

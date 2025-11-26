@@ -123,28 +123,21 @@ const GradientBackground = ({
 };
 
 // Section component with scroll animations
-const Section = React.forwardRef<
-  HTMLElement,
-  {
-    children: React.ReactNode;
-    className?: string;
-  }
->(({ children, className = "" }, ref) => {
+const Section = ({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
   const sectionRef = useRef<HTMLElement>(null);
-  const { isVisible, scrollProgress } = useScrollAnimation(sectionRef, {
+  const { isVisible } = useScrollAnimation(sectionRef, {
     threshold: 0.2,
   });
 
   return (
     <section
-      ref={(node) => {
-        sectionRef.current = node;
-        if (typeof ref === "function") {
-          ref(node);
-        } else if (ref) {
-          (ref as React.MutableRefObject<HTMLElement | null>).current = node;
-        }
-      }}
+      ref={sectionRef}
       className={`h-screen snap-start flex items-center justify-center px-6 sm:px-10 relative z-10 overflow-hidden ${className}`}
       style={{
         opacity: isVisible ? 1 : 0.3,
@@ -157,21 +150,15 @@ const Section = React.forwardRef<
       {children}
     </section>
   );
-});
-
-Section.displayName = "Section";
+};
 
 // Animated Project Card Component with mouse tracking hover effect
 const AnimatedProjectCard = ({
   project,
   palette,
-  cardIndex,
-  totalCards,
 }: {
   project: number;
   palette: ReturnType<typeof getActivePalette>;
-  cardIndex: number;
-  totalCards: number;
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const { isVisible: cardVisible } = useScrollAnimation(cardRef, {
@@ -240,15 +227,7 @@ const AnimatedProjectCard = ({
       container.removeEventListener("mousemove", handleMouseMove);
       container.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, [cardIndex, totalCards]);
-
-  // Convert hex to rgba for gradient effect
-  const hexToRgba = (hex: string, alpha: number) => {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  };
+  }, []);
 
   // Use white/light color for the gradient effect (works on both themes)
   const gradientColor1 = "rgba(255, 255, 255, 0.06)";
@@ -591,8 +570,6 @@ export default function Home() {
                     key={project}
                     project={project}
                     palette={palette}
-                    cardIndex={project - 1}
-                    totalCards={3}
                   />
                 ))}
               </div>

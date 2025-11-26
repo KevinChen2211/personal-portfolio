@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { getActivePalette } from "../color-palettes";
 
 type Theme = "light" | "dark";
 
@@ -39,9 +40,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!mounted) return;
     // Update body background color when theme changes
-    const palette = theme === "dark" 
-      ? { background: "#0a0a0f" }
-      : { background: "#3c2414" };
+    const palette = getActivePalette(theme);
     document.body.style.backgroundColor = palette.background;
   }, [theme, mounted]);
 
