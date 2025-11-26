@@ -25,13 +25,14 @@ export default function SmoothScrollContainer({
 
       const startScroll = container.scrollTop;
       const distance = target - startScroll;
-      const duration = 800; // ms
+      const duration = 600; // Reduced duration for snappier feel
       const startTime = performance.now();
 
       const animate = (currentTime: number) => {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
 
+        // Smoother easing function
         const ease =
           progress < 0.5
             ? 2 * progress * progress
@@ -51,6 +52,9 @@ export default function SmoothScrollContainer({
       animationFrameId = requestAnimationFrame(animate);
     };
 
+    // Expose smoothScrollTo for external use (e.g., ScrollIndicator)
+    (container as any).smoothScrollTo = smoothScrollTo;
+
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
 
@@ -68,7 +72,7 @@ export default function SmoothScrollContainer({
       const currentSectionBottom = (currentIndex + 1) * viewportHeight;
       const distanceFromTop = currentScroll - currentSectionTop;
       const distanceFromBottom = currentSectionBottom - currentScroll;
-      const SCROLL_THRESHOLD = 500;
+      const SCROLL_THRESHOLD = 200; // Reduced threshold for easier section navigation
 
       const scrollDelta = e.deltaY * 0.5;
       let newScroll = currentScroll + scrollDelta;
