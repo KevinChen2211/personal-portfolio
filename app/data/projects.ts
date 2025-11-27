@@ -35,10 +35,9 @@ export const projects: Project[] = [
   {
     title: "DIY Semiconductors",
     description:
-      "Pioneering research into accessible semiconductor fabrication using DIY approaches, collaborating with students from top universities to democratize chip manufacturing.",
+      "Starting Research and implementation into accessible semiconductor fabrication using DIY approaches.",
     highlights: [
       "Started work on maskless photolithography and semiconductor fabrication using DIY approaches",
-      "Collaborated alongside students from University of Waterloo, MIT, CMU, and Ohio State to adapt current industry standards for a home lab",
       "Worked on open-source documentation to make semiconductor fabrication accessible",
       "Research etching, doping, and deposition processes using consumer-grade tools while prioritizing accuracy",
       "Exploring innovative approaches to reduce cost barriers in semiconductor manufacturing",
@@ -84,4 +83,3 @@ export const projects: Project[] = [
     icon: "🧘",
   },
 ];
-
