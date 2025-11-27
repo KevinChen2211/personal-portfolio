@@ -390,8 +390,8 @@ const AnimatedSkillBadge = ({
       style={{
         backgroundColor: palette.border,
         color: palette.text,
-        opacity: skillVisible ? 1 : 0,
-        transform: `scale(${skillVisible ? 1 : 0})`,
+        opacity: skillVisible ? 1 : 1, // Always visible
+        transform: `scale(${skillVisible ? 1 : 1})`, // Always full size
         transitionDelay: `${index * 50}ms`,
       }}
     >
@@ -466,87 +466,166 @@ export default function Home() {
                 className="text-xl sm:text-2xl mb-8 transition-all duration-700"
                 style={{ color: palette.textSecondary }}
               >
-                Software Engineer & Creative Developer
+                Engineer & Creative Developer
+              </p>
+              <p
+                className="text-xl sm:text-2xl mb-8 transition-all duration-700"
+                style={{ color: palette.textSecondary }}
+              >
+                Welcome to my Website!
               </p>
               <p
                 className="text-lg sm:text-xl max-w-2xl mx-auto transition-all duration-700"
                 style={{ color: palette.textSecondary }}
               >
-                Building digital experiences that blend functionality with
-                elegant design.
+                Find out more about what im up to and the projects i've worked
+                on.
               </p>
             </div>
           </Section>
 
           {/* About Me Section */}
           <Section>
-            <div className="max-w-4xl w-full">
-              <h2
-                className="text-5xl sm:text-6xl font-bold mb-12 text-center"
-                style={{ color: palette.text }}
-              >
-                About Me
-              </h2>
-              <div
-                className="p-8 rounded-lg"
-                style={{
-                  backgroundColor: palette.surface,
-                  border: `1px solid ${palette.border}`,
-                }}
-              >
-                <p
-                  className="text-lg mb-6 leading-relaxed"
-                  style={{ color: palette.textSecondary }}
+            <div className="max-w-5xl w-full h-full flex flex-col justify-center py-8">
+              <div className="text-center mb-8 flex-shrink-0">
+                <h2
+                  className="text-4xl sm:text-6xl font-bold mb-4 transition-all duration-300 hover:scale-105"
+                  style={{ color: palette.text }}
                 >
-                  I'm a software engineer passionate about creating meaningful
-                  digital experiences. With a focus on clean code, elegant
-                  design, and user-centered thinking, I build applications that
-                  solve real problems.
-                </p>
-                <p
-                  className="text-lg mb-6 leading-relaxed"
-                  style={{ color: palette.textSecondary }}
+                  About Me
+                </h2>
+                <div
+                  className="w-24 h-1 mx-auto rounded-full"
+                  style={{ backgroundColor: palette.primary }}
+                />
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6 mb-6 flex-1 min-h-0">
+                {/* Left Column - Bio */}
+                <div
+                  className="p-6 rounded-lg transition-all duration-500 hover:shadow-lg hover:scale-[1.02] flex flex-col"
+                  style={{
+                    backgroundColor: palette.surface,
+                    border: `1px solid ${palette.border}`,
+                  }}
                 >
-                  My expertise spans full-stack development, with particular
-                  interest in modern web technologies, performance optimization,
-                  and creating intuitive user interfaces.
-                </p>
-                <div className="mt-8">
-                  <h3
-                    className="text-xl font-semibold mb-4"
-                    style={{ color: palette.text }}
+                  <div className="flex-1">
+                    <h3
+                      className="text-xl font-semibold mb-4 flex items-center gap-2"
+                      style={{ color: palette.text }}
+                    >
+                      <span
+                        className="text-2xl"
+                        style={{ color: palette.primary }}
+                      >
+                        👨‍💻
+                      </span>
+                      Who I Am
+                    </h3>
+                    <p
+                      className="text-base sm:text-lg mb-4 leading-relaxed transition-all duration-300 hover:text-opacity-80"
+                      style={{ color: palette.textSecondary }}
+                    >
+                      I love to build things and push myself to see what i can
+                      create.
+                    </p>
+                    <p
+                      className="text-base sm:text-lg mb-4 leading-relaxed transition-all duration-300 hover:text-opacity-80"
+                      style={{ color: palette.textSecondary }}
+                    >
+                      I love to learn and always looking for opportunities to
+                      refine my skills and expand my technical capabilities.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Right Column - Skills & Interests */}
+                <div className="flex flex-col gap-6">
+                  {/* Skills */}
+                  <div
+                    className="p-6 rounded-lg transition-all duration-500 hover:shadow-lg hover:scale-[1.02] flex-1"
+                    style={{
+                      backgroundColor: palette.surface,
+                      border: `1px solid ${palette.border}`,
+                    }}
                   >
-                    Skills & Technologies
-                  </h3>
-                  <div className="flex flex-wrap gap-3">
-                    {[
-                      "React",
-                      "TypeScript",
-                      "Next.js",
-                      "Node.js",
-                      "Python",
-                      "Design",
-                    ].map((skill, index) => (
-                      <AnimatedSkillBadge
-                        key={skill}
-                        skill={skill}
-                        index={index}
-                        palette={palette}
-                      />
-                    ))}
+                    <h3
+                      className="text-xl font-semibold mb-4 flex items-center gap-2"
+                      style={{ color: palette.text }}
+                    >
+                      <span
+                        className="text-2xl"
+                        style={{ color: palette.primary }}
+                      >
+                        🛠️
+                      </span>
+                      Skills & Technologies
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        "Devops (Jenkins)",
+                        "AWS Services/Cloud systems",
+                        "CICD/Testing",
+                        "Mobile dev android/IOS",
+                        "Scrum/ Engineering Practices",
+                        "Embedded/Robotics",
+                        "Web Development",
+                        "Design",
+                        "Professional Googler ",
+                      ].map((skill, index) => (
+                        <AnimatedSkillBadge
+                          key={skill}
+                          skill={skill}
+                          index={index}
+                          palette={palette}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Interests */}
+                  <div
+                    className="p-6 rounded-lg transition-all duration-500 hover:shadow-lg hover:scale-[1.02]"
+                    style={{
+                      backgroundColor: palette.surface,
+                      border: `1px solid ${palette.border}`,
+                    }}
+                  >
+                    <h3
+                      className="text-xl font-semibold mb-4 flex items-center gap-2"
+                      style={{ color: palette.text }}
+                    >
+                      <span
+                        className="text-2xl"
+                        style={{ color: palette.primary }}
+                      >
+                        🌟
+                      </span>
+                      Beyond Code
+                    </h3>
+                    <p
+                      className="text-base leading-relaxed transition-all duration-300 hover:text-opacity-80"
+                      style={{ color: palette.textSecondary }}
+                    >
+                      Outside of engineering, I love to cook, travel, and
+                      explore new places. I also enjoy photography, feel free to
+                      check out my gallery below!
+                    </p>
                   </div>
                 </div>
               </div>
-              <div className="mt-8 text-center">
+
+              <div className="mt-6 text-center flex-shrink-0">
                 <Link
                   href="/about"
-                  className="inline-block px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
+                  className="inline-block px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-110 hover:shadow-lg"
                   style={{
                     backgroundColor: palette.primary,
                     color: palette.text,
+                    boxShadow: `0 4px 14px ${palette.primary}40`,
                   }}
                 >
-                  Find out more
+                  View Full Experience →
                 </Link>
               </div>
             </div>

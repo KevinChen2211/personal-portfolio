@@ -23,7 +23,6 @@ body {
   background: var(--initial-bg, #3c2414);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
-  overflow: hidden;
   transition: background-color 0.3s ease;
 }
 
