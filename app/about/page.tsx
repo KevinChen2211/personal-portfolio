@@ -4,7 +4,8 @@ import { getActivePalette } from "../color-palettes";
 import { useTheme } from "../components/ThemeProvider";
 import ThemeToggle from "../components/ThemeToggle";
 import Link from "next/link";
-import React, { useRef, useEffect, useState } from "react";
+import { useRef } from "react";
+import { useScrollAnimation } from "../components/useScrollAnimation";
 
 export default function AboutPage() {
   const { theme } = useTheme();
@@ -14,45 +15,15 @@ export default function AboutPage() {
   const experienceRef = useRef<HTMLDivElement>(null);
   const skillsRef = useRef<HTMLDivElement>(null);
 
-  // Use IntersectionObserver for regular page scrolling
-  const [bioVisible, setBioVisible] = React.useState(false);
-  const [experienceVisible, setExperienceVisible] = React.useState(false);
-  const [skillsVisible, setSkillsVisible] = React.useState(false);
-
-  React.useEffect(() => {
-    const observers: IntersectionObserver[] = [];
-
-    if (bioRef.current) {
-      const observer = new IntersectionObserver(
-        ([entry]) => setBioVisible(entry.isIntersecting),
-        { threshold: 0.2 }
-      );
-      observer.observe(bioRef.current);
-      observers.push(observer);
-    }
-
-    if (experienceRef.current) {
-      const observer = new IntersectionObserver(
-        ([entry]) => setExperienceVisible(entry.isIntersecting),
-        { threshold: 0.1 }
-      );
-      observer.observe(experienceRef.current);
-      observers.push(observer);
-    }
-
-    if (skillsRef.current) {
-      const observer = new IntersectionObserver(
-        ([entry]) => setSkillsVisible(entry.isIntersecting),
-        { threshold: 0.1 }
-      );
-      observer.observe(skillsRef.current);
-      observers.push(observer);
-    }
-
-    return () => {
-      observers.forEach((obs) => obs.disconnect());
-    };
-  }, []);
+  const { isVisible: bioVisible } = useScrollAnimation(bioRef, {
+    threshold: 0.2,
+  });
+  const { isVisible: experienceVisible } = useScrollAnimation(experienceRef, {
+    threshold: 0.1,
+  });
+  const { isVisible: skillsVisible } = useScrollAnimation(skillsRef, {
+    threshold: 0.1,
+  });
 
   return (
     <div

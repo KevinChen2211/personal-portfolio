@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import IntroAnimation from "./components/IntroAnimation";
 import SmoothScrollContainer from "./components/SmoothScrollContainer";
 import ScrollIndicator from "./components/ScrollIndicator";
@@ -9,6 +9,7 @@ import { getActivePalette } from "./color-palettes";
 import { useTheme } from "./components/ThemeProvider";
 import Link from "next/link";
 import { useScrollAnimation } from "./components/useScrollAnimation";
+import { projects, type Project } from "./data/projects";
 
 // Gradient Background Component
 const GradientBackground = ({
@@ -155,9 +156,11 @@ const Section = ({
 // Animated Project Card Component with mouse tracking hover effect
 const AnimatedProjectCard = ({
   project,
+  index,
   palette,
 }: {
-  project: number;
+  project: Project;
+  index: number;
   palette: ReturnType<typeof getActivePalette>;
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -241,12 +244,12 @@ const AnimatedProjectCard = ({
         {
           opacity: cardVisible ? 1 : 0,
           transform: `translateY(${cardVisible ? 0 : 50}px)`,
-          transitionDelay: `${project * 100}ms`,
+          transitionDelay: `${index * 100}ms`,
           transition: "opacity 0.5s ease-out, transform 0.5s ease-out",
           backgroundColor: "rgba(255, 255, 255, 0.1)",
           borderRadius: "10px",
           position: "relative",
-          minHeight: "300px",
+          minHeight: "350px",
           "--mouse-x": "0px",
           "--mouse-y": "0px",
         } as React.CSSProperties & { "--mouse-x": string; "--mouse-y": string }
@@ -280,7 +283,7 @@ const AnimatedProjectCard = ({
 
       {/* Card content - inset to show border/gradient */}
       <div
-        className="relative p-6 rounded-lg flex flex-col"
+        className="relative p-6 rounded-lg flex flex-col h-full"
         style={{
           backgroundColor: palette.surface,
           borderRadius: "inherit",
@@ -290,26 +293,48 @@ const AnimatedProjectCard = ({
           minHeight: "calc(100% - 2px)",
         }}
       >
-        <div
-          className="h-48 rounded-md mb-4 flex items-center justify-center"
-          style={{
-            backgroundColor: palette.border,
-          }}
-        >
-          <span style={{ color: palette.textSecondary }}>
-            Project {project}
-          </span>
+        <div className="flex items-center gap-3 mb-4">
+          {project.icon && <span className="text-3xl">{project.icon}</span>}
+          <h3
+            className="text-xl font-semibold flex-1"
+            style={{ color: palette.text }}
+          >
+            {project.title}
+          </h3>
         </div>
-        <h3
-          className="text-xl font-semibold mb-2"
-          style={{ color: palette.text }}
+        <p
+          className="text-sm mb-4 leading-relaxed flex-shrink-0"
+          style={{ color: palette.textSecondary }}
         >
-          Project Title {project}
-        </h3>
-        <p style={{ color: palette.textSecondary }}>
-          Brief description of the project and its key features. Placeholder
-          content for project showcase.
+          {project.description}
         </p>
+        <div className="flex-shrink-0">
+          <ul className="space-y-1.5">
+            {project.highlights.slice(0, 2).map((highlight, idx) => (
+              <li
+                key={idx}
+                className="flex items-start text-xs leading-relaxed"
+                style={{ color: palette.textSecondary }}
+              >
+                <span
+                  className="mr-2 mt-1 flex-shrink-0"
+                  style={{ color: palette.primary }}
+                >
+                  •
+                </span>
+                <span className="line-clamp-2">{highlight}</span>
+              </li>
+            ))}
+            {project.highlights.length > 2 && (
+              <li
+                className="text-xs italic mt-1"
+                style={{ color: palette.textSecondary, opacity: 0.7 }}
+              >
+                +{project.highlights.length - 2} more achievements
+              </li>
+            )}
+          </ul>
+        </div>
       </div>
     </div>
   );
@@ -644,10 +669,11 @@ export default function Home() {
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                 id="project-cards"
               >
-                {[1, 2, 3].map((project) => (
+                {projects.slice(0, 3).map((project, index) => (
                   <AnimatedProjectCard
-                    key={project}
+                    key={project.title}
                     project={project}
+                    index={index}
                     palette={palette}
                   />
                 ))}

@@ -20,9 +20,20 @@ export function useScrollAnimation<T extends HTMLElement = HTMLElement>(
     const element = ref.current;
     if (!element) return;
 
+    // Check if we're in a smooth scroll container (landing page) or regular page
     const container = document.querySelector('[class*="hide-scrollbar"]') as HTMLElement;
-    if (!container) return;
+    
+    // If no smooth scroll container, use IntersectionObserver for regular pages
+    if (!container) {
+      const observer = new IntersectionObserver(
+        ([entry]) => setIsVisible(entry.isIntersecting),
+        { threshold, rootMargin }
+      );
+      observer.observe(element);
+      return () => observer.disconnect();
+    }
 
+    // Use scroll-based visibility for smooth scroll container
     const updateVisibility = () => {
       const containerRect = container.getBoundingClientRect();
       const elementRect = element.getBoundingClientRect();
