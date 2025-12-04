@@ -1,6 +1,7 @@
 "use client";
 
 import { use, ReactNode, useRef } from "react";
+import Image from "next/image";
 import { getActivePalette } from "../../color-palettes";
 import { useTheme } from "../../components/ThemeProvider";
 import ThemeToggle from "../../components/ThemeToggle";
@@ -226,6 +227,73 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
 
               lines.forEach((line, index) => {
                 const trimmed = line.trim();
+
+                // Handle images - format: ![IMAGE:path/to/image.png]
+                if (trimmed.startsWith("![IMAGE:")) {
+                  flushList();
+                  const imageMatch = trimmed.match(/!\[IMAGE:(.+?)\]/);
+                  if (imageMatch) {
+                    const imagePath = imageMatch[1];
+                    const isSvg = imagePath.toLowerCase().endsWith('.svg');
+                    elements.push(
+                      <div
+                        key={`img-${index}`}
+                        className="my-8 flex justify-center"
+                      >
+                        <div
+                          className="relative p-8 rounded-lg"
+                          style={{
+                            backgroundColor: "#ffffff",
+                            border: `1px solid ${palette.border}`,
+                            boxShadow: `0 4px 12px ${palette.primary}10`,
+                          }}
+                        >
+                          <div
+                            style={{
+                              filter: theme === "dark" 
+                                ? "brightness(1.2) contrast(1.1)" 
+                                : "brightness(1) contrast(1.05)",
+                            }}
+                          >
+                            {isSvg ? (
+                              // Use regular img tag for SVGs for better compatibility
+                              <img
+                                src={imagePath}
+                                alt=""
+                                className="object-contain"
+                                style={{
+                                  maxWidth: "400px",
+                                  width: "100%",
+                                  height: "auto",
+                                  display: "block",
+                                }}
+                                onError={(e) => {
+                                  console.error('Image failed to load:', imagePath);
+                                }}
+                              />
+                            ) : (
+                              <Image
+                                src={imagePath}
+                                alt=""
+                                width={400}
+                                height={120}
+                                className="object-contain"
+                                style={{
+                                  maxWidth: "100%",
+                                  height: "auto",
+                                }}
+                                onError={(e) => {
+                                  console.error('Image failed to load:', imagePath);
+                                }}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return;
+                }
 
                 // Handle headings
                 if (trimmed.startsWith("# ")) {

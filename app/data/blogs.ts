@@ -14,12 +14,14 @@ export const blogPosts: BlogPost[] = [
     id: "1",
     title: "Building My Portfolio: A Deep Dive into the Tech Stack",
     slug: "building-my-portfolio-tech-stack",
-    date: new Date().toISOString().split("T")[0],
+    date: "2025-11-21",
     excerpt:
       "A comprehensive overview of the technologies, tools, and practices I used to build this modern portfolio website, from Next.js and React to Git version control and Vercel hosting.",
     content: `# Building My Portfolio: A Deep Dive into the Tech Stack
 
 When I set out to build my personal portfolio website, I wanted to create something that not only showcases my work but also demonstrates modern web development practices. In this post, I'll walk you through the complete tech stack I used to bring this site to life.
+
+![IMAGE:/blog-images/next-js-seeklogo.svg]
 
 ## Frontend Framework: Next.js 16 & React 19
 
@@ -64,6 +66,8 @@ The theme system I've implemented uses Tailwind's custom properties and CSS vari
 - Rollback capabilities if something goes wrong
 
 The repository structure follows best practices with clear commit messages and organized branches. Git has been crucial for managing the iterative development process, especially when implementing complex features like the magic text animation and smooth scrolling.
+
+![IMAGE:/blog-images/Vercel_logo_2025.svg]
 
 ## Deployment & Hosting: Vercel
 
