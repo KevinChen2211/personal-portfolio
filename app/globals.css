@@ -30,6 +30,19 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Enhanced smooth scrolling */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Smooth scroll container enhancements */
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: auto; /* Override smooth for programmatic control */
+  will-change: scroll-position;
+}
+
 /* Hide scrollbar for smooth scroll container */
 .hide-scrollbar {
   -ms-overflow-style: none;

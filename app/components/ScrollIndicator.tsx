@@ -74,14 +74,16 @@ export default function ScrollIndicator() {
 
   return (
     <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50 hidden md:flex flex-col gap-5 items-center">
-      {/* Progress line - made larger */}
+      {/* Progress line - enhanced with glow effect */}
       <div
         className="absolute left-1/2 -translate-x-1/2 top-0 rounded-full pointer-events-none"
         style={{
-          width: "4px",
+          width: "3px",
           height: `${scrollProgress}%`,
-          background: `linear-gradient(180deg, ${palette.primary}, ${palette.secondary})`,
-          transition: "height 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+          background: `linear-gradient(180deg, ${palette.primary}, ${palette.secondary}, ${palette.accent})`,
+          transition: "height 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+          boxShadow: `0 0 8px ${palette.primary}40, 0 0 4px ${palette.secondary}30`,
+          opacity: 0.9,
         }}
       />
 
@@ -103,19 +105,20 @@ export default function ScrollIndicator() {
           >
             <button
               onClick={() => scrollToSection(index)}
-              className="relative rounded-full transition-all duration-500 ease-out cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent"
+              className="relative rounded-full transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent"
               style={{
-                width: isActive ? "16px" : isHovered ? "14px" : "12px",
-                height: isActive ? "16px" : isHovered ? "14px" : "12px",
+                width: isActive ? "18px" : isHovered ? "14px" : "10px",
+                height: isActive ? "18px" : isHovered ? "14px" : "10px",
                 backgroundColor:
                   isActive || isHovered ? palette.primary : palette.border,
-                transform: `scale(${isActive ? 1.2 : isHovered ? 1.1 : 1})`,
-                opacity: isActive ? 1 : isHovered ? 0.8 : 0.5,
+                transform: `scale(${isActive ? 1.3 : isHovered ? 1.15 : 1})`,
+                opacity: isActive ? 1 : isHovered ? 0.85 : 0.4,
                 boxShadow:
                   isActive || isHovered
-                    ? `0 0 ${isActive ? "16px" : "12px"} ${palette.primary}60`
+                    ? `0 0 ${isActive ? "20px" : "14px"} ${palette.primary}${isActive ? "80" : "60"}, 0 0 ${isActive ? "8px" : "6px"} ${palette.secondary}40`
                     : "none",
-                transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+                transition: "all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                border: isActive ? `2px solid ${palette.accent}` : "none",
               }}
               aria-label={`Go to ${sectionName}`}
             >
