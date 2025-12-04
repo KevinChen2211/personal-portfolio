@@ -10,6 +10,7 @@ import { useTheme } from "./components/ThemeProvider";
 import Link from "next/link";
 import { useScrollAnimation } from "./components/useScrollAnimation";
 import { projects, type Project } from "./data/projects";
+import MagicText from "./components/MagicText";
 
 // Gradient Background Component
 const GradientBackground = ({
@@ -542,7 +543,7 @@ export default function Home() {
                   letterSpacing: "0.02em",
                 }}
               >
-                Engineer & Creative Developer
+                Engineer & <MagicText>Creative Developer</MagicText>
               </p>
               <p
                 className={`text-lg sm:text-xl md:text-2xl mb-8 transition-all duration-700 ease-out ${
