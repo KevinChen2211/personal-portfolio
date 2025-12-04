@@ -636,14 +636,25 @@ export default function Home() {
                       create.
                     </p>
                     <p
-                      className="text-base sm:text-lg leading-relaxed transition-all duration-300 hover:text-opacity-80"
+                      className="text-base sm:text-lg leading-relaxed  mb-4 transition-all duration-300 hover:text-opacity-80"
                       style={{
                         color: palette.textSecondary,
                         lineHeight: "1.8",
                       }}
                     >
-                      I love to learn and always looking for opportunities to
+                      Im a learner and always looking for opportunities to
                       refine my skills and expand my technical capabilities.
+                    </p>
+                    <p
+                      className="text-base sm:text-lg leading-relaxed  mb-4 transition-all duration-300 hover:text-opacity-80"
+                      style={{
+                        color: palette.textSecondary,
+                        lineHeight: "1.8",
+                      }}
+                    >
+                      Im passionate about technology and its intergration in
+                      everyday life. If youd like to know more about me feel
+                      free to reach out and checkout my blog!
                     </p>
                   </div>
                 </div>
