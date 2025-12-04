@@ -258,7 +258,7 @@ html {
   }
 }
 
-@keyframes scale {
+@keyframes magic-star-scale {
   from,
   to {
     transform: scale(0);
@@ -268,7 +268,7 @@ html {
   }
 }
 
-@keyframes rotate {
+@keyframes magic-star-rotate {
   from {
     transform: rotate(0deg);
   }
@@ -284,7 +284,7 @@ html {
 
 .magic-star {
   --size: clamp(20px, 1.5vw, 30px);
-  animation: scale 700ms ease forwards;
+  animation: magic-star-scale 700ms ease forwards;
   display: block;
   height: var(--size);
   left: var(--star-left);
@@ -294,7 +294,7 @@ html {
 }
 
 .magic-star > svg {
-  animation: rotate 1000ms linear infinite;
+  animation: magic-star-rotate 1000ms linear infinite;
   display: block;
   opacity: 0.7;
 }
@@ -305,7 +305,7 @@ html {
 
 .magic-text {
   animation: background-pan 3s linear infinite;
-  background: linear-gradient(
+  background-image: linear-gradient(
     to right,
     var(--purple),
     var(--violet),
@@ -314,6 +314,7 @@ html {
   );
   background-size: 200%;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   white-space: nowrap;
 }

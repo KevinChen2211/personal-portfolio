@@ -520,7 +520,7 @@ export default function Home() {
                     : "opacity-0 translate-y-8"
                 }`}
                 style={{
-                  background: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
+                  backgroundImage: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
@@ -583,7 +583,7 @@ export default function Home() {
                 <h2
                   className="text-4xl sm:text-6xl md:text-7xl font-bold mb-6 transition-all duration-300 hover:scale-105"
                   style={{
-                    background: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
+                    backgroundImage: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                     backgroundClip: "text",
@@ -774,7 +774,7 @@ export default function Home() {
               <h2
                 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-16 text-center"
                 style={{
-                  background: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
+                  backgroundImage: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
@@ -825,7 +825,7 @@ export default function Home() {
               <h2
                 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-8 text-center flex-shrink-0"
                 style={{
-                  background: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
+                  backgroundImage: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
@@ -868,7 +868,7 @@ export default function Home() {
               <h2
                 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-12"
                 style={{
-                  background: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
+                  backgroundImage: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
@@ -910,7 +910,7 @@ export default function Home() {
               <h2
                 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-12"
                 style={{
-                  background: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
+                  backgroundImage: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",

@@ -8,6 +8,8 @@ interface MagicTextProps {
 
 const MagicText = ({ children }: MagicTextProps) => {
   const magicRef = useRef<HTMLSpanElement>(null);
+  const intervalsRef = useRef<NodeJS.Timeout[]>([]);
+  const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
 
   useEffect(() => {
     if (!magicRef.current) return;
@@ -19,13 +21,20 @@ const MagicText = ({ children }: MagicTextProps) => {
       Math.floor(Math.random() * (max - min + 1)) + min;
 
     const animate = (star: HTMLElement) => {
-      star.style.setProperty("--star-left", `${rand(-10, 100)}%`);
-      star.style.setProperty("--star-top", `${rand(-40, 80)}%`);
+      if (!magicRef.current || !star.isConnected) return;
+      
+      try {
+        star.style.setProperty("--star-left", `${rand(-10, 100)}%`);
+        star.style.setProperty("--star-top", `${rand(-40, 80)}%`);
 
-      star.style.animation = "none";
-      // Force reflow
-      void star.offsetHeight;
-      star.style.animation = "";
+        star.style.animation = "none";
+        // Force reflow
+        void star.offsetHeight;
+        star.style.animation = "";
+      } catch (error) {
+        // Silently handle errors during theme transitions
+        console.debug("MagicText animation error:", error);
+      }
     };
 
     const stars = magicRef.current.getElementsByClassName("magic-star");
@@ -33,17 +42,30 @@ const MagicText = ({ children }: MagicTextProps) => {
     const intervals: NodeJS.Timeout[] = [];
 
     for (const star of Array.from(stars)) {
+      const starElement = star as HTMLElement;
       const timeoutId = setTimeout(() => {
-        animate(star as HTMLElement);
-        const intervalId = setInterval(() => animate(star as HTMLElement), 1000);
+        if (!magicRef.current || !starElement.isConnected) return;
+        animate(starElement);
+        const intervalId = setInterval(() => {
+          if (!magicRef.current || !starElement.isConnected) {
+            clearInterval(intervalId);
+            return;
+          }
+          animate(starElement);
+        }, 1000);
         intervals.push(intervalId);
       }, index++ * (interval / 3));
       timeouts.push(timeoutId);
     }
 
+    intervalsRef.current = intervals;
+    timeoutsRef.current = timeouts;
+
     return () => {
       timeouts.forEach((id) => clearTimeout(id));
       intervals.forEach((id) => clearInterval(id));
+      intervalsRef.current = [];
+      timeoutsRef.current = [];
     };
   }, []);
 
