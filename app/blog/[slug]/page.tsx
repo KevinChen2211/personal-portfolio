@@ -236,10 +236,11 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                     const imagePath = imageMatch[1];
                     const isSvg = imagePath.toLowerCase().endsWith('.svg');
                     const isLogo = imagePath.includes('next-js') || imagePath.includes('Vercel');
+                    const isPhoto = !isLogo && !isSvg;
                     elements.push(
                       <div
                         key={`img-${index}`}
-                        className="my-8 flex justify-center"
+                        className="my-8 flex flex-col items-center"
                       >
                         <div
                           className="relative rounded-lg overflow-hidden"
@@ -288,6 +289,14 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                             />
                           )}
                         </div>
+                        {isPhoto && (
+                          <p
+                            className="text-sm mt-2 italic"
+                            style={{ color: palette.textSecondary }}
+                          >
+                            Photo by Kevin Chen
+                          </p>
+                        )}
                       </div>
                     );
                   }
