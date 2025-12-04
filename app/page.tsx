@@ -45,32 +45,45 @@ const GradientBackground = ({
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
       {/* Gradient background */}
       <div
-        className="absolute inset-0 opacity-40"
+        className="absolute inset-0 opacity-50"
         style={{
-          background: `radial-gradient(circle at 20% 50%, ${palette.primary}50 0%, transparent 50%),
-                      radial-gradient(circle at 80% 80%, ${palette.secondary}50 0%, transparent 50%),
-                      radial-gradient(circle at 40% 20%, ${palette.accent}40 0%, transparent 50%),
-                      linear-gradient(135deg, ${palette.primary}20 0%, ${palette.secondary}20 50%, ${palette.accent}20 100%)`,
+          background: `radial-gradient(circle at 20% 50%, ${palette.primary}60 0%, transparent 50%),
+                      radial-gradient(circle at 80% 80%, ${palette.secondary}60 0%, transparent 50%),
+                      radial-gradient(circle at 40% 20%, ${palette.accent}50 0%, transparent 50%),
+                      linear-gradient(135deg, ${palette.primary}25 0%, ${palette.secondary}25 50%, ${palette.accent}25 100%)`,
         }}
       />
 
       {/* Animated gradient orbs */}
       <div
-        className="absolute w-96 h-96 rounded-full blur-3xl opacity-20"
+        className="absolute w-96 h-96 md:w-[500px] md:h-[500px] rounded-full blur-3xl opacity-30"
         style={{
           background: `radial-gradient(circle, ${palette.primary} 0%, transparent 70%)`,
           top: "20%",
           left: "10%",
           animation: "float 20s ease-in-out infinite",
+          filter: `blur(60px)`,
         }}
       />
       <div
-        className="absolute w-96 h-96 rounded-full blur-3xl opacity-20"
+        className="absolute w-96 h-96 md:w-[500px] md:h-[500px] rounded-full blur-3xl opacity-30"
         style={{
           background: `radial-gradient(circle, ${palette.secondary} 0%, transparent 70%)`,
           top: "60%",
           right: "15%",
           animation: "float 25s ease-in-out infinite reverse",
+          filter: `blur(60px)`,
+        }}
+      />
+      <div
+        className="absolute w-80 h-80 md:w-[400px] md:h-[400px] rounded-full blur-3xl opacity-25"
+        style={{
+          background: `radial-gradient(circle, ${palette.accent} 0%, transparent 70%)`,
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          animation: "float 30s ease-in-out infinite",
+          filter: `blur(50px)`,
         }}
       />
 
@@ -139,13 +152,14 @@ const Section = ({
   return (
     <section
       ref={sectionRef}
-      className={`h-screen snap-start flex items-center justify-center px-6 sm:px-10 relative z-10 overflow-hidden ${className}`}
+      className={`h-screen snap-start flex items-center justify-center px-6 sm:px-10 md:px-16 relative z-10 overflow-hidden ${className}`}
       style={{
-        opacity: isVisible ? 1 : 0.3,
-        transform: `translateY(${isVisible ? 0 : 30}px) scale(${
-          isVisible ? 1 : 0.95
+        opacity: isVisible ? 1 : 0.4,
+        transform: `translateY(${isVisible ? 0 : 20}px) scale(${
+          isVisible ? 1 : 0.98
         })`,
-        transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
+        transition:
+          "opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 1s cubic-bezier(0.4, 0, 0.2, 1)",
       }}
     >
       {children}
@@ -239,15 +253,17 @@ const AnimatedProjectCard = ({
   return (
     <div
       ref={cardRef}
-      className="project-card relative rounded-lg cursor-pointer"
+      className="project-card relative rounded-xl cursor-pointer overflow-hidden group"
       style={
         {
           opacity: cardVisible ? 1 : 0,
-          transform: `translateY(${cardVisible ? 0 : 50}px)`,
+          transform: `translateY(${cardVisible ? 0 : 50}px) scale(${
+            cardVisible ? 1 : 0.95
+          })`,
           transitionDelay: `${index * 100}ms`,
-          transition: "opacity 0.5s ease-out, transform 0.5s ease-out",
-          backgroundColor: "rgba(255, 255, 255, 0.1)",
-          borderRadius: "10px",
+          transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
+          backgroundColor: `rgba(${palette.primary}15)`,
+          borderRadius: "16px",
           position: "relative",
           minHeight: "350px",
           "--mouse-x": "0px",
@@ -283,7 +299,7 @@ const AnimatedProjectCard = ({
 
       {/* Card content - inset to show border/gradient */}
       <div
-        className="relative p-6 rounded-lg flex flex-col h-full"
+        className="relative p-6 rounded-lg flex flex-col h-full transition-all duration-300"
         style={{
           backgroundColor: palette.surface,
           borderRadius: "inherit",
@@ -291,6 +307,11 @@ const AnimatedProjectCard = ({
           inset: "1px",
           zIndex: 2,
           minHeight: "calc(100% - 2px)",
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
+          boxShadow: isNearby
+            ? `0 8px 32px ${palette.primary}20, 0 0 0 1px ${palette.primary}15`
+            : "0 4px 16px rgba(0, 0, 0, 0.1)",
         }}
       >
         <div className="flex items-center gap-3 mb-4">
@@ -356,13 +377,16 @@ const AnimatedBlogPost = ({
   return (
     <article
       ref={articleRef}
-      className="p-4 sm:p-6 rounded-lg transition-all duration-500 hover:scale-[1.02]"
+      className="p-5 sm:p-7 rounded-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-lg group"
       style={{
         backgroundColor: palette.surface,
         border: `1px solid ${palette.border}`,
         opacity: articleVisible ? 1 : 0,
         transform: `translateX(${articleVisible ? 0 : -30}px)`,
         transitionDelay: `${post * 150}ms`,
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
+        boxShadow: "0 4px 16px rgba(0, 0, 0, 0.1)",
       }}
     >
       <div
@@ -411,13 +435,15 @@ const AnimatedSkillBadge = ({
   return (
     <span
       ref={skillRef}
-      className="px-4 py-2 rounded-full text-sm transition-all duration-500 hover:scale-110"
+      className="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-110 hover:shadow-md"
       style={{
         backgroundColor: palette.border,
         color: palette.text,
-        opacity: skillVisible ? 1 : 1, // Always visible
-        transform: `scale(${skillVisible ? 1 : 1})`, // Always full size
+        opacity: skillVisible ? 1 : 1,
+        transform: `scale(${skillVisible ? 1 : 0.9})`,
         transitionDelay: `${index * 50}ms`,
+        border: `1px solid ${palette.primary}20`,
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
       }}
     >
       {skill}
@@ -485,32 +511,44 @@ export default function Home() {
         <SmoothScrollContainer>
           {/* Home Section */}
           <Section>
-            <div className="max-w-4xl w-full text-center">
+            <div className="max-w-5xl w-full text-center">
               <h1
-                className={`text-6xl sm:text-8xl font-bold mb-6 transition-all duration-1000 ease-out ${
-                  showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                className={`text-6xl sm:text-8xl md:text-9xl font-bold mb-6 transition-all duration-1000 ease-out ${
+                  showContent
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-8"
                 }`}
                 style={{
-                  color: palette.text,
+                  background: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  letterSpacing: "-0.02em",
                   transitionDelay: showIntro ? "0.3s" : "0s",
+                  textShadow: `0 0 40px ${palette.primary}20`,
                 }}
               >
                 Kevin Chen
               </h1>
               <p
-                className={`text-xl sm:text-2xl mb-8 transition-all duration-700 ease-out ${
-                  showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                className={`text-xl sm:text-2xl md:text-3xl mb-6 font-medium transition-all duration-700 ease-out ${
+                  showContent
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-4"
                 }`}
                 style={{
-                  color: palette.textSecondary,
+                  color: palette.primary,
                   transitionDelay: showIntro ? "0.5s" : "0s",
+                  letterSpacing: "0.02em",
                 }}
               >
                 Engineer & Creative Developer
               </p>
               <p
-                className={`text-xl sm:text-2xl mb-8 transition-all duration-700 ease-out ${
-                  showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                className={`text-lg sm:text-xl md:text-2xl mb-8 transition-all duration-700 ease-out ${
+                  showContent
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-4"
                 }`}
                 style={{
                   color: palette.textSecondary,
@@ -520,12 +558,15 @@ export default function Home() {
                 Welcome to my Website!
               </p>
               <p
-                className={`text-lg sm:text-xl max-w-2xl mx-auto transition-all duration-700 ease-out ${
-                  showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                className={`text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-relaxed transition-all duration-700 ease-out ${
+                  showContent
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-4"
                 }`}
                 style={{
                   color: palette.textSecondary,
                   transitionDelay: showIntro ? "0.9s" : "0s",
+                  lineHeight: "1.8",
                 }}
               >
                 Find out more about what im up to and the projects i've worked
@@ -537,35 +578,47 @@ export default function Home() {
           {/* About Me Section */}
           <Section>
             <div className="max-w-5xl w-full h-full flex flex-col justify-center py-8">
-              <div className="text-center mb-8 flex-shrink-0">
+              <div className="text-center mb-12 flex-shrink-0">
                 <h2
-                  className="text-4xl sm:text-6xl font-bold mb-4 transition-all duration-300 hover:scale-105"
-                  style={{ color: palette.text }}
+                  className="text-4xl sm:text-6xl md:text-7xl font-bold mb-6 transition-all duration-300 hover:scale-105"
+                  style={{
+                    background: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                    letterSpacing: "-0.02em",
+                  }}
                 >
                   About Me
                 </h2>
                 <div
-                  className="w-24 h-1 mx-auto rounded-full"
-                  style={{ backgroundColor: palette.primary }}
+                  className="w-32 h-1.5 mx-auto rounded-full relative overflow-hidden"
+                  style={{
+                    background: `linear-gradient(90deg, ${palette.primary}, ${palette.secondary}, ${palette.accent})`,
+                    boxShadow: `0 0 20px ${palette.primary}40`,
+                  }}
                 />
               </div>
 
               <div className="grid md:grid-cols-2 gap-6 mb-6 flex-1 min-h-0">
                 {/* Left Column - Bio */}
                 <div
-                  className="p-6 rounded-lg transition-all duration-500 hover:shadow-lg hover:scale-[1.02] flex flex-col"
+                  className="p-6 sm:p-8 rounded-xl transition-all duration-500 hover:shadow-xl hover:scale-[1.02] flex flex-col group"
                   style={{
                     backgroundColor: palette.surface,
                     border: `1px solid ${palette.border}`,
+                    backdropFilter: "blur(10px)",
+                    WebkitBackdropFilter: "blur(10px)",
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
                   }}
                 >
                   <div className="flex-1">
                     <h3
-                      className="text-xl font-semibold mb-4 flex items-center gap-2"
+                      className="text-xl sm:text-2xl font-bold mb-5 flex items-center gap-3"
                       style={{ color: palette.text }}
                     >
                       <span
-                        className="text-2xl"
+                        className="text-3xl"
                         style={{ color: palette.primary }}
                       >
                         👨‍💻
@@ -573,15 +626,21 @@ export default function Home() {
                       Who I Am
                     </h3>
                     <p
-                      className="text-base sm:text-lg mb-4 leading-relaxed transition-all duration-300 hover:text-opacity-80"
-                      style={{ color: palette.textSecondary }}
+                      className="text-base sm:text-lg leading-relaxed mb-4 transition-all duration-300 hover:text-opacity-80"
+                      style={{
+                        color: palette.textSecondary,
+                        lineHeight: "1.8",
+                      }}
                     >
                       I love to build things and push myself to see what i can
                       create.
                     </p>
                     <p
-                      className="text-base sm:text-lg mb-4 leading-relaxed transition-all duration-300 hover:text-opacity-80"
-                      style={{ color: palette.textSecondary }}
+                      className="text-base sm:text-lg leading-relaxed transition-all duration-300 hover:text-opacity-80"
+                      style={{
+                        color: palette.textSecondary,
+                        lineHeight: "1.8",
+                      }}
                     >
                       I love to learn and always looking for opportunities to
                       refine my skills and expand my technical capabilities.
@@ -593,18 +652,21 @@ export default function Home() {
                 <div className="flex flex-col gap-6">
                   {/* Skills */}
                   <div
-                    className="p-6 rounded-lg transition-all duration-500 hover:shadow-lg hover:scale-[1.02] flex-1"
+                    className="p-6 sm:p-8 rounded-xl transition-all duration-500 hover:shadow-xl hover:scale-[1.02] flex-1 group"
                     style={{
                       backgroundColor: palette.surface,
                       border: `1px solid ${palette.border}`,
+                      backdropFilter: "blur(10px)",
+                      WebkitBackdropFilter: "blur(10px)",
+                      boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
                     }}
                   >
                     <h3
-                      className="text-xl font-semibold mb-4 flex items-center gap-2"
+                      className="text-xl sm:text-2xl font-bold mb-5 flex items-center gap-3"
                       style={{ color: palette.text }}
                     >
                       <span
-                        className="text-2xl"
+                        className="text-3xl"
                         style={{ color: palette.primary }}
                       >
                         🛠️
@@ -635,18 +697,21 @@ export default function Home() {
 
                   {/* Interests */}
                   <div
-                    className="p-6 rounded-lg transition-all duration-500 hover:shadow-lg hover:scale-[1.02]"
+                    className="p-6 sm:p-8 rounded-xl transition-all duration-500 hover:shadow-xl hover:scale-[1.02] group"
                     style={{
                       backgroundColor: palette.surface,
                       border: `1px solid ${palette.border}`,
+                      backdropFilter: "blur(10px)",
+                      WebkitBackdropFilter: "blur(10px)",
+                      boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
                     }}
                   >
                     <h3
-                      className="text-xl font-semibold mb-4 flex items-center gap-2"
+                      className="text-xl sm:text-2xl font-bold mb-5 flex items-center gap-3"
                       style={{ color: palette.text }}
                     >
                       <span
-                        className="text-2xl"
+                        className="text-3xl"
                         style={{ color: palette.primary }}
                       >
                         🌟
@@ -655,7 +720,10 @@ export default function Home() {
                     </h3>
                     <p
                       className="text-base leading-relaxed transition-all duration-300 hover:text-opacity-80"
-                      style={{ color: palette.textSecondary }}
+                      style={{
+                        color: palette.textSecondary,
+                        lineHeight: "1.8",
+                      }}
                     >
                       Outside of engineering, I love to cook, travel, and
                       explore new places. I also enjoy photography, feel free to
@@ -668,14 +736,21 @@ export default function Home() {
               <div className="mt-6 text-center flex-shrink-0">
                 <Link
                   href="/about"
-                  className="inline-block px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-110 hover:shadow-lg"
+                  className="inline-block px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-110 hover:shadow-xl relative overflow-hidden group"
                   style={{
-                    backgroundColor: palette.primary,
+                    background: `linear-gradient(135deg, ${palette.primary}, ${palette.secondary})`,
                     color: palette.text,
-                    boxShadow: `0 4px 14px ${palette.primary}40`,
+                    boxShadow: `0 4px 20px ${palette.primary}40`,
                   }}
                 >
-                  View Full Experience →
+                  <span className="relative z-10">View Full Experience →</span>
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgba(255,255,255,0.3), transparent)",
+                    }}
+                  />
                 </Link>
               </div>
             </div>
@@ -685,8 +760,14 @@ export default function Home() {
           <Section>
             <div className="max-w-6xl w-full">
               <h2
-                className="text-5xl sm:text-6xl font-bold mb-12 text-center"
-                style={{ color: palette.text }}
+                className="text-5xl sm:text-6xl md:text-7xl font-bold mb-16 text-center"
+                style={{
+                  background: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  letterSpacing: "-0.02em",
+                }}
               >
                 Projects
               </h2>
@@ -706,13 +787,21 @@ export default function Home() {
               <div className="mt-12 text-center">
                 <Link
                   href="/projects"
-                  className="inline-block px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
+                  className="inline-block px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-110 hover:shadow-xl relative overflow-hidden group"
                   style={{
-                    backgroundColor: palette.primary,
+                    background: `linear-gradient(135deg, ${palette.primary}, ${palette.secondary})`,
                     color: palette.text,
+                    boxShadow: `0 4px 20px ${palette.primary}40`,
                   }}
                 >
-                  Find out more
+                  <span className="relative z-10">Find out more</span>
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgba(255,255,255,0.3), transparent)",
+                    }}
+                  />
                 </Link>
               </div>
             </div>
@@ -722,8 +811,14 @@ export default function Home() {
           <Section>
             <div className="max-w-4xl w-full h-full flex flex-col justify-center py-8">
               <h2
-                className="text-4xl sm:text-5xl font-bold mb-6 text-center flex-shrink-0"
-                style={{ color: palette.text }}
+                className="text-4xl sm:text-5xl md:text-6xl font-bold mb-8 text-center flex-shrink-0"
+                style={{
+                  background: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  letterSpacing: "-0.02em",
+                }}
               >
                 Blog
               </h2>
@@ -735,13 +830,21 @@ export default function Home() {
               <div className="mt-6 text-center flex-shrink-0">
                 <Link
                   href="/blog"
-                  className="inline-block px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
+                  className="inline-block px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-110 hover:shadow-xl relative overflow-hidden group"
                   style={{
-                    backgroundColor: palette.primary,
+                    background: `linear-gradient(135deg, ${palette.primary}, ${palette.secondary})`,
                     color: palette.text,
+                    boxShadow: `0 4px 20px ${palette.primary}40`,
                   }}
                 >
-                  Find out more
+                  <span className="relative z-10">Find out more</span>
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgba(255,255,255,0.3), transparent)",
+                    }}
+                  />
                 </Link>
               </div>
             </div>
@@ -751,8 +854,14 @@ export default function Home() {
           <Section>
             <div className="max-w-4xl w-full text-center">
               <h2
-                className="text-5xl sm:text-6xl font-bold mb-12"
-                style={{ color: palette.text }}
+                className="text-5xl sm:text-6xl md:text-7xl font-bold mb-12"
+                style={{
+                  background: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  letterSpacing: "-0.02em",
+                }}
               >
                 Gallery
               </h2>
@@ -764,13 +873,21 @@ export default function Home() {
               </p>
               <Link
                 href="/gallery"
-                className="inline-block px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
+                className="inline-block px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-110 hover:shadow-xl relative overflow-hidden group"
                 style={{
-                  backgroundColor: palette.primary,
+                  background: `linear-gradient(135deg, ${palette.primary}, ${palette.secondary})`,
                   color: palette.text,
+                  boxShadow: `0 4px 20px ${palette.primary}40`,
                 }}
               >
-                Find out more
+                <span className="relative z-10">Find out more</span>
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, rgba(255,255,255,0.3), transparent)",
+                  }}
+                />
               </Link>
             </div>
           </Section>
@@ -779,8 +896,14 @@ export default function Home() {
           <Section>
             <div className="max-w-2xl w-full text-center">
               <h2
-                className="text-5xl sm:text-6xl font-bold mb-12"
-                style={{ color: palette.text }}
+                className="text-5xl sm:text-6xl md:text-7xl font-bold mb-12"
+                style={{
+                  background: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  letterSpacing: "-0.02em",
+                }}
               >
                 Get In Touch
               </h2>
@@ -796,25 +919,41 @@ export default function Home() {
                   href="https://www.linkedin.com/in/kevinsoftwarewiz"
                   target="_blank"
                   rel="noreferrer"
-                  className="px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
+                  className="px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-110 hover:shadow-xl relative overflow-hidden group"
                   style={{
-                    backgroundColor: palette.primary,
+                    background: `linear-gradient(135deg, ${palette.primary}, ${palette.secondary})`,
                     color: palette.text,
+                    boxShadow: `0 4px 20px ${palette.primary}40`,
                   }}
                 >
-                  LinkedIn
+                  <span className="relative z-10">LinkedIn</span>
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgba(255,255,255,0.3), transparent)",
+                    }}
+                  />
                 </Link>
                 <Link
                   href="https://github.com/KevinChen2211"
                   target="_blank"
                   rel="noreferrer"
-                  className="px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
+                  className="px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-110 hover:shadow-xl relative overflow-hidden group"
                   style={{
-                    backgroundColor: palette.primary,
+                    background: `linear-gradient(135deg, ${palette.primary}, ${palette.secondary})`,
                     color: palette.text,
+                    boxShadow: `0 4px 20px ${palette.primary}40`,
                   }}
                 >
-                  GitHub
+                  <span className="relative z-10">GitHub</span>
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgba(255,255,255,0.3), transparent)",
+                    }}
+                  />
                 </Link>
               </div>
             </div>
