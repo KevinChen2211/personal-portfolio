@@ -10,6 +10,7 @@ import { useTheme } from "./components/ThemeProvider";
 import Link from "next/link";
 import { useScrollAnimation } from "./components/useScrollAnimation";
 import { projects, type Project } from "./data/projects";
+import { blogPosts } from "./data/blogs";
 import MagicText from "./components/MagicText";
 
 // Gradient Background Component
@@ -366,55 +367,61 @@ const AnimatedProjectCard = ({
 const AnimatedBlogPost = ({
   post,
   palette,
+  index,
 }: {
-  post: number;
+  post: (typeof blogPosts)[0];
   palette: ReturnType<typeof getActivePalette>;
+  index: number;
 }) => {
   const articleRef = useRef<HTMLElement>(null);
   const { isVisible: articleVisible } = useScrollAnimation(articleRef, {
     threshold: 0.1,
   });
 
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
   return (
-    <article
-      ref={articleRef}
-      className="p-5 sm:p-7 rounded-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-lg group"
-      style={{
-        backgroundColor: palette.surface,
-        border: `1px solid ${palette.border}`,
-        opacity: articleVisible ? 1 : 0,
-        transform: `translateX(${articleVisible ? 0 : -30}px)`,
-        transitionDelay: `${post * 150}ms`,
-        backdropFilter: "blur(10px)",
-        WebkitBackdropFilter: "blur(10px)",
-        boxShadow: "0 4px 16px rgba(0, 0, 0, 0.1)",
-      }}
-    >
-      <div
-        className="text-sm mb-2 font-medium"
-        style={{ color: palette.primary }}
+    <Link href={`/blog/${post.slug}`} className="block group">
+      <article
+        ref={articleRef}
+        className="p-5 sm:p-7 rounded-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-lg cursor-pointer"
+        style={{
+          backgroundColor: palette.surface,
+          border: `1px solid ${palette.border}`,
+          opacity: articleVisible ? 1 : 0,
+          transform: `translateX(${articleVisible ? 0 : -30}px)`,
+          transitionDelay: `${index * 150}ms`,
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
+          boxShadow: "0 4px 16px rgba(0, 0, 0, 0.1)",
+        }}
       >
-        {new Date().toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })}
-      </div>
-      <h3
-        className="text-lg sm:text-xl font-semibold mb-2"
-        style={{ color: palette.text }}
-      >
-        Blog Post Title {post}
-      </h3>
-      <p
-        className="text-sm sm:text-base line-clamp-2"
-        style={{ color: palette.textSecondary }}
-      >
-        This is a placeholder for blog post content. Here you would write about
-        your thoughts, experiences, and insights on software development,
-        design, or other topics of interest.
-      </p>
-    </article>
+        <div
+          className="text-sm mb-2 font-medium"
+          style={{ color: palette.primary }}
+        >
+          {formatDate(post.date)}
+        </div>
+        <h3
+          className="text-lg sm:text-xl font-semibold mb-2 group-hover:underline transition-all duration-300"
+          style={{ color: palette.text }}
+        >
+          {post.title}
+        </h3>
+        <p
+          className="text-sm sm:text-base line-clamp-2"
+          style={{ color: palette.textSecondary }}
+        >
+          {post.excerpt}
+        </p>
+      </article>
+    </Link>
   );
 };
 
@@ -835,8 +842,13 @@ export default function Home() {
                 Blog
               </h2>
               <div className="space-y-4 flex-1 min-h-0 overflow-hidden">
-                {[1, 2, 3].map((post) => (
-                  <AnimatedBlogPost key={post} post={post} palette={palette} />
+                {blogPosts.slice(0, 3).map((post, index) => (
+                  <AnimatedBlogPost
+                    key={post.id}
+                    post={post}
+                    palette={palette}
+                    index={index}
+                  />
                 ))}
               </div>
               <div className="mt-6 text-center flex-shrink-0">
