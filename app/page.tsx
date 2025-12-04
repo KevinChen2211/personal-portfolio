@@ -154,7 +154,7 @@ const Section = ({
   return (
     <section
       ref={sectionRef}
-      className={`h-screen snap-start flex items-center justify-center px-4 sm:px-6 md:px-10 lg:px-16 relative z-10 overflow-y-auto ${className}`}
+      className={`h-screen snap-start flex items-center justify-center px-4 sm:px-6 md:px-10 lg:px-16 relative z-10 overflow-y-auto md:overflow-hidden ${className}`}
       style={{
         opacity: isVisible ? 1 : 0.4,
         transform: `translateY(${isVisible ? 0 : 20}px) scale(${
@@ -585,7 +585,7 @@ export default function Home() {
 
           {/* About Me Section */}
           <Section>
-            <div className="max-w-5xl w-full h-full flex flex-col justify-center py-4 sm:py-8 overflow-y-auto">
+            <div className="max-w-5xl w-full h-full flex flex-col justify-center py-4 sm:py-8 overflow-y-auto md:overflow-visible">
               <div className="text-center mb-6 sm:mb-12 flex-shrink-0">
                 <h2
                   className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 transition-all duration-300 hover:scale-105"
@@ -608,7 +608,7 @@ export default function Home() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6 flex-1 min-h-0 overflow-y-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6 flex-1 min-h-0 overflow-y-auto md:overflow-visible">
                 {/* Left Column - Bio */}
                 <div
                   className="p-4 sm:p-6 md:p-8 rounded-xl transition-all duration-500 hover:shadow-xl hover:scale-[1.02] flex flex-col group"
@@ -778,7 +778,7 @@ export default function Home() {
 
           {/* Projects Section */}
           <Section>
-            <div className="max-w-6xl w-full h-full flex flex-col justify-center py-4 sm:py-8 overflow-y-auto">
+            <div className="max-w-6xl w-full h-full flex flex-col justify-center py-4 sm:py-8 overflow-y-auto md:overflow-visible">
               <h2
                 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 sm:mb-12 md:mb-16 text-center"
                 style={{
@@ -792,7 +792,7 @@ export default function Home() {
                 Projects
               </h2>
               <div
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 flex-1 overflow-y-auto"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 flex-1 overflow-y-auto md:overflow-visible"
                 id="project-cards"
               >
                 {projects.slice(0, 3).map((project, index) => (

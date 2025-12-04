@@ -65,6 +65,18 @@ html {
   display: none;
 }
 
+/* Hide scrollbars on desktop for sections */
+@media (min-width: 768px) {
+  section.overflow-y-auto::-webkit-scrollbar {
+    display: none;
+  }
+  
+  section.overflow-y-auto {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+}
+
 /* Page Transition Animations */
 .page-transition-wrapper {
   /* Default visible state */
