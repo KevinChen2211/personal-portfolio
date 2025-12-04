@@ -43,6 +43,13 @@ html {
   will-change: scroll-position;
 }
 
+/* Page Transition Animations */
+.page-transition-wrapper {
+  /* Default visible state */
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* Hide scrollbar for smooth scroll container */
 .hide-scrollbar {
   -ms-overflow-style: none;

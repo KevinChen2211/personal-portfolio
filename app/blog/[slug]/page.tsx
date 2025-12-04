@@ -1,11 +1,12 @@
 "use client";
 
-import { use, ReactNode } from "react";
+import { use, ReactNode, useRef } from "react";
 import { getActivePalette } from "../../color-palettes";
 import { useTheme } from "../../components/ThemeProvider";
 import ThemeToggle from "../../components/ThemeToggle";
 import Link from "next/link";
 import { blogPosts } from "../../data/blogs";
+import { useScrollAnimation } from "../../components/useScrollAnimation";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -15,6 +16,8 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
   const { theme } = useTheme();
   const palette = getActivePalette(theme);
   const { slug } = use(params);
+  const articleRef = useRef<HTMLElement>(null);
+  const { isVisible } = useScrollAnimation(articleRef, { threshold: 0.1 });
 
   const post = blogPosts.find((p) => p.slug === slug);
 
@@ -59,21 +62,23 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
       }}
     >
       <ThemeToggle />
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <Link
           href="/blog"
-          className="inline-block mb-8 text-lg hover:underline transition-all duration-300"
+          className="inline-block mb-8 text-lg transition-all duration-300 hover:underline hover:translate-x-[-4px]"
           style={{ color: palette.primary }}
         >
           ← Back to Blog
         </Link>
 
         <article
-          className="p-8 sm:p-12 rounded-xl"
+          ref={articleRef}
+          className="p-8 sm:p-12 rounded-lg transition-all duration-500 hover:shadow-lg"
           style={{
             backgroundColor: palette.surface,
             border: `1px solid ${palette.border}`,
-            boxShadow: `0 4px 20px ${palette.primary}10`,
+            opacity: isVisible ? 1 : 0,
+            transform: `translateY(${isVisible ? 0 : 30}px)`,
           }}
         >
           <div

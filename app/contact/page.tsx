@@ -4,10 +4,14 @@ import { getActivePalette } from "../color-palettes";
 import { useTheme } from "../components/ThemeProvider";
 import ThemeToggle from "../components/ThemeToggle";
 import Link from "next/link";
+import { useRef } from "react";
+import { useScrollAnimation } from "../components/useScrollAnimation";
 
 export default function ContactPage() {
   const { theme } = useTheme();
   const palette = getActivePalette(theme);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const { isVisible } = useScrollAnimation(contentRef, { threshold: 0.1 });
 
   return (
     <div
@@ -18,25 +22,32 @@ export default function ContactPage() {
       }}
     >
       <ThemeToggle />
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <Link
           href="/"
-          className="inline-block mb-8 text-lg hover:underline"
+          className="inline-block mb-8 text-lg transition-all duration-300 hover:underline hover:translate-x-[-4px]"
           style={{ color: palette.primary }}
         >
           ← Back to Home
         </Link>
         <h1
-          className="text-5xl sm:text-6xl font-bold mb-12"
+          className="text-5xl sm:text-6xl font-bold mb-4 transition-all duration-300 hover:scale-105"
           style={{ color: palette.text }}
         >
           Get In Touch
         </h1>
         <div
-          className="p-8 rounded-lg mb-8"
+          className="w-24 h-1 mb-12 rounded-full"
+          style={{ backgroundColor: palette.primary }}
+        />
+        <div
+          ref={contentRef}
+          className="p-8 rounded-lg mb-8 transition-all duration-500 hover:shadow-lg hover:scale-[1.02]"
           style={{
             backgroundColor: palette.surface,
             border: `1px solid ${palette.border}`,
+            opacity: isVisible ? 1 : 0,
+            transform: `translateY(${isVisible ? 0 : 30}px)`,
           }}
         >
           <p

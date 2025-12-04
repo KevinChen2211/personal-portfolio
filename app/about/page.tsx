@@ -34,7 +34,7 @@ export default function AboutPage() {
       }}
     >
       <ThemeToggle />
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <Link
           href="/"
           className="inline-block mb-8 text-lg transition-all duration-300 hover:underline hover:translate-x-[-4px]"
@@ -43,15 +43,15 @@ export default function AboutPage() {
           ← Back to Home
         </Link>
         <h1
-          className="text-5xl sm:text-6xl font-bold mb-12 transition-all duration-700 hover:scale-105"
-          style={{
-            color: palette.text,
-            opacity: bioVisible ? 1 : 0,
-            transform: `translateY(${bioVisible ? 0 : 30}px)`,
-          }}
+          className="text-5xl sm:text-6xl font-bold mb-4 transition-all duration-300 hover:scale-105"
+          style={{ color: palette.text }}
         >
           About Me
         </h1>
+        <div
+          className="w-24 h-1 mb-12 rounded-full"
+          style={{ backgroundColor: palette.primary }}
+        />
         <div
           ref={bioRef}
           className="p-8 rounded-lg mb-8 transition-all duration-500 hover:shadow-lg hover:scale-[1.02]"
