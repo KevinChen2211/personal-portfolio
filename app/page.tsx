@@ -255,7 +255,7 @@ const AnimatedProjectCard = ({
   return (
     <div
       ref={cardRef}
-      className="project-card relative rounded-xl cursor-pointer overflow-hidden group"
+      className="project-card relative rounded-xl cursor-pointer overflow-hidden group h-full"
       style={
         {
           opacity: cardVisible ? 1 : 0,
@@ -268,6 +268,7 @@ const AnimatedProjectCard = ({
           borderRadius: "16px",
           position: "relative",
           minHeight: "350px",
+          height: "100%",
           "--mouse-x": "0px",
           "--mouse-y": "0px",
         } as React.CSSProperties & { "--mouse-x": string; "--mouse-y": string }
@@ -301,14 +302,14 @@ const AnimatedProjectCard = ({
 
       {/* Card content - inset to show border/gradient */}
       <div
-        className="relative p-6 rounded-lg flex flex-col h-full transition-all duration-300"
+        className="relative p-6 rounded-lg flex flex-col transition-all duration-300"
         style={{
           backgroundColor: palette.surface,
           borderRadius: "inherit",
           position: "absolute",
           inset: "1px",
           zIndex: 2,
-          minHeight: "calc(100% - 2px)",
+          height: "calc(100% - 2px)",
           backdropFilter: "blur(10px)",
           WebkitBackdropFilter: "blur(10px)",
           boxShadow: isNearby
@@ -326,12 +327,12 @@ const AnimatedProjectCard = ({
           </h3>
         </div>
         <p
-          className="text-sm mb-4 leading-relaxed flex-shrink-0"
+          className="text-sm mb-4 leading-relaxed"
           style={{ color: palette.textSecondary }}
         >
           {project.description}
         </p>
-        <div className="flex-shrink-0">
+        <div className="mt-auto">
           <ul className="space-y-1.5">
             {project.highlights.slice(0, 2).map((highlight, idx) => (
               <li
@@ -792,7 +793,7 @@ export default function Home() {
                 Projects
               </h2>
               <div
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 flex-1 overflow-y-auto md:overflow-visible"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 items-stretch"
                 id="project-cards"
               >
                 {projects.slice(0, 3).map((project, index) => (
