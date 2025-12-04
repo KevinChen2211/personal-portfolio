@@ -10,18 +10,20 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="fixed top-6 right-6 z-50 p-3 rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2"
+      className="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 p-2.5 sm:p-3 rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 touch-manipulation"
       style={{
         backgroundColor: palette.surface,
         border: `2px solid ${palette.border}`,
         color: palette.text,
         boxShadow: `0 4px 12px ${palette.primary}20`,
+        minWidth: "44px",
+        minHeight: "44px",
       }}
       aria-label="Toggle theme"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="w-6 h-6"
+        className="w-5 h-5 sm:w-6 sm:h-6"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"

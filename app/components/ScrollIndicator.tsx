@@ -73,13 +73,13 @@ export default function ScrollIndicator() {
   };
 
   return (
-    <div className="fixed right-4 md:right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-4 md:gap-5 items-center">
+    <div className="fixed right-4 md:right-6 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col gap-5 md:gap-6 items-center">
       {/* Background blur container for better visibility */}
       <div
         className="absolute inset-0 rounded-full backdrop-blur-sm"
         style={{
-          padding: "8px",
-          margin: "-8px",
+          padding: "10px",
+          margin: "-10px",
           backgroundColor: `${palette.surface}40`,
           border: `1px solid ${palette.border}30`,
         }}
@@ -115,34 +115,34 @@ export default function ScrollIndicator() {
             onMouseLeave={() => setHoveredSection(null)}
           >
             <button
+              data-scroll-indicator
               onClick={() => scrollToSection(index)}
               className="relative rounded-full transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent"
               style={{
-                width: isActive ? "20px" : isHovered ? "16px" : "12px",
-                height: isActive ? "20px" : isHovered ? "16px" : "12px",
+                width: isActive ? "16px" : isHovered ? "14px" : "12px",
+                height: isActive ? "16px" : isHovered ? "14px" : "12px",
                 backgroundColor:
                   isActive || isHovered ? palette.primary : palette.border,
-                transform: `scale(${isActive ? 1.4 : isHovered ? 1.2 : 1})`,
+                transform: `scale(${isActive ? 1.2 : isHovered ? 1.1 : 1})`,
                 opacity: isActive ? 1 : isHovered ? 0.9 : 0.7,
                 boxShadow:
                   isActive || isHovered
-                    ? `0 0 ${isActive ? "24px" : "18px"} ${palette.primary}${
+                    ? `0 0 ${isActive ? "20px" : "16px"} ${palette.primary}${
                         isActive ? "90" : "70"
-                      }, 0 0 ${isActive ? "10px" : "8px"} ${
-                        palette.secondary
-                      }60`
+                      }, 0 0 ${isActive ? "8px" : "6px"} ${palette.secondary}60`
                     : `0 0 4px ${palette.primary}30`,
                 transition: "all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
                 border: isActive
-                  ? `3px solid ${palette.accent}`
-                  : `2px solid ${palette.primary}30`,
+                  ? `2px solid ${palette.accent}`
+                  : `1px solid ${palette.primary}30`,
+                flexShrink: 0,
               }}
               aria-label={`Go to ${sectionName}`}
             >
               {/* Tooltip */}
               {isHovered && (
                 <div
-                  className="absolute right-8 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap pointer-events-none z-10"
+                  className="absolute right-6 top-1/2 -translate-y-1/2 px-2 py-1 rounded-md text-xs font-medium whitespace-nowrap pointer-events-none z-10"
                   style={{
                     backgroundColor: palette.surface,
                     color: palette.text,

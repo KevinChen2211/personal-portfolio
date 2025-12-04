@@ -154,7 +154,7 @@ const Section = ({
   return (
     <section
       ref={sectionRef}
-      className={`h-screen snap-start flex items-center justify-center px-6 sm:px-10 md:px-16 relative z-10 overflow-hidden ${className}`}
+      className={`h-screen snap-start flex items-center justify-center px-4 sm:px-6 md:px-10 lg:px-16 relative z-10 overflow-y-auto ${className}`}
       style={{
         opacity: isVisible ? 1 : 0.4,
         transform: `translateY(${isVisible ? 0 : 20}px) scale(${
@@ -521,7 +521,7 @@ export default function Home() {
           <Section>
             <div className="max-w-5xl w-full text-center">
               <h1
-                className={`text-6xl sm:text-8xl md:text-9xl font-bold mb-6 transition-all duration-1000 ease-out ${
+                className={`text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold mb-4 sm:mb-6 transition-all duration-1000 ease-out px-4 ${
                   showContent
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-8"
@@ -539,7 +539,7 @@ export default function Home() {
                 Kevin Chen
               </h1>
               <p
-                className={`text-xl sm:text-2xl md:text-3xl mb-6 font-medium transition-all duration-700 ease-out ${
+                className={`text-lg sm:text-xl md:text-2xl lg:text-3xl mb-4 sm:mb-6 font-medium transition-all duration-700 ease-out px-4 ${
                   showContent
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-4"
@@ -585,10 +585,10 @@ export default function Home() {
 
           {/* About Me Section */}
           <Section>
-            <div className="max-w-5xl w-full h-full flex flex-col justify-center py-8">
-              <div className="text-center mb-12 flex-shrink-0">
+            <div className="max-w-5xl w-full h-full flex flex-col justify-center py-4 sm:py-8 overflow-y-auto">
+              <div className="text-center mb-6 sm:mb-12 flex-shrink-0">
                 <h2
-                  className="text-4xl sm:text-6xl md:text-7xl font-bold mb-6 transition-all duration-300 hover:scale-105"
+                  className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 transition-all duration-300 hover:scale-105"
                   style={{
                     backgroundImage: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
                     WebkitBackgroundClip: "text",
@@ -600,7 +600,7 @@ export default function Home() {
                   About Me
                 </h2>
                 <div
-                  className="w-32 h-1.5 mx-auto rounded-full relative overflow-hidden"
+                  className="w-24 sm:w-32 h-1 sm:h-1.5 mx-auto rounded-full relative overflow-hidden"
                   style={{
                     background: `linear-gradient(90deg, ${palette.primary}, ${palette.secondary}, ${palette.accent})`,
                     boxShadow: `0 0 20px ${palette.primary}40`,
@@ -608,10 +608,10 @@ export default function Home() {
                 />
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6 mb-6 flex-1 min-h-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6 flex-1 min-h-0 overflow-y-auto">
                 {/* Left Column - Bio */}
                 <div
-                  className="p-6 sm:p-8 rounded-xl transition-all duration-500 hover:shadow-xl hover:scale-[1.02] flex flex-col group"
+                  className="p-4 sm:p-6 md:p-8 rounded-xl transition-all duration-500 hover:shadow-xl hover:scale-[1.02] flex flex-col group"
                   style={{
                     backgroundColor: palette.surface,
                     border: `1px solid ${palette.border}`,
@@ -668,10 +668,10 @@ export default function Home() {
                 </div>
 
                 {/* Right Column - Skills & Interests */}
-                <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-4 sm:gap-6">
                   {/* Skills */}
                   <div
-                    className="p-6 sm:p-8 rounded-xl transition-all duration-500 hover:shadow-xl hover:scale-[1.02] flex-1 group"
+                    className="p-4 sm:p-6 md:p-8 rounded-xl transition-all duration-500 hover:shadow-xl hover:scale-[1.02] flex-1 group"
                     style={{
                       backgroundColor: palette.surface,
                       border: `1px solid ${palette.border}`,
@@ -716,7 +716,7 @@ export default function Home() {
 
                   {/* Interests */}
                   <div
-                    className="p-6 sm:p-8 rounded-xl transition-all duration-500 hover:shadow-xl hover:scale-[1.02] group"
+                    className="p-4 sm:p-6 md:p-8 rounded-xl transition-all duration-500 hover:shadow-xl hover:scale-[1.02] group"
                     style={{
                       backgroundColor: palette.surface,
                       border: `1px solid ${palette.border}`,
@@ -752,14 +752,15 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="mt-6 text-center flex-shrink-0">
+              <div className="mt-4 sm:mt-6 text-center flex-shrink-0">
                 <Link
                   href="/about"
-                  className="inline-block px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-110 hover:shadow-xl relative overflow-hidden group"
+                  className="inline-block px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-sm sm:text-base font-semibold transition-all duration-300 hover:scale-110 hover:shadow-xl relative overflow-hidden group touch-manipulation"
                   style={{
                     background: `linear-gradient(135deg, ${palette.primary}, ${palette.secondary})`,
                     color: palette.text,
                     boxShadow: `0 4px 20px ${palette.primary}40`,
+                    minHeight: "44px",
                   }}
                 >
                   <span className="relative z-10">View Full Experience →</span>
@@ -777,9 +778,9 @@ export default function Home() {
 
           {/* Projects Section */}
           <Section>
-            <div className="max-w-6xl w-full">
+            <div className="max-w-6xl w-full h-full flex flex-col justify-center py-4 sm:py-8 overflow-y-auto">
               <h2
-                className="text-5xl sm:text-6xl md:text-7xl font-bold mb-16 text-center"
+                className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 sm:mb-12 md:mb-16 text-center"
                 style={{
                   backgroundImage: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
                   WebkitBackgroundClip: "text",
@@ -791,7 +792,7 @@ export default function Home() {
                 Projects
               </h2>
               <div
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 flex-1 overflow-y-auto"
                 id="project-cards"
               >
                 {projects.slice(0, 3).map((project, index) => (

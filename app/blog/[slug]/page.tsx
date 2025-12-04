@@ -74,7 +74,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
 
         <article
           ref={articleRef}
-          className="p-8 sm:p-12 rounded-lg transition-all duration-500 hover:shadow-lg"
+          className="p-4 sm:p-8 md:p-12 rounded-lg transition-all duration-500 hover:shadow-lg"
           style={{
             backgroundColor: palette.surface,
             border: `1px solid ${palette.border}`,
@@ -91,7 +91,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
           </div>
 
           <h1
-            className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight"
             style={{ color: palette.text }}
           >
             {post.title}
@@ -243,51 +243,52 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                         className="my-8 flex flex-col items-center"
                       >
                         <div
-                          className="relative rounded-lg overflow-hidden"
+                          className={`relative rounded-lg overflow-hidden ${
+                            isLogo ? "p-4 sm:p-8 max-w-full sm:max-w-[400px]" : ""
+                          }`}
                           style={{
                             backgroundColor: isLogo ? "#ffffff" : "transparent",
                             border: isLogo ? `1px solid ${palette.border}` : "none",
                             boxShadow: isLogo ? `0 4px 12px ${palette.primary}10` : "none",
-                            padding: isLogo ? "2rem" : "0",
-                            maxWidth: isLogo ? "400px" : "100%",
                             width: "100%",
                           }}
                         >
-                          {isSvg ? (
-                            // Use regular img tag for SVGs for better compatibility
-                            <img
-                              src={imagePath}
-                              alt=""
-                              className="object-contain"
-                              style={{
-                                maxWidth: "100%",
-                                width: "100%",
-                                height: "auto",
-                                display: "block",
-                              }}
-                              onError={(e) => {
-                                console.error('Image failed to load:', imagePath);
-                                (e.target as HTMLImageElement).style.display = 'none';
-                              }}
-                            />
-                          ) : (
-                            <Image
-                              src={imagePath}
-                              alt=""
-                              width={800}
-                              height={600}
-                              className="object-contain w-full h-auto"
-                              style={{
-                                maxWidth: "100%",
-                                height: "auto",
-                                display: "block",
-                              }}
-                              unoptimized={false}
-                              onError={(e) => {
-                                console.error('Image failed to load:', imagePath);
-                              }}
-                            />
-                          )}
+                            {isSvg ? (
+                              // Use regular img tag for SVGs for better compatibility
+                              <img
+                                src={imagePath}
+                                alt=""
+                                className="object-contain w-full h-auto"
+                                style={{
+                                  maxWidth: "100%",
+                                  width: "100%",
+                                  height: "auto",
+                                  display: "block",
+                                }}
+                                onError={(e) => {
+                                  console.error('Image failed to load:', imagePath);
+                                  (e.target as HTMLImageElement).style.display = 'none';
+                                }}
+                              />
+                            ) : (
+                              <Image
+                                src={imagePath}
+                                alt=""
+                                width={800}
+                                height={600}
+                                className="object-contain w-full h-auto"
+                                style={{
+                                  maxWidth: "100%",
+                                  height: "auto",
+                                  display: "block",
+                                }}
+                                unoptimized={false}
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
+                                onError={(e) => {
+                                  console.error('Image failed to load:', imagePath);
+                                }}
+                              />
+                            )}
                         </div>
                         {isPhoto && (
                           <p

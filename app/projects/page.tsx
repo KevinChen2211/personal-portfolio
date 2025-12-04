@@ -24,7 +24,7 @@ const ProjectCard = ({
   return (
     <div
       ref={cardRef}
-      className="p-6 rounded-lg transition-all duration-500 hover:shadow-lg hover:scale-[1.02]"
+      className="p-4 sm:p-6 rounded-lg transition-all duration-500 hover:shadow-lg hover:scale-[1.02] touch-manipulation"
       style={{
         backgroundColor: palette.surface,
         border: `1px solid ${palette.border}`,
@@ -99,7 +99,7 @@ export default function ProjectsPage() {
           ← Back to Home
         </Link>
         <h1
-          className="text-5xl sm:text-6xl font-bold mb-4 transition-all duration-300 hover:scale-105"
+          className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 transition-all duration-300 hover:scale-105"
           style={{ color: palette.text }}
         >
           Projects

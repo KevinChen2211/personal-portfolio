@@ -24,6 +24,29 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   transition: background-color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Mobile touch optimizations */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:not([data-scroll-indicator]),
+a:not([data-scroll-indicator]),
+[role="button"]:not([data-scroll-indicator]) {
+  touch-action: manipulation;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Mobile-specific spacing */
+@media (max-width: 640px) {
+  .hide-scrollbar {
+    padding-right: 0;
+  }
 }
 
 html {
