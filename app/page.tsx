@@ -430,6 +430,7 @@ export default function Home() {
   const palette = getActivePalette(theme);
   const [showIntro, setShowIntro] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -447,6 +448,13 @@ export default function Home() {
     // Only show intro on first visit, not when navigating back
     if (!hasSeenIntro && !isNavigatingBack) {
       setShowIntro(true);
+      // Start showing content slightly before intro completes for seamless transition
+      setTimeout(() => {
+        setShowContent(true);
+      }, 2200);
+    } else {
+      // If no intro, show content immediately
+      setShowContent(true);
     }
   }, []);
 
@@ -463,7 +471,9 @@ export default function Home() {
     <>
       {showIntro && <IntroAnimation onComplete={handleIntroComplete} />}
       <div
-        className="relative"
+        className={`relative transition-opacity duration-1000 ease-in-out ${
+          showContent ? "opacity-100" : "opacity-0"
+        }`}
         style={{
           backgroundColor: palette.background,
           color: palette.text,
@@ -477,31 +487,46 @@ export default function Home() {
           <Section>
             <div className="max-w-4xl w-full text-center">
               <h1
-                className={`text-6xl sm:text-8xl font-bold mb-6 transition-opacity duration-1000 ${
-                  showIntro ? "opacity-0" : "opacity-100"
+                className={`text-6xl sm:text-8xl font-bold mb-6 transition-all duration-1000 ease-out ${
+                  showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                 }`}
                 style={{
                   color: palette.text,
-                  transitionDelay: showIntro ? "1.5s" : "0s",
+                  transitionDelay: showIntro ? "0.3s" : "0s",
                 }}
               >
                 Kevin Chen
               </h1>
               <p
-                className="text-xl sm:text-2xl mb-8 transition-all duration-700"
-                style={{ color: palette.textSecondary }}
+                className={`text-xl sm:text-2xl mb-8 transition-all duration-700 ease-out ${
+                  showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                }`}
+                style={{
+                  color: palette.textSecondary,
+                  transitionDelay: showIntro ? "0.5s" : "0s",
+                }}
               >
                 Engineer & Creative Developer
               </p>
               <p
-                className="text-xl sm:text-2xl mb-8 transition-all duration-700"
-                style={{ color: palette.textSecondary }}
+                className={`text-xl sm:text-2xl mb-8 transition-all duration-700 ease-out ${
+                  showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                }`}
+                style={{
+                  color: palette.textSecondary,
+                  transitionDelay: showIntro ? "0.7s" : "0s",
+                }}
               >
                 Welcome to my Website!
               </p>
               <p
-                className="text-lg sm:text-xl max-w-2xl mx-auto transition-all duration-700"
-                style={{ color: palette.textSecondary }}
+                className={`text-lg sm:text-xl max-w-2xl mx-auto transition-all duration-700 ease-out ${
+                  showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                }`}
+                style={{
+                  color: palette.textSecondary,
+                  transitionDelay: showIntro ? "0.9s" : "0s",
+                }}
               >
                 Find out more about what im up to and the projects i've worked
                 on.

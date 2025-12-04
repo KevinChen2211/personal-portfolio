@@ -14,6 +14,7 @@ export default function IntroAnimation({ onComplete }: IntroAnimationProps) {
   const [progress, setProgress] = useState(0);
   const [showText, setShowText] = useState(false);
   const [textRevealed, setTextRevealed] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
 
   // Generate particles
   const particles = useMemo(() => {
@@ -50,22 +51,30 @@ export default function IntroAnimation({ onComplete }: IntroAnimationProps) {
       setTextRevealed(true);
     }, 1200);
 
-    // Complete animation
+    // Start fade out before completing (overlap with landing screen fade in)
+    const fadeOutTimer = setTimeout(() => {
+      setIsFadingOut(true);
+    }, 2200);
+
+    // Complete animation after fade out
     const completeTimer = setTimeout(() => {
       onComplete();
-    }, 2500);
+    }, 2800);
 
     return () => {
       clearInterval(progressInterval);
       clearTimeout(textTimer);
       clearTimeout(revealTimer);
+      clearTimeout(fadeOutTimer);
       clearTimeout(completeTimer);
     };
   }, [onComplete]);
 
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center"
+      className={`fixed inset-0 z-50 flex flex-col items-center justify-center transition-opacity duration-700 ease-in-out ${
+        isFadingOut ? "opacity-0" : "opacity-100"
+      }`}
       style={{
         backgroundColor: palette.background,
       }}
