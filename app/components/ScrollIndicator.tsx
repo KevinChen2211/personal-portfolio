@@ -73,17 +73,28 @@ export default function ScrollIndicator() {
   };
 
   return (
-    <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50 hidden md:flex flex-col gap-5 items-center">
+    <div className="fixed right-4 md:right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-4 md:gap-5 items-center">
+      {/* Background blur container for better visibility */}
+      <div
+        className="absolute inset-0 rounded-full backdrop-blur-sm"
+        style={{
+          padding: "8px",
+          margin: "-8px",
+          backgroundColor: `${palette.surface}40`,
+          border: `1px solid ${palette.border}30`,
+        }}
+      />
+
       {/* Progress line - enhanced with glow effect */}
       <div
         className="absolute left-1/2 -translate-x-1/2 top-0 rounded-full pointer-events-none"
         style={{
-          width: "3px",
+          width: "4px",
           height: `${scrollProgress}%`,
           background: `linear-gradient(180deg, ${palette.primary}, ${palette.secondary}, ${palette.accent})`,
           transition: "height 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-          boxShadow: `0 0 8px ${palette.primary}40, 0 0 4px ${palette.secondary}30`,
-          opacity: 0.9,
+          boxShadow: `0 0 12px ${palette.primary}60, 0 0 6px ${palette.secondary}50`,
+          opacity: 1,
         }}
       />
 
@@ -95,7 +106,7 @@ export default function ScrollIndicator() {
         return (
           <div
             key={index}
-            className="relative flex items-center justify-center"
+            className="relative flex items-center justify-center z-10"
             style={{
               padding: "16px",
               margin: "-16px",
@@ -107,18 +118,24 @@ export default function ScrollIndicator() {
               onClick={() => scrollToSection(index)}
               className="relative rounded-full transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent"
               style={{
-                width: isActive ? "18px" : isHovered ? "14px" : "10px",
-                height: isActive ? "18px" : isHovered ? "14px" : "10px",
+                width: isActive ? "20px" : isHovered ? "16px" : "12px",
+                height: isActive ? "20px" : isHovered ? "16px" : "12px",
                 backgroundColor:
                   isActive || isHovered ? palette.primary : palette.border,
-                transform: `scale(${isActive ? 1.3 : isHovered ? 1.15 : 1})`,
-                opacity: isActive ? 1 : isHovered ? 0.85 : 0.4,
+                transform: `scale(${isActive ? 1.4 : isHovered ? 1.2 : 1})`,
+                opacity: isActive ? 1 : isHovered ? 0.9 : 0.7,
                 boxShadow:
                   isActive || isHovered
-                    ? `0 0 ${isActive ? "20px" : "14px"} ${palette.primary}${isActive ? "80" : "60"}, 0 0 ${isActive ? "8px" : "6px"} ${palette.secondary}40`
-                    : "none",
+                    ? `0 0 ${isActive ? "24px" : "18px"} ${palette.primary}${
+                        isActive ? "90" : "70"
+                      }, 0 0 ${isActive ? "10px" : "8px"} ${
+                        palette.secondary
+                      }60`
+                    : `0 0 4px ${palette.primary}30`,
                 transition: "all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                border: isActive ? `2px solid ${palette.accent}` : "none",
+                border: isActive
+                  ? `3px solid ${palette.accent}`
+                  : `2px solid ${palette.primary}30`,
               }}
               aria-label={`Go to ${sectionName}`}
             >
@@ -130,7 +147,7 @@ export default function ScrollIndicator() {
                     backgroundColor: palette.surface,
                     color: palette.text,
                     border: `1px solid ${palette.border}`,
-                    boxShadow: `0 4px 12px ${palette.primary}20`,
+                    boxShadow: `0 4px 12px ${palette.primary}30`,
                     animation: "fadeIn 0.2s ease-out forwards",
                   }}
                 >
