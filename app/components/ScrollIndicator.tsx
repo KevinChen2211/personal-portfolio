@@ -121,6 +121,8 @@ export default function ScrollIndicator() {
               style={{
                 width: isActive ? "16px" : isHovered ? "14px" : "12px",
                 height: isActive ? "16px" : isHovered ? "14px" : "12px",
+                minWidth: 0,
+                minHeight: 0,
                 backgroundColor:
                   isActive || isHovered ? palette.primary : palette.border,
                 transform: `scale(${isActive ? 1.2 : isHovered ? 1.1 : 1})`,

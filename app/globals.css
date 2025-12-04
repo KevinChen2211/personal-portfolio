@@ -34,9 +34,9 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-button:not([data-scroll-indicator]),
-a:not([data-scroll-indicator]),
-[role="button"]:not([data-scroll-indicator]) {
+button,
+a,
+[role="button"] {
   touch-action: manipulation;
   min-height: 44px;
   min-width: 44px;
@@ -63,18 +63,6 @@ html {
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
-}
-
-/* Hide scrollbars on desktop for sections */
-@media (min-width: 768px) {
-  section.overflow-y-auto::-webkit-scrollbar {
-    display: none;
-  }
-  
-  section.overflow-y-auto {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
 }
 
 /* Page Transition Animations */
@@ -180,7 +168,6 @@ html {
 .project-card .card-nearby.card-gradient-after {
   opacity: 1 !important;
 }
-
 
 /* Magic Text Effect - theme-aware colors */
 :root {
