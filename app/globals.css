@@ -242,11 +242,12 @@ html {
   pointer-events: none;
 }
 
-/* Magic Text Effect - matches prototype exactly */
+/* Magic Text Effect - theme-aware colors */
 :root {
-  --purple: rgb(123, 31, 162);
-  --violet: rgb(103, 58, 183);
-  --pink: rgb(244, 143, 177);
+  /* Default colors (will be overridden by component) */
+  --magic-color-1: rgb(99, 102, 241); /* Indigo for dark theme */
+  --magic-color-2: rgb(139, 92, 246); /* Purple for dark theme */
+  --magic-color-3: rgb(236, 72, 153); /* Pink for dark theme */
 }
 
 @keyframes background-pan {
@@ -296,25 +297,27 @@ html {
 .magic-star > svg {
   animation: magic-star-rotate 1000ms linear infinite;
   display: block;
-  opacity: 0.7;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 4px var(--magic-color-2));
 }
 
 .magic-star > svg > path {
-  fill: var(--violet);
+  fill: var(--magic-color-2);
 }
 
 .magic-text {
   animation: background-pan 3s linear infinite;
   background-image: linear-gradient(
     to right,
-    var(--purple),
-    var(--violet),
-    var(--pink),
-    var(--purple)
+    var(--magic-color-1),
+    var(--magic-color-2),
+    var(--magic-color-3),
+    var(--magic-color-1)
   );
   background-size: 200%;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   white-space: nowrap;
+  filter: brightness(1.2) saturate(1.4);
 }
