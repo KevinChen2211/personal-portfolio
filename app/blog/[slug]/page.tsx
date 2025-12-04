@@ -235,59 +235,58 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                   if (imageMatch) {
                     const imagePath = imageMatch[1];
                     const isSvg = imagePath.toLowerCase().endsWith('.svg');
+                    const isLogo = imagePath.includes('next-js') || imagePath.includes('Vercel');
                     elements.push(
                       <div
                         key={`img-${index}`}
                         className="my-8 flex justify-center"
                       >
                         <div
-                          className="relative p-8 rounded-lg"
+                          className="relative rounded-lg overflow-hidden"
                           style={{
-                            backgroundColor: "#ffffff",
-                            border: `1px solid ${palette.border}`,
-                            boxShadow: `0 4px 12px ${palette.primary}10`,
+                            backgroundColor: isLogo ? "#ffffff" : "transparent",
+                            border: isLogo ? `1px solid ${palette.border}` : "none",
+                            boxShadow: isLogo ? `0 4px 12px ${palette.primary}10` : "none",
+                            padding: isLogo ? "2rem" : "0",
+                            maxWidth: isLogo ? "400px" : "100%",
+                            width: "100%",
                           }}
                         >
-                          <div
-                            style={{
-                              filter: theme === "dark" 
-                                ? "brightness(1.2) contrast(1.1)" 
-                                : "brightness(1) contrast(1.05)",
-                            }}
-                          >
-                            {isSvg ? (
-                              // Use regular img tag for SVGs for better compatibility
-                              <img
-                                src={imagePath}
-                                alt=""
-                                className="object-contain"
-                                style={{
-                                  maxWidth: "400px",
-                                  width: "100%",
-                                  height: "auto",
-                                  display: "block",
-                                }}
-                                onError={(e) => {
-                                  console.error('Image failed to load:', imagePath);
-                                }}
-                              />
-                            ) : (
-                              <Image
-                                src={imagePath}
-                                alt=""
-                                width={400}
-                                height={120}
-                                className="object-contain"
-                                style={{
-                                  maxWidth: "100%",
-                                  height: "auto",
-                                }}
-                                onError={(e) => {
-                                  console.error('Image failed to load:', imagePath);
-                                }}
-                              />
-                            )}
-                          </div>
+                          {isSvg ? (
+                            // Use regular img tag for SVGs for better compatibility
+                            <img
+                              src={imagePath}
+                              alt=""
+                              className="object-contain"
+                              style={{
+                                maxWidth: "100%",
+                                width: "100%",
+                                height: "auto",
+                                display: "block",
+                              }}
+                              onError={(e) => {
+                                console.error('Image failed to load:', imagePath);
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <Image
+                              src={imagePath}
+                              alt=""
+                              width={800}
+                              height={600}
+                              className="object-contain w-full h-auto"
+                              style={{
+                                maxWidth: "100%",
+                                height: "auto",
+                                display: "block",
+                              }}
+                              unoptimized={false}
+                              onError={(e) => {
+                                console.error('Image failed to load:', imagePath);
+                              }}
+                            />
+                          )}
                         </div>
                       </div>
                     );

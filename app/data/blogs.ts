@@ -11,6 +11,57 @@ export interface BlogPost {
 
 export const blogPosts: BlogPost[] = [
   {
+    id: "2",
+    title: "The Art of being Uncomfortable",
+    slug: "the-art-of-being-uncomfortable",
+    date: "2025-12-02",
+    excerpt:
+      "Growth rarely happens in moments of ease. Over the past few years as a student, an engineer, and someone who is always trying to build something new, I've learned that being uncomfortable isn't something to avoid. It's something to seek out.",
+    content: `# The Art of being Uncomfortable
+
+Growth rarely happens in moments of ease. Over the past few years as a student, an engineer, and someone who is always trying to build something new I've learned that being uncomfortable isn't something to avoid. It's something to seek out.
+
+Discomfort is the space between where I am and where I want to be. It's the feeling that tells me I'm doing something new, something uncertain, something that requires me to stretch further than before. And while it's rarely pleasant, it's almost always the place where I learn the most.
+
+![IMAGE:/blog-images/choosing-discomfort-pushing-beyond-familiar-1.jpg]
+
+## The Value of Being Uncomfortable
+
+When I first started pushing myself into unfamiliar territory new technologies, leadership roles, bigger projects I realised how quickly comfort can become a trap. It lulls you into doing the same things the same way, even if you know you're capable of more.
+
+Being uncomfortable forces me to confront weaknesses instead of working around them. It reveals what I don't know and challenges me to fill those gaps. Whether it's tackling a new engineering discipline, taking on a leadership role, or speaking to people who intimidate me, discomfort becomes a tool for self-assessment and improvement.
+
+It's also where confidence is built. There's a moment after you've struggled through something difficult where you realise it didn't beat you you adapted, you figured it out, you grew. That experience compounds. The next challenge feels a little less overwhelming.
+
+![IMAGE:/blog-images/choosing-discomfort-pushing-beyond-familiar-2.jpg]
+
+## Why I Seek It Out Personally
+
+My drive to step into discomfort comes from a simple belief: if I stay still, I fall behind. Engineering, tech, and even life itself move too fast for comfort to be a long-term strategy. I've had to learn new technologies on short timelines, guide teams through unclear requirements, and put myself in situations where I had no guarantee of success. Each time, that initial discomfort became the spark that pushed me toward something better.
+
+I've also seen how avoiding discomfort limits potential. Some of the best moments in my academic and professional life from founding a robotics club, to leading workshops, to building products I had no roadmap for only happened because I said yes before I felt fully ready.
+
+Discomfort, for me, isn't just a challenge. It's a philosophy. It reminds me that improvement is a deliberate choice, and that the most rewarding opportunities often begin with uncertainty.
+
+![IMAGE:/blog-images/choosing-discomfort-pushing-beyond-familiar-3.jpg]
+
+## Growing Through the Unfamiliar
+
+I won't pretend that choosing discomfort is easy. There are days I hesitate. Days self-doubt creeps in. Days I question whether I've taken on too much. But I've learned that the feeling of being uncomfortable is temporary. What it creates skills, resilience, new opportunities is lasting.
+
+The more I push myself into situations that stretch my abilities, the broader my world becomes. New ideas, new people, new possibilities all of it starts with a willingness to be uncomfortable.
+
+And that's why I continue to choose it. Not because it feels good in the moment, but because of who I become by moving through it.`,
+    author: "Kevin Chen",
+    tags: [
+      "Personal Growth",
+      "Mindset",
+      "Engineering",
+      "Leadership",
+      "Self-Improvement",
+    ],
+  },
+  {
     id: "1",
     title: "Building My Portfolio: A Deep Dive into the Tech Stack",
     slug: "building-my-portfolio-tech-stack",
