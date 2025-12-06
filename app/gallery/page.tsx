@@ -9,231 +9,84 @@ import ThemeToggle from "../components/ThemeToggle";
 export default function GalleryPage() {
   const { theme } = useTheme();
   const palette = getActivePalette(theme);
+
   const trackRef = useRef<HTMLDivElement | null>(null);
+  const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
+  const scrollToImageRef = useRef<((index: number) => void) | null>(null);
+  const currentScrollPercentageRef = useRef<number>(-50);
+
   const [expandedImageIndex, setExpandedImageIndex] = useState<number | null>(
     null
   );
-  const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
-  const scrollToImageRef = useRef<((index: number) => void) | null>(null);
-  const getCenteredImageIndexRef = useRef<(() => number | null) | null>(null);
-  const getImagePositionRef = useRef<
-    | ((
-        index: number
-      ) => { top: number; left: number; width: number; height: number } | null)
-    | null
-  >(null);
   const [expandedImageStyle, setExpandedImageStyle] = useState<{
     top: number;
     left: number;
     width: number;
     height: number;
   } | null>(null);
-  const [originalImageStyle, setOriginalImageStyle] = useState<{
-    top: number;
-    left: number;
-    width: number;
-    height: number;
-  } | null>(null);
   const [isClosing, setIsClosing] = useState(false);
-  const [showOriginalImage, setShowOriginalImage] = useState(true);
 
-  /* ---------------------------------------------------------
-     Disable vertical page scrolling
-  --------------------------------------------------------- */
+  /* -------------------------------
+     Disable vertical scrolling
+  ------------------------------- */
   useEffect(() => {
-    const previous = document.body.style.overflow;
+    const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = previous;
+      document.body.style.overflow = prev;
     };
   }, []);
 
-  /* ---------------------------------------------------------
-     Handle escape key for expanded image
-  --------------------------------------------------------- */
-  useEffect(() => {
-    if (expandedImageIndex === null) return;
-
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        // Reverse animation: animate back to original position and size
-        if (originalImageStyle && expandedImageIndex !== null) {
-          const imageIndexToScroll = expandedImageIndex; // Save index before clearing
-
-          // Scroll to center the image immediately (before shrinking)
-          if (scrollToImageRef.current) {
-            scrollToImageRef.current(imageIndexToScroll);
-          }
-
-          // Get the clicked image's position after scrolling and parallax updates
-          // Wait for animation loop to update parallax and ensure scroll is complete
-          setTimeout(() => {
-            // Use the clicked image's position directly, not the "centered" one
-            const clickedImagePosition = getImagePositionRef.current
-              ? getImagePositionRef.current(imageIndexToScroll)
-              : null;
-
-            setIsClosing(true);
-            setExpandedImageStyle(
-              clickedImagePosition || {
-                top: originalImageStyle.top,
-                left: originalImageStyle.left,
-                width: originalImageStyle.width,
-                height: originalImageStyle.height,
-              }
-            );
-
-            // Show original image slightly before animation completes for smooth transition
-            setTimeout(() => {
-              setShowOriginalImage(true); // Show original image again
-            }, 700);
-            // Hide expanded image after animation completes
-            setTimeout(() => {
-              setExpandedImageIndex(null);
-              setExpandedImageStyle(null);
-              setOriginalImageStyle(null);
-              setIsClosing(false);
-            }, 1000);
-          }, 100); // Delay to ensure scroll and parallax animations have updated
-        } else {
-          setExpandedImageIndex(null);
-          setExpandedImageStyle(null);
-          setOriginalImageStyle(null);
-          setIsClosing(false);
-          setShowOriginalImage(true);
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleEscape);
-
-    return () => {
-      window.removeEventListener("keydown", handleEscape);
-    };
-  }, [expandedImageIndex, originalImageStyle]);
-
-  /* ---------------------------------------------------------
-     Horizontal scroll-wheel logic with individual parallax
-  --------------------------------------------------------- */
+  /* -------------------------------
+     Horizontal scroll + parallax
+  ------------------------------- */
   useEffect(() => {
     const track = trackRef.current!;
     if (!track) return;
 
-    let percentage = -50; // starting center
+    let percentage = -50;
     let targetPercentage = percentage;
     let velocity = 60;
     let lastTime = performance.now();
 
-    // Get images reference
     const images = track.getElementsByClassName("image");
 
-    // Calculate maximum scroll position (when last image is centered in viewport)
     const calculateMaxScroll = () => {
       const trackRect = track.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
       const trackWidth = trackRect.width;
-      // Get the last image to find its width
       const lastImage = images[images.length - 1] as HTMLElement;
       const imageWidth = lastImage.getBoundingClientRect().width;
-
-      // Track starts at left: 50% with translate(-50%, -50%), so its left edge is at viewport left (0)
-      // The last image's center is currently at: trackWidth - (imageWidth / 2) from viewport left
-      // We want the last image's center to be at: viewportWidth / 2 (center of viewport)
-      // Need to move left by: (trackWidth - imageWidth/2) - (viewportWidth / 2)
-      // As percentage of track width: -50 - ((trackWidth - imageWidth/2 - viewportWidth/2) / trackWidth) * 100
       const distanceToMove = trackWidth - imageWidth / 2 - viewportWidth / 2;
-      const maxScroll = -50 - (distanceToMove / trackWidth) * 100;
-      return maxScroll;
+      return -50 - (distanceToMove / trackWidth) * 100;
     };
 
     let maxScroll = calculateMaxScroll();
-
-    // Update max scroll on resize
-    const handleResize = () => {
+    window.addEventListener("resize", () => {
       maxScroll = calculateMaxScroll();
-    };
-    window.addEventListener("resize", handleResize);
+    });
 
     const clamp = (value: number) => Math.max(Math.min(value, 0), maxScroll);
 
-    // Function to find which image is currently centered
-    const getCenteredImageIndex = (): number | null => {
-      const viewportCenterX = window.innerWidth / 2;
-      let closestImageIndex = 0;
-      let closestDistance = Infinity;
-
-      for (let i = 0; i < images.length; i++) {
-        const img = images[i] as HTMLElement;
-        const rect = img.getBoundingClientRect();
-        const imageCenterX = rect.left + rect.width / 2;
-        const distance = Math.abs(imageCenterX - viewportCenterX);
-
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          closestImageIndex = i;
-        }
-      }
-
-      return closestImageIndex;
-    };
-
-    // Function to get the position of a specific image
-    const getImagePosition = (
-      imageIndex: number
-    ): { top: number; left: number; width: number; height: number } | null => {
-      if (imageIndex < 0 || imageIndex >= images.length) return null;
-
-      const img = images[imageIndex] as HTMLElement;
-      const rect = img.getBoundingClientRect();
-
-      return {
-        top: rect.top + rect.height / 2,
-        left: rect.left + rect.width / 2,
-        width: rect.width,
-        height: rect.height,
-      };
-    };
-
-    // Function to scroll to center a specific image
     const scrollToImage = (imageIndex: number) => {
       if (imageIndex < 0 || imageIndex >= images.length) return;
-
-      // Get current image position
-      const targetImage = images[imageIndex] as HTMLElement;
-      const imageRect = targetImage.getBoundingClientRect();
-      const imageCenterX = imageRect.left + imageRect.width / 2;
-      const viewportCenterX = window.innerWidth / 2;
-
-      // Calculate how far the image center is from viewport center
-      const offsetX = viewportCenterX - imageCenterX;
-
-      // Get track dimensions
+      const targetImg = images[imageIndex] as HTMLElement;
+      const rect = targetImg.getBoundingClientRect();
+      const offsetX = window.innerWidth / 2 - (rect.left + rect.width / 2);
       const trackRect = track.getBoundingClientRect();
-      const trackWidth = trackRect.width;
-
-      // Convert pixel offset to percentage (percentage is relative to track width)
-      const percentageAdjustment = (offsetX / trackWidth) * 100;
-
-      // Set both current and target percentage immediately for instant scroll
+      const percentageAdjustment = (offsetX / trackRect.width) * 100;
       const newPercentage = clamp(targetPercentage + percentageAdjustment);
       percentage = newPercentage;
       targetPercentage = newPercentage;
-      velocity = 0; // Reset velocity
-
-      // Apply transform immediately
+      velocity = 0;
       track.style.transform = `translate(${percentage}%, -50%)`;
     };
 
-    // Store the functions in refs so they can be called from outside
     scrollToImageRef.current = scrollToImage;
-    getCenteredImageIndexRef.current = getCenteredImageIndex;
-    getImagePositionRef.current = getImagePosition;
 
-    // Optimize for transform animations
     track.style.willChange = "transform";
-    for (const img of images) {
+    for (const img of images)
       (img as HTMLElement).style.willChange = "object-position";
-    }
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
@@ -241,7 +94,6 @@ export default function GalleryPage() {
       targetPercentage = clamp(targetPercentage + delta);
       velocity = delta * 0.1;
     };
-
     window.addEventListener("wheel", handleWheel, { passive: false });
 
     const animate = (currentTime: number) => {
@@ -257,20 +109,19 @@ export default function GalleryPage() {
       const lerpFactor = Math.abs(distance) > 1 ? 0.015 : 0.01;
       percentage += distance * lerpFactor;
 
-      if (Math.abs(distance) < 0.01 && Math.abs(velocity) < 0.01) {
+      if (Math.abs(distance) < 0.01 && Math.abs(velocity) < 0.01)
         percentage = targetPercentage;
-      }
 
-      // Move the track
+      // Update ref for external access
+      currentScrollPercentageRef.current = percentage;
+
       track.style.transform = `translate(${percentage}%, -50%)`;
 
-      // Apply individual parallax to each image
+      // Parallax
       const totalImages = images.length;
       for (let i = 0; i < totalImages; i++) {
         const img = images[i] as HTMLElement;
-        // Calculate relative position (-0.5 to 0.5) from center
         const relIndex = i / (totalImages - 1) - 0.5;
-        // Apply parallax factor (adjust multiplier for stronger/weaker effect)
         const parallaxOffset = relIndex * 30;
         img.style.objectPosition = `${
           100 + percentage + parallaxOffset
@@ -284,24 +135,74 @@ export default function GalleryPage() {
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("resize", handleResize);
       track.style.willChange = "auto";
-      for (const img of images) {
-        (img as HTMLElement).style.willChange = "auto";
-      }
+      for (const img of images) (img as HTMLElement).style.willChange = "auto";
     };
   }, []);
+
+  /* -------------------------------
+     SHRINK EXPANDED IMAGE SEAMLESSLY
+  ------------------------------- */
+  const shrinkImage = () => {
+    if (expandedImageIndex === null) return;
+    const imageIndexToScroll = expandedImageIndex;
+    const img = imageRefs.current[expandedImageIndex];
+    if (!img) return;
+
+    // First, scroll to center the clicked image
+    if (scrollToImageRef.current) {
+      scrollToImageRef.current(imageIndexToScroll);
+    }
+
+    // Wait for scroll animation to complete and parallax to update
+    // Use a longer delay to ensure the transform has been fully applied
+    setTimeout(() => {
+      // Get the image position - read it twice to ensure it's stable
+      const updatedImg = imageRefs.current[imageIndexToScroll];
+      if (!updatedImg) return;
+
+      // Force a reflow to ensure layout is updated
+      updatedImg.offsetHeight;
+
+      const rect = updatedImg.getBoundingClientRect();
+
+      // Get the exact center position of the image element
+      const targetRect = {
+        top: rect.top + rect.height / 2,
+        left: rect.left + rect.width / 2,
+        width: rect.width,
+        height: rect.height,
+      };
+
+      setIsClosing(true);
+      setExpandedImageStyle(targetRect);
+
+      // Remove expanded image after animation
+      setTimeout(() => {
+        setExpandedImageIndex(null);
+        setExpandedImageStyle(null);
+        setIsClosing(false);
+      }, 1000);
+    }, 300); // Longer delay to ensure scroll transform has been applied
+  };
+
+  /* -------------------------------
+     Close on Escape
+  ------------------------------- */
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && expandedImageIndex !== null) shrinkImage();
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [expandedImageIndex]);
 
   return (
     <div
       className="min-h-screen px-6 sm:px-10 py-16 relative overflow-hidden"
-      style={{
-        backgroundColor: palette.background,
-        color: palette.text,
-      }}
+      style={{ backgroundColor: palette.background, color: palette.text }}
     >
       <ThemeToggle />
-
       <div className="max-w-6xl mx-auto">
         <Link
           href="/"
@@ -310,9 +211,7 @@ export default function GalleryPage() {
         >
           ← Back to Home
         </Link>
-
         <h1 className="text-5xl sm:text-6xl font-bold mb-4">Gallery</h1>
-
         <div
           className="w-24 h-1 mb-12 rounded-full"
           style={{ backgroundColor: palette.primary }}
@@ -321,94 +220,52 @@ export default function GalleryPage() {
 
       {/* IMAGE TRACK */}
       <div
-        id="image-track"
         ref={trackRef}
         className="absolute top-3/5 left-1/2 flex gap-[4vmin] select-none"
-        style={{
-          transform: "translate(-50%, -50%)",
-        }}
+        style={{ transform: "translate(-50%, -50%)" }}
       >
-        {Array.from({ length: 6 }).map((_, i) => {
-          const isExpanded = expandedImageIndex === i;
-          return (
-            <img
-              key={i}
-              ref={(el) => {
-                imageRefs.current[i] = el;
-              }}
-              src="/gallery-images/test.jpg"
-              className="image cursor-pointer transition-all duration-500 ease-out hover:scale-105"
-              draggable={false}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (isExpanded) {
-                  setExpandedImageIndex(null);
-                  // Clear style after a brief delay to allow transition
-                  setTimeout(() => {
-                    setExpandedImageStyle(null);
-                    setShowOriginalImage(true);
-                  }, 500);
-                } else {
-                  const img = imageRefs.current[i];
-                  if (img) {
-                    const rect = img.getBoundingClientRect();
-                    // Get current center position and size of image
-                    const imageCenterX = rect.left + rect.width / 2;
-                    const imageCenterY = rect.top + rect.height / 2;
-                    const initialWidth = rect.width;
-                    const initialHeight = rect.height;
-
-                    // Store original position and size for reverse animation
-                    setOriginalImageStyle({
-                      top: imageCenterY,
-                      left: imageCenterX,
-                      width: initialWidth,
-                      height: initialHeight,
-                    });
-
-                    // Set initial position and size
-                    setIsClosing(false);
-                    setShowOriginalImage(false); // Hide original image
-                    setExpandedImageStyle({
-                      top: imageCenterY,
-                      left: imageCenterX,
-                      width: initialWidth,
-                      height: initialHeight,
-                    });
-                    setExpandedImageIndex(i);
-
-                    // After DOM update, animate to viewport center and fullscreen size
-                    requestAnimationFrame(() => {
-                      setExpandedImageStyle({
-                        top: window.innerHeight / 2,
-                        left: window.innerWidth / 2,
-                        width: window.innerWidth,
-                        height: window.innerHeight,
-                      });
-                    });
-                  }
-                }
-              }}
-              style={{
-                width: "40vmin",
-                height: "56vmin",
-                aspectRatio: "40 / 56",
-                objectFit: "cover",
-                objectPosition: "100% center",
-                flexShrink: 0,
-                opacity: showOriginalImage ? 1 : 0,
-                visibility: showOriginalImage ? "visible" : "hidden",
-                transition: "opacity 0.3s ease-out",
-              }}
-            />
-          );
-        })}
+        {Array.from({ length: 6 }).map((_, i) => (
+          <img
+            key={i}
+            ref={(el) => (imageRefs.current[i] = el)}
+            src="/gallery-images/test.jpg"
+            className="image cursor-pointer transition-all duration-500 ease-out hover:scale-105"
+            draggable={false}
+            onClick={() => {
+              const img = imageRefs.current[i];
+              if (!img) return;
+              const rect = img.getBoundingClientRect();
+              setExpandedImageIndex(i);
+              setExpandedImageStyle({
+                top: rect.top + rect.height / 2,
+                left: rect.left + rect.width / 2,
+                width: rect.width,
+                height: rect.height,
+              });
+              requestAnimationFrame(() => {
+                setExpandedImageStyle({
+                  top: window.innerHeight / 2,
+                  left: window.innerWidth / 2,
+                  width: window.innerWidth,
+                  height: window.innerHeight,
+                });
+              });
+            }}
+            style={{
+              width: "40vmin",
+              height: "56vmin",
+              aspectRatio: "40 / 56",
+              objectFit: "cover",
+              objectPosition: "100% center",
+              flexShrink: 0,
+            }}
+          />
+        ))}
       </div>
 
-      {/* EXPANDED IMAGE - Rendered outside track to avoid transform containment */}
-      {expandedImageIndex !== null && (
+      {/* EXPANDED IMAGE */}
+      {expandedImageIndex !== null && expandedImageStyle && (
         <>
-          {/* BACKGROUND OVERLAY - Hides everything except the expanded image */}
           <div
             className="fixed inset-0 z-40 transition-opacity duration-1000"
             style={{
@@ -416,85 +273,32 @@ export default function GalleryPage() {
               opacity: isClosing ? 0 : 1,
             }}
           />
-          {/* BACK LINK - Top left */}
           <button
-            onClick={() => {
-              // Reverse animation: animate back to original position and size
-              if (originalImageStyle && expandedImageIndex !== null) {
-                const imageIndexToScroll = expandedImageIndex; // Save index before clearing
-
-                // Scroll to center the image immediately (before shrinking)
-                if (scrollToImageRef.current) {
-                  scrollToImageRef.current(imageIndexToScroll);
-                }
-
-                // Get the clicked image's position after scrolling and parallax updates
-                // Wait for animation loop to update parallax
-                setTimeout(() => {
-                  // Use the clicked image's position directly, not the "centered" one
-                  const clickedImagePosition = getImagePositionRef.current
-                    ? getImagePositionRef.current(imageIndexToScroll)
-                    : null;
-
-                  setIsClosing(true);
-                  setExpandedImageStyle(
-                    clickedImagePosition || {
-                      top: originalImageStyle.top,
-                      left: originalImageStyle.left,
-                      width: originalImageStyle.width,
-                      height: originalImageStyle.height,
-                    }
-                  );
-
-                  // Show original image slightly before animation completes for smooth transition
-                  setTimeout(() => {
-                    setShowOriginalImage(true); // Show original image again
-                  }, 700);
-                  // Hide expanded image after animation completes
-                  setTimeout(() => {
-                    setExpandedImageIndex(null);
-                    setExpandedImageStyle(null);
-                    setOriginalImageStyle(null);
-                    setIsClosing(false);
-                  }, 1000);
-                }, 100); // Delay to ensure scroll and parallax animations have updated
-              } else {
-                setExpandedImageIndex(null);
-                setExpandedImageStyle(null);
-                setOriginalImageStyle(null);
-                setIsClosing(false);
-                setShowOriginalImage(true);
-              }
-            }}
+            onClick={shrinkImage}
             className="fixed top-6 left-6 text-xl font-semibold transition-all duration-300 hover:underline hover:translate-x-[-4px] px-4 py-2 rounded-lg backdrop-blur-sm"
             style={{
               color: "white",
               zIndex: 60,
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-              textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)",
+              backgroundColor: "rgba(0,0,0,0.5)",
+              textShadow: "0 2px 4px rgba(0,0,0,0.5)",
             }}
           >
             ← Back
           </button>
           <img
             src="/gallery-images/test.jpg"
-            className="transition-all duration-1000 ease-out"
             draggable={false}
+            className="transition-all duration-1000 ease-out"
             style={{
-              width: expandedImageStyle
-                ? `${expandedImageStyle.width}px`
-                : "100vw",
-              height: expandedImageStyle
-                ? `${expandedImageStyle.height}px`
-                : "100vh",
+              width: `${expandedImageStyle.width}px`,
+              height: `${expandedImageStyle.height}px`,
               aspectRatio: "40 / 56",
               objectFit: "cover",
               objectPosition: "100% center",
               position: "fixed",
-              top: expandedImageStyle ? `${expandedImageStyle.top}px` : "50%",
-              left: expandedImageStyle ? `${expandedImageStyle.left}px` : "50%",
+              top: `${expandedImageStyle.top}px`,
+              left: `${expandedImageStyle.left}px`,
               transform: "translate(-50%, -50%)",
-              transformOrigin: "center center",
               zIndex: 50,
             }}
           />
