@@ -27,6 +27,7 @@ export default function GalleryPage() {
     height: number;
   } | null>(null);
   const [isClosing, setIsClosing] = useState(false);
+  const [showOriginalImage, setShowOriginalImage] = useState(true);
 
   /* ---------------------------------------------------------
      Disable vertical page scrolling
@@ -56,7 +57,11 @@ export default function GalleryPage() {
             width: originalImageStyle.width,
             height: originalImageStyle.height,
           });
-          // Hide after animation completes
+          // Show original image slightly before animation completes for smooth transition
+          setTimeout(() => {
+            setShowOriginalImage(true); // Show original image again
+          }, 700);
+          // Hide expanded image after animation completes
           setTimeout(() => {
             setExpandedImageIndex(null);
             setExpandedImageStyle(null);
@@ -68,6 +73,7 @@ export default function GalleryPage() {
           setExpandedImageStyle(null);
           setOriginalImageStyle(null);
           setIsClosing(false);
+          setShowOriginalImage(true);
         }
       }
     };
@@ -240,6 +246,7 @@ export default function GalleryPage() {
                   // Clear style after a brief delay to allow transition
                   setTimeout(() => {
                     setExpandedImageStyle(null);
+                    setShowOriginalImage(true);
                   }, 500);
                 } else {
                   const img = imageRefs.current[i];
@@ -261,6 +268,7 @@ export default function GalleryPage() {
 
                     // Set initial position and size
                     setIsClosing(false);
+                    setShowOriginalImage(false); // Hide original image
                     setExpandedImageStyle({
                       top: imageCenterY,
                       left: imageCenterX,
@@ -288,8 +296,9 @@ export default function GalleryPage() {
                 objectFit: "cover",
                 objectPosition: "100% center",
                 flexShrink: 0,
-                opacity: isExpanded ? 0 : 1,
-                visibility: isExpanded ? "hidden" : "visible",
+                opacity: showOriginalImage ? 1 : 0,
+                visibility: showOriginalImage ? "visible" : "hidden",
+                transition: "opacity 0.3s ease-out",
               }}
             />
           );
@@ -319,7 +328,11 @@ export default function GalleryPage() {
                   width: originalImageStyle.width,
                   height: originalImageStyle.height,
                 });
-                // Hide after animation completes
+                // Show original image slightly before animation completes for smooth transition
+                setTimeout(() => {
+                  setShowOriginalImage(true); // Show original image again
+                }, 700);
+                // Hide expanded image after animation completes
                 setTimeout(() => {
                   setExpandedImageIndex(null);
                   setExpandedImageStyle(null);
@@ -331,6 +344,7 @@ export default function GalleryPage() {
                 setExpandedImageStyle(null);
                 setOriginalImageStyle(null);
                 setIsClosing(false);
+                setShowOriginalImage(true);
               }
             }}
             className="fixed top-6 left-6 text-xl font-semibold transition-all duration-300 hover:underline hover:translate-x-[-4px] px-4 py-2 rounded-lg backdrop-blur-sm"
