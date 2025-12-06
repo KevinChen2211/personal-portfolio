@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useTheme } from "../components/ThemeProvider";
 import { getActivePalette } from "../color-palettes";
@@ -10,6 +10,16 @@ export default function GalleryPage() {
   const { theme } = useTheme();
   const palette = getActivePalette(theme);
   const trackRef = useRef<HTMLDivElement | null>(null);
+  const [expandedImageIndex, setExpandedImageIndex] = useState<number | null>(
+    null
+  );
+  const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
+  const [expandedImageStyle, setExpandedImageStyle] = useState<{
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+  } | null>(null);
 
   /* ---------------------------------------------------------
      Disable vertical page scrolling
@@ -21,6 +31,25 @@ export default function GalleryPage() {
       document.body.style.overflow = previous;
     };
   }, []);
+
+  /* ---------------------------------------------------------
+     Handle escape key for expanded image
+  --------------------------------------------------------- */
+  useEffect(() => {
+    if (expandedImageIndex === null) return;
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setExpandedImageIndex(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [expandedImageIndex]);
 
   /* ---------------------------------------------------------
      Horizontal scroll-wheel logic with individual parallax
@@ -165,23 +194,111 @@ export default function GalleryPage() {
           transform: "translate(-50%, -50%)",
         }}
       >
-        {Array.from({ length: 6 }).map((_, i) => (
-          <img
-            key={i}
-            src="/gallery-images/test.jpg"
-            className="image"
-            draggable={false}
+        {Array.from({ length: 6 }).map((_, i) => {
+          const isExpanded = expandedImageIndex === i;
+          return (
+            <img
+              key={i}
+              ref={(el) => {
+                imageRefs.current[i] = el;
+              }}
+              src="/gallery-images/test.jpg"
+              className="image cursor-pointer transition-all duration-500 ease-out hover:scale-105"
+              draggable={false}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (isExpanded) {
+                  setExpandedImageIndex(null);
+                  // Clear style after a brief delay to allow transition
+                  setTimeout(() => {
+                    setExpandedImageStyle(null);
+                  }, 500);
+                } else {
+                  const img = imageRefs.current[i];
+                  if (img) {
+                    const rect = img.getBoundingClientRect();
+                    // Get current center position and size of image
+                    const imageCenterX = rect.left + rect.width / 2;
+                    const imageCenterY = rect.top + rect.height / 2;
+                    const initialWidth = rect.width;
+                    const initialHeight = rect.height;
+
+                    // Set initial position and size
+                    setExpandedImageStyle({
+                      top: imageCenterY,
+                      left: imageCenterX,
+                      width: initialWidth,
+                      height: initialHeight,
+                    });
+                    setExpandedImageIndex(i);
+
+                    // After DOM update, animate to viewport center and fullscreen size
+                    requestAnimationFrame(() => {
+                      setExpandedImageStyle({
+                        top: window.innerHeight / 2,
+                        left: window.innerWidth / 2,
+                        width: window.innerWidth * 0.9,
+                        height: window.innerHeight * 0.9,
+                      });
+                    });
+                  }
+                }
+              }}
+              style={{
+                width: "40vmin",
+                height: "56vmin",
+                aspectRatio: "40 / 56",
+                objectFit: "cover",
+                objectPosition: "100% center",
+                flexShrink: 0,
+                opacity: isExpanded ? 0 : 1,
+                visibility: isExpanded ? "hidden" : "visible",
+              }}
+            />
+          );
+        })}
+      </div>
+
+      {/* EXPANDED IMAGE - Rendered outside track to avoid transform containment */}
+      {expandedImageIndex !== null && (
+        <>
+          {/* BACKGROUND OVERLAY - Hides everything except the expanded image */}
+          <div
+            className="fixed inset-0 z-40 transition-opacity duration-500"
             style={{
-              width: "40vmin",
-              height: "56vmin",
+              backgroundColor: palette.background,
+            }}
+          />
+          <img
+            src="/gallery-images/test.jpg"
+            className="cursor-pointer transition-all duration-1000 ease-out"
+            draggable={false}
+            onClick={() => {
+              setExpandedImageIndex(null);
+              setTimeout(() => {
+                setExpandedImageStyle(null);
+              }, 1000);
+            }}
+            style={{
+              width: expandedImageStyle
+                ? `${expandedImageStyle.width}px`
+                : "90vw",
+              height: expandedImageStyle
+                ? `${expandedImageStyle.height}px`
+                : "90vh",
               aspectRatio: "40 / 56",
               objectFit: "cover",
               objectPosition: "100% center",
-              flexShrink: 0,
+              position: "fixed",
+              top: expandedImageStyle ? `${expandedImageStyle.top}px` : "50%",
+              left: expandedImageStyle ? `${expandedImageStyle.left}px` : "50%",
+              transform: "translate(-50%, -50%)",
+              transformOrigin: "center center",
+              zIndex: 50,
             }}
           />
-        ))}
-      </div>
+        </>
+      )}
     </div>
   );
 }
