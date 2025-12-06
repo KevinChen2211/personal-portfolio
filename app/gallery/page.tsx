@@ -31,7 +31,7 @@ export default function GalleryPage() {
 
     let percentage = -50; // starting center
     let targetPercentage = percentage;
-    let velocity = 10;
+    let velocity = 60;
     let lastTime = performance.now();
 
     const clamp = (value: number) => Math.max(Math.min(value, 0), -100);
@@ -45,11 +45,11 @@ export default function GalleryPage() {
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      // vertical scroll → horizontal movement with reduced sensitivity
-      const delta = e.deltaY * -0.08;
+      // vertical scroll → horizontal movement with very reduced sensitivity
+      const delta = e.deltaY * -0.02;
       targetPercentage = clamp(targetPercentage + delta);
       // Add slight momentum
-      velocity = delta * 0.3;
+      velocity = delta * 0.1;
     };
 
     window.addEventListener("wheel", handleWheel, { passive: false });
@@ -62,12 +62,12 @@ export default function GalleryPage() {
       // Apply momentum decay
       if (Math.abs(velocity) > 0.01) {
         targetPercentage = clamp(targetPercentage + velocity);
-        velocity *= 0.92; // Decay momentum
+        velocity *= 0.82; // Faster decay for much slower scrolling
       }
 
       // Smoother interpolation with adaptive lerp
       const distance = targetPercentage - percentage;
-      const lerpFactor = Math.abs(distance) > 1 ? 0.05 : 0.03; // Slower for fine adjustments
+      const lerpFactor = Math.abs(distance) > 1 ? 0.015 : 0.01; // Much slower for very smooth scrolling
       percentage += distance * lerpFactor;
 
       // Stop animation when very close to target
