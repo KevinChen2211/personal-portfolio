@@ -14,6 +14,14 @@ export default function GalleryPage() {
     null
   );
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
+  const scrollToImageRef = useRef<((index: number) => void) | null>(null);
+  const getCenteredImageIndexRef = useRef<(() => number | null) | null>(null);
+  const getImagePositionRef = useRef<
+    | ((
+        index: number
+      ) => { top: number; left: number; width: number; height: number } | null)
+    | null
+  >(null);
   const [expandedImageStyle, setExpandedImageStyle] = useState<{
     top: number;
     left: number;
@@ -49,25 +57,44 @@ export default function GalleryPage() {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         // Reverse animation: animate back to original position and size
-        if (originalImageStyle) {
-          setIsClosing(true);
-          setExpandedImageStyle({
-            top: originalImageStyle.top,
-            left: originalImageStyle.left,
-            width: originalImageStyle.width,
-            height: originalImageStyle.height,
-          });
-          // Show original image slightly before animation completes for smooth transition
+        if (originalImageStyle && expandedImageIndex !== null) {
+          const imageIndexToScroll = expandedImageIndex; // Save index before clearing
+
+          // Scroll to center the image immediately (before shrinking)
+          if (scrollToImageRef.current) {
+            scrollToImageRef.current(imageIndexToScroll);
+          }
+
+          // Get the clicked image's position after scrolling and parallax updates
+          // Wait for animation loop to update parallax and ensure scroll is complete
           setTimeout(() => {
-            setShowOriginalImage(true); // Show original image again
-          }, 700);
-          // Hide expanded image after animation completes
-          setTimeout(() => {
-            setExpandedImageIndex(null);
-            setExpandedImageStyle(null);
-            setOriginalImageStyle(null);
-            setIsClosing(false);
-          }, 1000);
+            // Use the clicked image's position directly, not the "centered" one
+            const clickedImagePosition = getImagePositionRef.current
+              ? getImagePositionRef.current(imageIndexToScroll)
+              : null;
+
+            setIsClosing(true);
+            setExpandedImageStyle(
+              clickedImagePosition || {
+                top: originalImageStyle.top,
+                left: originalImageStyle.left,
+                width: originalImageStyle.width,
+                height: originalImageStyle.height,
+              }
+            );
+
+            // Show original image slightly before animation completes for smooth transition
+            setTimeout(() => {
+              setShowOriginalImage(true); // Show original image again
+            }, 700);
+            // Hide expanded image after animation completes
+            setTimeout(() => {
+              setExpandedImageIndex(null);
+              setExpandedImageStyle(null);
+              setOriginalImageStyle(null);
+              setIsClosing(false);
+            }, 1000);
+          }, 100); // Delay to ensure scroll and parallax animations have updated
         } else {
           setExpandedImageIndex(null);
           setExpandedImageStyle(null);
@@ -128,6 +155,79 @@ export default function GalleryPage() {
     window.addEventListener("resize", handleResize);
 
     const clamp = (value: number) => Math.max(Math.min(value, 0), maxScroll);
+
+    // Function to find which image is currently centered
+    const getCenteredImageIndex = (): number | null => {
+      const viewportCenterX = window.innerWidth / 2;
+      let closestImageIndex = 0;
+      let closestDistance = Infinity;
+
+      for (let i = 0; i < images.length; i++) {
+        const img = images[i] as HTMLElement;
+        const rect = img.getBoundingClientRect();
+        const imageCenterX = rect.left + rect.width / 2;
+        const distance = Math.abs(imageCenterX - viewportCenterX);
+
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestImageIndex = i;
+        }
+      }
+
+      return closestImageIndex;
+    };
+
+    // Function to get the position of a specific image
+    const getImagePosition = (
+      imageIndex: number
+    ): { top: number; left: number; width: number; height: number } | null => {
+      if (imageIndex < 0 || imageIndex >= images.length) return null;
+
+      const img = images[imageIndex] as HTMLElement;
+      const rect = img.getBoundingClientRect();
+
+      return {
+        top: rect.top + rect.height / 2,
+        left: rect.left + rect.width / 2,
+        width: rect.width,
+        height: rect.height,
+      };
+    };
+
+    // Function to scroll to center a specific image
+    const scrollToImage = (imageIndex: number) => {
+      if (imageIndex < 0 || imageIndex >= images.length) return;
+
+      // Get current image position
+      const targetImage = images[imageIndex] as HTMLElement;
+      const imageRect = targetImage.getBoundingClientRect();
+      const imageCenterX = imageRect.left + imageRect.width / 2;
+      const viewportCenterX = window.innerWidth / 2;
+
+      // Calculate how far the image center is from viewport center
+      const offsetX = viewportCenterX - imageCenterX;
+
+      // Get track dimensions
+      const trackRect = track.getBoundingClientRect();
+      const trackWidth = trackRect.width;
+
+      // Convert pixel offset to percentage (percentage is relative to track width)
+      const percentageAdjustment = (offsetX / trackWidth) * 100;
+
+      // Set both current and target percentage immediately for instant scroll
+      const newPercentage = clamp(targetPercentage + percentageAdjustment);
+      percentage = newPercentage;
+      targetPercentage = newPercentage;
+      velocity = 0; // Reset velocity
+
+      // Apply transform immediately
+      track.style.transform = `translate(${percentage}%, -50%)`;
+    };
+
+    // Store the functions in refs so they can be called from outside
+    scrollToImageRef.current = scrollToImage;
+    getCenteredImageIndexRef.current = getCenteredImageIndex;
+    getImagePositionRef.current = getImagePosition;
 
     // Optimize for transform animations
     track.style.willChange = "transform";
@@ -320,25 +420,44 @@ export default function GalleryPage() {
           <button
             onClick={() => {
               // Reverse animation: animate back to original position and size
-              if (originalImageStyle) {
-                setIsClosing(true);
-                setExpandedImageStyle({
-                  top: originalImageStyle.top,
-                  left: originalImageStyle.left,
-                  width: originalImageStyle.width,
-                  height: originalImageStyle.height,
-                });
-                // Show original image slightly before animation completes for smooth transition
+              if (originalImageStyle && expandedImageIndex !== null) {
+                const imageIndexToScroll = expandedImageIndex; // Save index before clearing
+
+                // Scroll to center the image immediately (before shrinking)
+                if (scrollToImageRef.current) {
+                  scrollToImageRef.current(imageIndexToScroll);
+                }
+
+                // Get the clicked image's position after scrolling and parallax updates
+                // Wait for animation loop to update parallax
                 setTimeout(() => {
-                  setShowOriginalImage(true); // Show original image again
-                }, 700);
-                // Hide expanded image after animation completes
-                setTimeout(() => {
-                  setExpandedImageIndex(null);
-                  setExpandedImageStyle(null);
-                  setOriginalImageStyle(null);
-                  setIsClosing(false);
-                }, 1000);
+                  // Use the clicked image's position directly, not the "centered" one
+                  const clickedImagePosition = getImagePositionRef.current
+                    ? getImagePositionRef.current(imageIndexToScroll)
+                    : null;
+
+                  setIsClosing(true);
+                  setExpandedImageStyle(
+                    clickedImagePosition || {
+                      top: originalImageStyle.top,
+                      left: originalImageStyle.left,
+                      width: originalImageStyle.width,
+                      height: originalImageStyle.height,
+                    }
+                  );
+
+                  // Show original image slightly before animation completes for smooth transition
+                  setTimeout(() => {
+                    setShowOriginalImage(true); // Show original image again
+                  }, 700);
+                  // Hide expanded image after animation completes
+                  setTimeout(() => {
+                    setExpandedImageIndex(null);
+                    setExpandedImageStyle(null);
+                    setOriginalImageStyle(null);
+                    setIsClosing(false);
+                  }, 1000);
+                }, 100); // Delay to ensure scroll and parallax animations have updated
               } else {
                 setExpandedImageIndex(null);
                 setExpandedImageStyle(null);
