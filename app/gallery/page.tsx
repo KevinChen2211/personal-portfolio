@@ -34,11 +34,40 @@ export default function GalleryPage() {
     let velocity = 60;
     let lastTime = performance.now();
 
-    const clamp = (value: number) => Math.min(value, 0); // Allow scrolling left indefinitely, but not right past 0
+    // Get images reference
+    const images = track.getElementsByClassName("image");
+
+    // Calculate maximum scroll position (when last image is centered in viewport)
+    const calculateMaxScroll = () => {
+      const trackRect = track.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const trackWidth = trackRect.width;
+      // Get the last image to find its width
+      const lastImage = images[images.length - 1] as HTMLElement;
+      const imageWidth = lastImage.getBoundingClientRect().width;
+
+      // Track starts at left: 50% with translate(-50%, -50%), so its left edge is at viewport left (0)
+      // The last image's center is currently at: trackWidth - (imageWidth / 2) from viewport left
+      // We want the last image's center to be at: viewportWidth / 2 (center of viewport)
+      // Need to move left by: (trackWidth - imageWidth/2) - (viewportWidth / 2)
+      // As percentage of track width: -50 - ((trackWidth - imageWidth/2 - viewportWidth/2) / trackWidth) * 100
+      const distanceToMove = trackWidth - imageWidth / 2 - viewportWidth / 2;
+      const maxScroll = -50 - (distanceToMove / trackWidth) * 100;
+      return maxScroll;
+    };
+
+    let maxScroll = calculateMaxScroll();
+
+    // Update max scroll on resize
+    const handleResize = () => {
+      maxScroll = calculateMaxScroll();
+    };
+    window.addEventListener("resize", handleResize);
+
+    const clamp = (value: number) => Math.max(Math.min(value, 0), maxScroll);
 
     // Optimize for transform animations
     track.style.willChange = "transform";
-    const images = track.getElementsByClassName("image");
     for (const img of images) {
       (img as HTMLElement).style.willChange = "object-position";
     }
@@ -92,6 +121,7 @@ export default function GalleryPage() {
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("resize", handleResize);
       track.style.willChange = "auto";
       for (const img of images) {
         (img as HTMLElement).style.willChange = "auto";
