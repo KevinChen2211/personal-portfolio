@@ -20,6 +20,13 @@ export default function GalleryPage() {
     width: number;
     height: number;
   } | null>(null);
+  const [originalImageStyle, setOriginalImageStyle] = useState<{
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+  } | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
 
   /* ---------------------------------------------------------
      Disable vertical page scrolling
@@ -40,7 +47,28 @@ export default function GalleryPage() {
 
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setExpandedImageIndex(null);
+        // Reverse animation: animate back to original position and size
+        if (originalImageStyle) {
+          setIsClosing(true);
+          setExpandedImageStyle({
+            top: originalImageStyle.top,
+            left: originalImageStyle.left,
+            width: originalImageStyle.width,
+            height: originalImageStyle.height,
+          });
+          // Hide after animation completes
+          setTimeout(() => {
+            setExpandedImageIndex(null);
+            setExpandedImageStyle(null);
+            setOriginalImageStyle(null);
+            setIsClosing(false);
+          }, 1000);
+        } else {
+          setExpandedImageIndex(null);
+          setExpandedImageStyle(null);
+          setOriginalImageStyle(null);
+          setIsClosing(false);
+        }
       }
     };
 
@@ -49,7 +77,7 @@ export default function GalleryPage() {
     return () => {
       window.removeEventListener("keydown", handleEscape);
     };
-  }, [expandedImageIndex]);
+  }, [expandedImageIndex, originalImageStyle]);
 
   /* ---------------------------------------------------------
      Horizontal scroll-wheel logic with individual parallax
@@ -223,7 +251,16 @@ export default function GalleryPage() {
                     const initialWidth = rect.width;
                     const initialHeight = rect.height;
 
+                    // Store original position and size for reverse animation
+                    setOriginalImageStyle({
+                      top: imageCenterY,
+                      left: imageCenterX,
+                      width: initialWidth,
+                      height: initialHeight,
+                    });
+
                     // Set initial position and size
+                    setIsClosing(false);
                     setExpandedImageStyle({
                       top: imageCenterY,
                       left: imageCenterX,
@@ -237,8 +274,8 @@ export default function GalleryPage() {
                       setExpandedImageStyle({
                         top: window.innerHeight / 2,
                         left: window.innerWidth / 2,
-                        width: window.innerWidth * 0.9,
-                        height: window.innerHeight * 0.9,
+                        width: window.innerWidth,
+                        height: window.innerHeight,
                       });
                     });
                   }
@@ -264,28 +301,59 @@ export default function GalleryPage() {
         <>
           {/* BACKGROUND OVERLAY - Hides everything except the expanded image */}
           <div
-            className="fixed inset-0 z-40 transition-opacity duration-500"
+            className="fixed inset-0 z-40 transition-opacity duration-1000"
             style={{
               backgroundColor: palette.background,
+              opacity: isClosing ? 0 : 1,
             }}
           />
+          {/* BACK LINK - Top left */}
+          <button
+            onClick={() => {
+              // Reverse animation: animate back to original position and size
+              if (originalImageStyle) {
+                setIsClosing(true);
+                setExpandedImageStyle({
+                  top: originalImageStyle.top,
+                  left: originalImageStyle.left,
+                  width: originalImageStyle.width,
+                  height: originalImageStyle.height,
+                });
+                // Hide after animation completes
+                setTimeout(() => {
+                  setExpandedImageIndex(null);
+                  setExpandedImageStyle(null);
+                  setOriginalImageStyle(null);
+                  setIsClosing(false);
+                }, 1000);
+              } else {
+                setExpandedImageIndex(null);
+                setExpandedImageStyle(null);
+                setOriginalImageStyle(null);
+                setIsClosing(false);
+              }
+            }}
+            className="fixed top-6 left-6 text-xl font-semibold transition-all duration-300 hover:underline hover:translate-x-[-4px] px-4 py-2 rounded-lg backdrop-blur-sm"
+            style={{
+              color: "white",
+              zIndex: 60,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)",
+            }}
+          >
+            ← Back
+          </button>
           <img
             src="/gallery-images/test.jpg"
-            className="cursor-pointer transition-all duration-1000 ease-out"
+            className="transition-all duration-1000 ease-out"
             draggable={false}
-            onClick={() => {
-              setExpandedImageIndex(null);
-              setTimeout(() => {
-                setExpandedImageStyle(null);
-              }, 1000);
-            }}
             style={{
               width: expandedImageStyle
                 ? `${expandedImageStyle.width}px`
-                : "90vw",
+                : "100vw",
               height: expandedImageStyle
                 ? `${expandedImageStyle.height}px`
-                : "90vh",
+                : "100vh",
               aspectRatio: "40 / 56",
               objectFit: "cover",
               objectPosition: "100% center",
