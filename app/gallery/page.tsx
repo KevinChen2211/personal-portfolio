@@ -89,7 +89,7 @@ export default function GalleryPage() {
       <div
         id="image-track"
         ref={trackRef}
-        className="absolute top-1/2 left-1/2 flex gap-[4vmin] select-none"
+        className="absolute top-3/5 left-1/2 flex gap-[4vmin] select-none"
         style={{
           transform: "translate(-50%, -50%)",
         }}
