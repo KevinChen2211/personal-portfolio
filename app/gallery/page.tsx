@@ -23,7 +23,7 @@ export default function GalleryPage() {
   }, []);
 
   /* ---------------------------------------------------------
-     Horizontal scroll-wheel logic
+     Horizontal scroll-wheel logic with individual parallax
   --------------------------------------------------------- */
   useEffect(() => {
     const track = trackRef.current!;
@@ -34,7 +34,7 @@ export default function GalleryPage() {
     let velocity = 60;
     let lastTime = performance.now();
 
-    const clamp = (value: number) => Math.max(Math.min(value, 0), -100);
+    const clamp = (value: number) => Math.min(value, 0); // Allow scrolling left indefinitely, but not right past 0
 
     // Optimize for transform animations
     track.style.willChange = "transform";
@@ -45,46 +45,49 @@ export default function GalleryPage() {
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      // vertical scroll → horizontal movement with very reduced sensitivity
       const delta = e.deltaY * -0.02;
       targetPercentage = clamp(targetPercentage + delta);
-      // Add slight momentum
       velocity = delta * 0.1;
     };
 
     window.addEventListener("wheel", handleWheel, { passive: false });
 
-    /* Smooth animation loop with improved easing */
     const animate = (currentTime: number) => {
-      const deltaTime = Math.min((currentTime - lastTime) / 16.67, 2); // Cap at 2x normal frame time
+      const deltaTime = Math.min((currentTime - lastTime) / 16.67, 2);
       lastTime = currentTime;
 
-      // Apply momentum decay
       if (Math.abs(velocity) > 0.01) {
         targetPercentage = clamp(targetPercentage + velocity);
-        velocity *= 0.82; // Faster decay for much slower scrolling
+        velocity *= 0.82;
       }
 
-      // Smoother interpolation with adaptive lerp
       const distance = targetPercentage - percentage;
-      const lerpFactor = Math.abs(distance) > 1 ? 0.015 : 0.01; // Much slower for very smooth scrolling
+      const lerpFactor = Math.abs(distance) > 1 ? 0.015 : 0.01;
       percentage += distance * lerpFactor;
 
-      // Stop animation when very close to target
       if (Math.abs(distance) < 0.01 && Math.abs(velocity) < 0.01) {
         percentage = targetPercentage;
       }
 
+      // Move the track
       track.style.transform = `translate(${percentage}%, -50%)`;
 
-      for (const img of images) {
-        (img as HTMLElement).style.objectPosition = `${
-          100 + percentage
+      // Apply individual parallax to each image
+      const totalImages = images.length;
+      for (let i = 0; i < totalImages; i++) {
+        const img = images[i] as HTMLElement;
+        // Calculate relative position (-0.5 to 0.5) from center
+        const relIndex = i / (totalImages - 1) - 0.5;
+        // Apply parallax factor (adjust multiplier for stronger/weaker effect)
+        const parallaxOffset = relIndex * 30;
+        img.style.objectPosition = `${
+          100 + percentage + parallaxOffset
         }% center`;
       }
 
       requestAnimationFrame(animate);
     };
+
     animate(performance.now());
 
     return () => {
@@ -132,7 +135,7 @@ export default function GalleryPage() {
           transform: "translate(-50%, -50%)",
         }}
       >
-        {Array.from({ length: 8 }).map((_, i) => (
+        {Array.from({ length: 6 }).map((_, i) => (
           <img
             key={i}
             src="/gallery-images/test.jpg"
@@ -141,8 +144,10 @@ export default function GalleryPage() {
             style={{
               width: "40vmin",
               height: "56vmin",
+              aspectRatio: "40 / 56",
               objectFit: "cover",
               objectPosition: "100% center",
+              flexShrink: 0,
             }}
           />
         ))}
