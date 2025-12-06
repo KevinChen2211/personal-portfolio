@@ -17,7 +17,9 @@ export default function GalleryPage() {
   useEffect(() => {
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => (document.body.style.overflow = previous);
+    return () => {
+      document.body.style.overflow = previous;
+    };
   }, []);
 
   /* ---------------------------------------------------------
@@ -25,25 +27,57 @@ export default function GalleryPage() {
   --------------------------------------------------------- */
   useEffect(() => {
     const track = trackRef.current!;
+    if (!track) return;
+
     let percentage = -50; // starting center
     let targetPercentage = percentage;
+    let velocity = 10;
+    let lastTime = performance.now();
 
     const clamp = (value: number) => Math.max(Math.min(value, 0), -100);
 
+    // Optimize for transform animations
+    track.style.willChange = "transform";
+    const images = track.getElementsByClassName("image");
+    for (const img of images) {
+      (img as HTMLElement).style.willChange = "object-position";
+    }
+
     const handleWheel = (e: WheelEvent) => {
-      // vertical scroll → horizontal movement
-      targetPercentage = clamp(targetPercentage + e.deltaY * -0.1);
+      e.preventDefault();
+      // vertical scroll → horizontal movement with reduced sensitivity
+      const delta = e.deltaY * -0.08;
+      targetPercentage = clamp(targetPercentage + delta);
+      // Add slight momentum
+      velocity = delta * 0.3;
     };
 
-    window.addEventListener("wheel", handleWheel, { passive: true });
+    window.addEventListener("wheel", handleWheel, { passive: false });
 
-    /* Smooth animation loop */
-    const animate = () => {
-      percentage += (targetPercentage - percentage) * 0.08;
+    /* Smooth animation loop with improved easing */
+    const animate = (currentTime: number) => {
+      const deltaTime = Math.min((currentTime - lastTime) / 16.67, 2); // Cap at 2x normal frame time
+      lastTime = currentTime;
+
+      // Apply momentum decay
+      if (Math.abs(velocity) > 0.01) {
+        targetPercentage = clamp(targetPercentage + velocity);
+        velocity *= 0.92; // Decay momentum
+      }
+
+      // Smoother interpolation with adaptive lerp
+      const distance = targetPercentage - percentage;
+      const lerpFactor = Math.abs(distance) > 1 ? 0.05 : 0.03; // Slower for fine adjustments
+      percentage += distance * lerpFactor;
+
+      // Stop animation when very close to target
+      if (Math.abs(distance) < 0.01 && Math.abs(velocity) < 0.01) {
+        percentage = targetPercentage;
+      }
 
       track.style.transform = `translate(${percentage}%, -50%)`;
 
-      for (const img of track.getElementsByClassName("image")) {
+      for (const img of images) {
         (img as HTMLElement).style.objectPosition = `${
           100 + percentage
         }% center`;
@@ -51,10 +85,14 @@ export default function GalleryPage() {
 
       requestAnimationFrame(animate);
     };
-    animate();
+    animate(performance.now());
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      track.style.willChange = "auto";
+      for (const img of images) {
+        (img as HTMLElement).style.willChange = "auto";
+      }
     };
   }, []);
 
