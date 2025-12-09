@@ -24,6 +24,8 @@ export default function GalleryPage() {
     width: number;
     height: number;
   } | null>(null);
+  const [expandedObjectPosition, setExpandedObjectPosition] =
+    useState<string>("100% center");
   const [isClosing, setIsClosing] = useState(false);
 
   /* -------------------------------
@@ -165,6 +167,7 @@ export default function GalleryPage() {
       updatedImg.offsetHeight;
 
       const rect = updatedImg.getBoundingClientRect();
+      const currentObjectPosition = getComputedStyle(updatedImg).objectPosition;
 
       // Get the exact center position of the image element
       const targetRect = {
@@ -175,6 +178,7 @@ export default function GalleryPage() {
       };
 
       setIsClosing(true);
+      setExpandedObjectPosition(currentObjectPosition);
       setExpandedImageStyle(targetRect);
 
       // Remove expanded image after animation
@@ -236,12 +240,16 @@ export default function GalleryPage() {
               if (!img) return;
               const rect = img.getBoundingClientRect();
               setExpandedImageIndex(i);
+              const currentObjectPosition =
+                getComputedStyle(img).objectPosition;
+
               setExpandedImageStyle({
                 top: rect.top + rect.height / 2,
                 left: rect.left + rect.width / 2,
                 width: rect.width,
                 height: rect.height,
               });
+              setExpandedObjectPosition(currentObjectPosition);
               requestAnimationFrame(() => {
                 setExpandedImageStyle({
                   top: window.innerHeight / 2,
@@ -294,7 +302,7 @@ export default function GalleryPage() {
               height: `${expandedImageStyle.height}px`,
               aspectRatio: "40 / 56",
               objectFit: "cover",
-              objectPosition: "100% center",
+              objectPosition: expandedObjectPosition,
               position: "fixed",
               top: `${expandedImageStyle.top}px`,
               left: `${expandedImageStyle.left}px`,
