@@ -14,6 +14,7 @@ export default function GalleryPage() {
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
   const scrollToImageRef = useRef<((index: number) => void) | null>(null);
   const currentScrollPercentageRef = useRef<number>(-50);
+  const expandedIndexRef = useRef<number | null>(null);
 
   const [expandedImageIndex, setExpandedImageIndex] = useState<number | null>(
     null
@@ -27,6 +28,10 @@ export default function GalleryPage() {
   const [expandedObjectPosition, setExpandedObjectPosition] =
     useState<string>("100% center");
   const [isClosing, setIsClosing] = useState(false);
+
+  useEffect(() => {
+    expandedIndexRef.current = expandedImageIndex;
+  }, [expandedImageIndex]);
 
   /* -------------------------------
      Disable vertical scrolling
@@ -91,6 +96,7 @@ export default function GalleryPage() {
       (img as HTMLElement).style.willChange = "object-position";
 
     const handleWheel = (e: WheelEvent) => {
+      if (expandedIndexRef.current !== null) return;
       e.preventDefault();
       const delta = e.deltaY * -0.02;
       targetPercentage = clamp(targetPercentage + delta);
@@ -102,7 +108,12 @@ export default function GalleryPage() {
       const deltaTime = Math.min((currentTime - lastTime) / 16.67, 2);
       lastTime = currentTime;
 
-      if (Math.abs(velocity) > 0.01) {
+      const isExpanded = expandedIndexRef.current !== null;
+
+      if (isExpanded) {
+        targetPercentage = percentage; // freeze track movement
+        velocity = 0;
+      } else if (Math.abs(velocity) > 0.01) {
         targetPercentage = clamp(targetPercentage + velocity);
         velocity *= 0.82;
       }
@@ -120,14 +131,16 @@ export default function GalleryPage() {
       track.style.transform = `translate(${percentage}%, -50%)`;
 
       // Parallax
-      const totalImages = images.length;
-      for (let i = 0; i < totalImages; i++) {
-        const img = images[i] as HTMLElement;
-        const relIndex = i / (totalImages - 1) - 0.5;
-        const parallaxOffset = relIndex * 30;
-        img.style.objectPosition = `${
-          100 + percentage + parallaxOffset
-        }% center`;
+      if (!isExpanded) {
+        const totalImages = images.length;
+        for (let i = 0; i < totalImages; i++) {
+          const img = images[i] as HTMLElement;
+          const relIndex = i / (totalImages - 1) - 0.5;
+          const parallaxOffset = relIndex * 30;
+          img.style.objectPosition = `${
+            100 + percentage + parallaxOffset
+          }% center`;
+        }
       }
 
       requestAnimationFrame(animate);
@@ -151,43 +164,39 @@ export default function GalleryPage() {
     const img = imageRefs.current[expandedImageIndex];
     if (!img) return;
 
-    // First, scroll to center the clicked image
-    if (scrollToImageRef.current) {
-      scrollToImageRef.current(imageIndexToScroll);
-    }
+    // Only translate the clicked image back to its current spot.
+    // Double-RAF to let any pending layout settle, then read the rect/objectPosition.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const updatedImg = imageRefs.current[imageIndexToScroll];
+        if (!updatedImg) return;
 
-    // Wait for scroll animation to complete and parallax to update
-    // Use a longer delay to ensure the transform has been fully applied
-    setTimeout(() => {
-      // Get the image position - read it twice to ensure it's stable
-      const updatedImg = imageRefs.current[imageIndexToScroll];
-      if (!updatedImg) return;
+        // Force a reflow to ensure layout is updated
+        updatedImg.offsetHeight;
 
-      // Force a reflow to ensure layout is updated
-      updatedImg.offsetHeight;
+        const rect = updatedImg.getBoundingClientRect();
+        const currentObjectPosition =
+          getComputedStyle(updatedImg).objectPosition;
 
-      const rect = updatedImg.getBoundingClientRect();
-      const currentObjectPosition = getComputedStyle(updatedImg).objectPosition;
+        const targetRect = {
+          top: rect.top + rect.height / 2,
+          left: rect.left + rect.width / 2,
+          width: rect.width,
+          height: rect.height,
+        };
 
-      // Get the exact center position of the image element
-      const targetRect = {
-        top: rect.top + rect.height / 2,
-        left: rect.left + rect.width / 2,
-        width: rect.width,
-        height: rect.height,
-      };
+        setIsClosing(true);
+        setExpandedObjectPosition(currentObjectPosition);
+        setExpandedImageStyle(targetRect);
 
-      setIsClosing(true);
-      setExpandedObjectPosition(currentObjectPosition);
-      setExpandedImageStyle(targetRect);
-
-      // Remove expanded image after animation
-      setTimeout(() => {
-        setExpandedImageIndex(null);
-        setExpandedImageStyle(null);
-        setIsClosing(false);
-      }, 1000);
-    }, 300); // Longer delay to ensure scroll transform has been applied
+        // Remove expanded image after animation
+        setTimeout(() => {
+          setExpandedImageIndex(null);
+          setExpandedImageStyle(null);
+          setIsClosing(false);
+        }, 1000);
+      });
+    });
   };
 
   /* -------------------------------
