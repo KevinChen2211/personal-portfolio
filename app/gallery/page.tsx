@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useTheme } from "../components/ThemeProvider";
 import { getActivePalette } from "../color-palettes";
+import { galleryImages, parseCollection } from "./data";
 
 export default function GalleryPage() {
   const { theme } = useTheme();
@@ -14,19 +15,6 @@ export default function GalleryPage() {
   const scrollToImageRef = useRef<((index: number) => void) | null>(null);
   const currentScrollPercentageRef = useRef<number>(-50);
   const expandedIndexRef = useRef<number | null>(null);
-  const parseCollection = (src: string) => {
-    const filename = src.split("/").pop() ?? "";
-    const base = filename.split(".")[0] ?? "";
-    const withoutTrailingDigits = base.replace(/_\d+$/, "");
-    const name = (withoutTrailingDigits || base || "Collection")
-      .replace(/_/g, " ")
-      .trim();
-    const slug = name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-    return { name, slug };
-  };
 
   const [expandedImageIndex, setExpandedImageIndex] = useState<number | null>(
     null
@@ -273,12 +261,7 @@ export default function GalleryPage() {
         className="absolute top-3/5 left-1/2 flex gap-[4vmin] select-none"
         style={{ transform: "translate(-50%, -50%)" }}
       >
-        {[
-          "/gallery-images/Hello_Gorgeous.jpg",
-          "/gallery-images/test.jpg",
-          "/gallery-images/test.jpg",
-          "/gallery-images/test.jpg",
-        ].map((src, i) => (
+        {galleryImages.map((src, i) => (
           <img
             key={i}
             ref={(el) => (imageRefs.current[i] = el)}
@@ -333,7 +316,7 @@ export default function GalleryPage() {
             <div
               className="fixed inset-0 z-40 transition-opacity duration-1000"
               style={{
-                backgroundColor: palette.background,
+                backgroundColor: "#141414",
                 opacity: isClosing ? 0 : 1,
               }}
             />
