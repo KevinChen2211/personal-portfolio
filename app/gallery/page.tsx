@@ -15,11 +15,28 @@ export default function GalleryPage() {
   const scrollToImageRef = useRef<((index: number) => void) | null>(null);
   const currentScrollPercentageRef = useRef<number>(-50);
   const expandedIndexRef = useRef<number | null>(null);
+  const parseCollection = (src: string) => {
+    const filename = src.split("/").pop() ?? "";
+    const base = filename.split(".")[0] ?? "";
+    const withoutTrailingDigits = base.replace(/_\d+$/, "");
+    const name = (withoutTrailingDigits || base || "Collection")
+      .replace(/_/g, " ")
+      .trim();
+    const slug = name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    return { name, slug };
+  };
 
   const [expandedImageIndex, setExpandedImageIndex] = useState<number | null>(
     null
   );
   const [expandedImageSrc, setExpandedImageSrc] = useState<string | null>(null);
+  const [expandedCollection, setExpandedCollection] = useState<{
+    name: string;
+    slug: string;
+  } | null>(null);
   const [expandedImageStyle, setExpandedImageStyle] = useState<{
     top: number;
     left: number;
@@ -195,6 +212,7 @@ export default function GalleryPage() {
           setExpandedImageIndex(null);
           setExpandedImageStyle(null);
           setExpandedImageSrc(null);
+          setExpandedCollection(null);
           setIsClosing(false);
         }, 1000);
       });
@@ -257,6 +275,7 @@ export default function GalleryPage() {
               const rect = img.getBoundingClientRect();
               setExpandedImageIndex(i);
               setExpandedImageSrc(src);
+              setExpandedCollection(parseCollection(src));
               const currentObjectPosition =
                 getComputedStyle(img).objectPosition;
 
@@ -291,7 +310,8 @@ export default function GalleryPage() {
       {/* EXPANDED IMAGE */}
       {expandedImageIndex !== null &&
         expandedImageStyle &&
-        expandedImageSrc && (
+        expandedImageSrc &&
+        expandedCollection && (
           <>
             <div
               className="fixed inset-0 z-40 transition-opacity duration-1000"
@@ -312,6 +332,13 @@ export default function GalleryPage() {
             >
               ← Back
             </button>
+            <Link
+              href={`/gallery/collection/${expandedCollection.slug}`}
+              className="fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight transition-opacity duration-500 hover:opacity-80"
+              style={{ color: palette.text }}
+            >
+              {expandedCollection.name}
+            </Link>
             <img
               src={expandedImageSrc}
               draggable={false}
