@@ -19,6 +19,7 @@ export default function GalleryPage() {
   const [expandedImageIndex, setExpandedImageIndex] = useState<number | null>(
     null
   );
+  const [expandedImageSrc, setExpandedImageSrc] = useState<string | null>(null);
   const [expandedImageStyle, setExpandedImageStyle] = useState<{
     top: number;
     left: number;
@@ -193,6 +194,7 @@ export default function GalleryPage() {
         setTimeout(() => {
           setExpandedImageIndex(null);
           setExpandedImageStyle(null);
+          setExpandedImageSrc(null);
           setIsClosing(false);
         }, 1000);
       });
@@ -237,11 +239,16 @@ export default function GalleryPage() {
         className="absolute top-3/5 left-1/2 flex gap-[4vmin] select-none"
         style={{ transform: "translate(-50%, -50%)" }}
       >
-        {Array.from({ length: 6 }).map((_, i) => (
+        {[
+          "/gallery-images/Hello_Gorgeous1.jpg",
+          "/gallery-images/test.jpg",
+          "/gallery-images/test.jpg",
+          "/gallery-images/test.jpg",
+        ].map((src, i) => (
           <img
             key={i}
             ref={(el) => (imageRefs.current[i] = el)}
-            src="/gallery-images/test.jpg"
+            src={src}
             className="image cursor-pointer transition-all duration-500 ease-out hover:scale-105"
             draggable={false}
             onClick={() => {
@@ -249,6 +256,7 @@ export default function GalleryPage() {
               if (!img) return;
               const rect = img.getBoundingClientRect();
               setExpandedImageIndex(i);
+              setExpandedImageSrc(src);
               const currentObjectPosition =
                 getComputedStyle(img).objectPosition;
 
@@ -281,46 +289,48 @@ export default function GalleryPage() {
       </div>
 
       {/* EXPANDED IMAGE */}
-      {expandedImageIndex !== null && expandedImageStyle && (
-        <>
-          <div
-            className="fixed inset-0 z-40 transition-opacity duration-1000"
-            style={{
-              backgroundColor: palette.background,
-              opacity: isClosing ? 0 : 1,
-            }}
-          />
-          <button
-            onClick={shrinkImage}
-            className="fixed top-6 left-6 text-xl font-semibold transition-all duration-300 hover:underline hover:translate-x-[-4px] px-4 py-2 rounded-lg backdrop-blur-sm"
-            style={{
-              color: "white",
-              zIndex: 60,
-              backgroundColor: "rgba(0,0,0,0.5)",
-              textShadow: "0 2px 4px rgba(0,0,0,0.5)",
-            }}
-          >
-            ← Back
-          </button>
-          <img
-            src="/gallery-images/test.jpg"
-            draggable={false}
-            className="transition-all duration-1000 ease-out"
-            style={{
-              width: `${expandedImageStyle.width}px`,
-              height: `${expandedImageStyle.height}px`,
-              aspectRatio: "40 / 56",
-              objectFit: "cover",
-              objectPosition: expandedObjectPosition,
-              position: "fixed",
-              top: `${expandedImageStyle.top}px`,
-              left: `${expandedImageStyle.left}px`,
-              transform: "translate(-50%, -50%)",
-              zIndex: 50,
-            }}
-          />
-        </>
-      )}
+      {expandedImageIndex !== null &&
+        expandedImageStyle &&
+        expandedImageSrc && (
+          <>
+            <div
+              className="fixed inset-0 z-40 transition-opacity duration-1000"
+              style={{
+                backgroundColor: palette.background,
+                opacity: isClosing ? 0 : 1,
+              }}
+            />
+            <button
+              onClick={shrinkImage}
+              className="fixed top-6 left-6 text-xl font-semibold transition-all duration-300 hover:underline hover:translate-x-[-4px] px-4 py-2 rounded-lg backdrop-blur-sm"
+              style={{
+                color: "white",
+                zIndex: 60,
+                backgroundColor: "rgba(0,0,0,0.5)",
+                textShadow: "0 2px 4px rgba(0,0,0,0.5)",
+              }}
+            >
+              ← Back
+            </button>
+            <img
+              src={expandedImageSrc}
+              draggable={false}
+              className="transition-all duration-1000 ease-out"
+              style={{
+                width: `${expandedImageStyle.width}px`,
+                height: `${expandedImageStyle.height}px`,
+                aspectRatio: "40 / 56",
+                objectFit: "cover",
+                objectPosition: expandedObjectPosition,
+                position: "fixed",
+                top: `${expandedImageStyle.top}px`,
+                left: `${expandedImageStyle.left}px`,
+                transform: "translate(-50%, -50%)",
+                zIndex: 50,
+              }}
+            />
+          </>
+        )}
     </div>
   );
 }
