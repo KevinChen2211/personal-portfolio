@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useTheme } from "../components/ThemeProvider";
 import { getActivePalette } from "../color-palettes";
-import ThemeToggle from "../components/ThemeToggle";
 
 export default function GalleryPage() {
   const { theme } = useTheme();
@@ -251,9 +250,8 @@ export default function GalleryPage() {
   return (
     <div
       className="min-h-screen px-6 sm:px-10 py-16 relative overflow-hidden"
-      style={{ backgroundColor: palette.background, color: palette.text }}
+      style={{ backgroundColor: "#141414", color: palette.text }}
     >
-      <ThemeToggle />
       <div className="max-w-6xl mx-auto">
         <Link
           href="/"
@@ -276,7 +274,7 @@ export default function GalleryPage() {
         style={{ transform: "translate(-50%, -50%)" }}
       >
         {[
-          "/gallery-images/Hello_Gorgeous1.jpg",
+          "/gallery-images/Hello_Gorgeous.jpg",
           "/gallery-images/test.jpg",
           "/gallery-images/test.jpg",
           "/gallery-images/test.jpg",
@@ -339,6 +337,18 @@ export default function GalleryPage() {
                 opacity: isClosing ? 0 : 1,
               }}
             />
+            <button
+              onClick={shrinkImage}
+              className="fixed top-6 left-6 text-xl font-semibold transition-all duration-300 hover:underline hover:translate-x-[-4px] px-4 py-2 rounded-lg backdrop-blur-sm"
+              style={{
+                color: "white",
+                zIndex: 60,
+                backgroundColor: "rgba(0,0,0,0.5)",
+                textShadow: "0 2px 4px rgba(0,0,0,0.5)",
+              }}
+            >
+              ← Back
+            </button>
             <Link
               href={`/gallery/collection/${expandedCollection.slug}`}
               className="fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight transition-opacity duration-500 hover:opacity-80"
