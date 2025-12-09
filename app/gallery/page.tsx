@@ -34,6 +34,7 @@ export default function GalleryPage() {
   const [expandedObjectPosition, setExpandedObjectPosition] =
     useState<string>("100% center");
   const [isClosing, setIsClosing] = useState(false);
+  const hasCollectionLink = !!expandedCollection?.slug;
 
   useEffect(() => {
     expandedIndexRef.current = expandedImageIndex;
@@ -320,28 +321,29 @@ export default function GalleryPage() {
                 opacity: isClosing ? 0 : 1,
               }}
             />
-            <button
-              onClick={shrinkImage}
-              className="fixed top-6 left-6 text-xl font-semibold transition-all duration-300 hover:underline hover:translate-x-[-4px] px-4 py-2 rounded-lg backdrop-blur-sm"
-              style={{
-                color: "white",
-                zIndex: 60,
-                backgroundColor: "rgba(0,0,0,0.5)",
-                textShadow: "0 2px 4px rgba(0,0,0,0.5)",
-              }}
-            >
-              ← Back
-            </button>
-            <Link
-              href={`/gallery/collection/${expandedCollection.slug}`}
-              className="fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight transition-opacity duration-500 hover:opacity-80"
-              style={{
-                color: palette.text,
-                opacity: showCollectionTitle ? 1 : 0,
-              }}
-            >
-              {expandedCollection.name}
-            </Link>
+            {hasCollectionLink ? (
+              <Link
+                href={`/gallery/collection/${expandedCollection.slug}`}
+                className="fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight transition-opacity duration-500 hover:opacity-80"
+                style={{
+                  color: palette.text,
+                  opacity: showCollectionTitle ? 1 : 0,
+                  pointerEvents: showCollectionTitle ? "auto" : "none",
+                }}
+              >
+                {expandedCollection.name}
+              </Link>
+            ) : (
+              <div
+                className="fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight transition-opacity duration-500 pointer-events-none"
+                style={{
+                  color: palette.text,
+                  opacity: showCollectionTitle ? 1 : 0,
+                }}
+              >
+                {expandedCollection.name}
+              </div>
+            )}
             <img
               src={expandedImageSrc}
               draggable={false}
