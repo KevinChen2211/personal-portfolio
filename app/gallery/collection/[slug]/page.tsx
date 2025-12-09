@@ -2,11 +2,21 @@ import Link from "next/link";
 import { galleryImages, parseCollection } from "../../data";
 
 type Params = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
-export default function CollectionPage({ params }: Params) {
-  const { slug } = params;
+// Allow visiting any slug even if it's not statically generated
+export const dynamicParams = true;
+
+export function generateStaticParams() {
+  const uniqueSlugs = Array.from(
+    new Set(galleryImages.map((src) => parseCollection(src).slug))
+  );
+  return uniqueSlugs.map((slug) => ({ slug }));
+}
+
+export default async function CollectionPage({ params }: Params) {
+  const { slug } = await params;
   const collectionImages = galleryImages.filter(
     (src) => parseCollection(src).slug === slug
   );
