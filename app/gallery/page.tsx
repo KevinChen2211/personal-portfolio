@@ -37,6 +37,7 @@ export default function GalleryPage() {
     name: string;
     slug: string;
   } | null>(null);
+  const [showCollectionTitle, setShowCollectionTitle] = useState(true);
   const [expandedImageStyle, setExpandedImageStyle] = useState<{
     top: number;
     left: number;
@@ -177,46 +178,50 @@ export default function GalleryPage() {
      SHRINK EXPANDED IMAGE SEAMLESSLY
   ------------------------------- */
   const shrinkImage = () => {
-    if (expandedImageIndex === null) return;
+    if (expandedImageIndex === null || isClosing) return;
+    setShowCollectionTitle(false);
     const imageIndexToScroll = expandedImageIndex;
     const img = imageRefs.current[expandedImageIndex];
     if (!img) return;
 
     // Only translate the clicked image back to its current spot.
-    // Double-RAF to let any pending layout settle, then read the rect/objectPosition.
-    requestAnimationFrame(() => {
+    // Delay briefly so the title can fade before shrink begins, then double-RAF to read layout.
+    setTimeout(() => {
       requestAnimationFrame(() => {
-        const updatedImg = imageRefs.current[imageIndexToScroll];
-        if (!updatedImg) return;
+        requestAnimationFrame(() => {
+          const updatedImg = imageRefs.current[imageIndexToScroll];
+          if (!updatedImg) return;
 
-        // Force a reflow to ensure layout is updated
-        updatedImg.offsetHeight;
+          // Force a reflow to ensure layout is updated
+          updatedImg.offsetHeight;
 
-        const rect = updatedImg.getBoundingClientRect();
-        const currentObjectPosition =
-          getComputedStyle(updatedImg).objectPosition;
+          const rect = updatedImg.getBoundingClientRect();
+          const currentObjectPosition =
+            getComputedStyle(updatedImg).objectPosition;
 
-        const targetRect = {
-          top: rect.top + rect.height / 2,
-          left: rect.left + rect.width / 2,
-          width: rect.width,
-          height: rect.height,
-        };
+          const targetRect = {
+            top: rect.top + rect.height / 2,
+            left: rect.left + rect.width / 2,
+            width: rect.width,
+            height: rect.height,
+          };
 
-        setIsClosing(true);
-        setExpandedObjectPosition(currentObjectPosition);
-        setExpandedImageStyle(targetRect);
+          setIsClosing(true);
+          setExpandedObjectPosition(currentObjectPosition);
+          setExpandedImageStyle(targetRect);
 
-        // Remove expanded image after animation
-        setTimeout(() => {
-          setExpandedImageIndex(null);
-          setExpandedImageStyle(null);
-          setExpandedImageSrc(null);
-          setExpandedCollection(null);
-          setIsClosing(false);
-        }, 1000);
+          // Remove expanded image after animation
+          setTimeout(() => {
+            setExpandedImageIndex(null);
+            setExpandedImageStyle(null);
+            setExpandedImageSrc(null);
+            setExpandedCollection(null);
+            setShowCollectionTitle(true);
+            setIsClosing(false);
+          }, 1000);
+        });
       });
-    });
+    }, 120);
   };
 
   /* -------------------------------
@@ -229,6 +234,19 @@ export default function GalleryPage() {
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
   }, [expandedImageIndex]);
+
+  /* -------------------------------
+     Shrink on wheel while expanded
+  ------------------------------- */
+  useEffect(() => {
+    const handleExpandedWheel = (e: WheelEvent) => {
+      if (expandedIndexRef.current === null || isClosing) return;
+      e.preventDefault();
+      shrinkImage();
+    };
+    window.addEventListener("wheel", handleExpandedWheel, { passive: false });
+    return () => window.removeEventListener("wheel", handleExpandedWheel);
+  }, [expandedImageIndex, isClosing]);
 
   return (
     <div
@@ -276,6 +294,7 @@ export default function GalleryPage() {
               setExpandedImageIndex(i);
               setExpandedImageSrc(src);
               setExpandedCollection(parseCollection(src));
+              setShowCollectionTitle(true);
               const currentObjectPosition =
                 getComputedStyle(img).objectPosition;
 
@@ -320,22 +339,13 @@ export default function GalleryPage() {
                 opacity: isClosing ? 0 : 1,
               }}
             />
-            <button
-              onClick={shrinkImage}
-              className="fixed top-6 left-6 text-xl font-semibold transition-all duration-300 hover:underline hover:translate-x-[-4px] px-4 py-2 rounded-lg backdrop-blur-sm"
-              style={{
-                color: "white",
-                zIndex: 60,
-                backgroundColor: "rgba(0,0,0,0.5)",
-                textShadow: "0 2px 4px rgba(0,0,0,0.5)",
-              }}
-            >
-              ← Back
-            </button>
             <Link
               href={`/gallery/collection/${expandedCollection.slug}`}
               className="fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight transition-opacity duration-500 hover:opacity-80"
-              style={{ color: palette.text }}
+              style={{
+                color: palette.text,
+                opacity: showCollectionTitle ? 1 : 0,
+              }}
             >
               {expandedCollection.name}
             </Link>
