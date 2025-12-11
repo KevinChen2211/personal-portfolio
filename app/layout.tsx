@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "./components/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,9 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Kevin Chen — Site Under Construction",
-  description:
-    "A living build log while Kevin Chen rebuilds his digital home with fresh stories, interactions, and experiments.",
+  title: "Kevin Chen — Portfolio",
+  description: "Engineer & Creative Developer. Portfolio for Kevin Chen.",
 };
 
 export default function RootLayout({
@@ -24,11 +24,33 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem('theme') || 
+                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                  const palette = theme === 'dark' 
+                    ? { background: '#0a0a0f' }
+                    : { background: '#3c2414' };
+                  document.documentElement.style.setProperty('--initial-bg', palette.background);
+                  if (document.body) {
+                    document.body.style.backgroundColor = palette.background;
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning
       >
-        {children}
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

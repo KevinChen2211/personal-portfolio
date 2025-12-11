@@ -20,7 +20,231 @@
 }
 
 body {
-  background: var(--background);
+  background: var(--initial-bg, #3c2414);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Mobile touch optimizations */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Mobile-specific spacing */
+@media (max-width: 640px) {
+  .hide-scrollbar {
+    padding-right: 0;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Smooth scroll container enhancements */
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: auto; /* Override smooth for programmatic control */
+  will-change: scroll-position;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Page Transition Animations */
+.page-transition-wrapper {
+  /* Default visible state */
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  33% {
+    transform: translateY(-30px) translateX(20px);
+  }
+  66% {
+    transform: translateY(20px) translateX(-15px);
+  }
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(calc(-100vh - 200px)) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes floatUpSlow {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(calc(-100vh - 200px)) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes particleFloat {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(20px, -20px) scale(1.1);
+  }
+  50% {
+    transform: translate(-15px, -30px) scale(0.9);
+  }
+  75% {
+    transform: translate(10px, -10px) scale(1.05);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Project card hover effect - card glows when hovered or nearby */
+.project-card:hover .card-gradient-before,
+.project-card .card-nearby.card-gradient-before {
+  opacity: 1 !important;
+}
+
+.project-card:hover .card-gradient-after,
+.project-card .card-nearby.card-gradient-after {
+  opacity: 1 !important;
+}
+
+/* Magic Text Effect - theme-aware colors */
+:root {
+  /* Default colors (will be overridden by component) */
+  --magic-color-1: rgb(99, 102, 241); /* Indigo for dark theme */
+  --magic-color-2: rgb(139, 92, 246); /* Purple for dark theme */
+  --magic-color-3: rgb(236, 72, 153); /* Pink for dark theme */
+}
+
+@keyframes background-pan {
+  from {
+    background-position: 0% center;
+  }
+  to {
+    background-position: -200% center;
+  }
+}
+
+@keyframes magic-star-scale {
+  from,
+  to {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1);
+  }
+}
+
+@keyframes magic-star-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(180deg);
+  }
+}
+
+.magic {
+  display: inline-block;
+  position: relative;
+}
+
+.magic-star {
+  --size: clamp(20px, 1.5vw, 30px);
+  animation: magic-star-scale 700ms ease forwards;
+  display: block;
+  height: var(--size);
+  left: var(--star-left);
+  position: absolute;
+  top: var(--star-top);
+  width: var(--size);
+}
+
+.magic-star > svg {
+  animation: magic-star-rotate 1000ms linear infinite;
+  display: block;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 4px var(--magic-color-2));
+}
+
+.magic-star > svg > path {
+  fill: var(--magic-color-2);
+}
+
+.magic-text {
+  animation: background-pan 3s linear infinite;
+  background-image: linear-gradient(
+    to right,
+    var(--magic-color-1),
+    var(--magic-color-2),
+    var(--magic-color-3),
+    var(--magic-color-1)
+  );
+  background-size: 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+  filter: brightness(1.2) saturate(1.4);
 }
