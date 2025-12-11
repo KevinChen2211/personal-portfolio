@@ -20,8 +20,8 @@ export default function SmoothScrollContainer({
     const container = containerRef.current;
     if (!container) return;
 
-    let animationFrameId: number;
-    let momentumAnimationId: number;
+    let animationFrameId: number | undefined;
+    let momentumAnimationId: number | undefined;
 
     // Enhanced easing function - smooth ease-out cubic
     const easeOutCubic = (t: number): number => {

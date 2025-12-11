@@ -265,7 +265,7 @@ export default function GalleryPage() {
         {galleryImages.map((src, i) => (
           <img
             key={i}
-            ref={(el) => (imageRefs.current[i] = el)}
+            ref={(el) => { imageRefs.current[i] = el; }}
             src={src}
             className="image cursor-pointer transition-all duration-500 ease-out hover:scale-105"
             draggable={false}
