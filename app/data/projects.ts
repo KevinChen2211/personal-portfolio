@@ -38,7 +38,6 @@ export const projects: Project[] = [
       "Starting Research and implementation into accessible semiconductor fabrication using DIY approaches.",
     highlights: [
       "Started work on maskless photolithography and semiconductor fabrication using DIY approaches",
-      "Worked on open-source documentation to make semiconductor fabrication accessible",
       "Research etching, doping, and deposition processes using consumer-grade tools while prioritizing accuracy",
       "Exploring innovative approaches to reduce cost barriers in semiconductor manufacturing",
     ],
