@@ -10,7 +10,20 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
 }
+
+/* IvyPresto Display Thin - Use Adobe Fonts if available, otherwise falls back to Playfair Display */
+/* To use IvyPresto: Add Adobe Fonts link in layout.tsx head and uncomment below */
+/*
+@font-face {
+  font-family: 'IvyPresto Display';
+  src: url('path-to-ivypresto-display-thin.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+*/
 
 @media (prefers-color-scheme: dark) {
   :root {
