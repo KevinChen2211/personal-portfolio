@@ -15,10 +15,12 @@ const geistMono = Geist_Mono({
 
 // Playfair Display as fallback for IvyPresto Display Thin
 // To use IvyPresto Display Thin, add it via Adobe Fonts and replace this
+// Note: Playfair Display doesn't have weight 300, so we use 400 and apply font-weight: 300 in CSS
+// which will use browser font synthesis for a thinner appearance
 const playfairDisplay = Playfair_Display({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["300", "400"],
+  weight: ["400"],
   style: ["normal", "italic"],
 });
 
