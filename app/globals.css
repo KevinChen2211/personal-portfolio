@@ -13,6 +13,34 @@
   --font-display: var(--font-display);
 }
 
+/* Juana Extra Light - Commercial font from Latinotype */
+@font-face {
+  font-family: "Juana";
+  src: url("/fonts/Juana ExtraLight.woff2") format("woff2"),
+    url("/fonts/Juana ExtraLight.ttf") format("truetype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Juana";
+  src: url("/fonts/Juana ExtraLight Italic.woff2") format("woff2"),
+    url("/fonts/Juana ExtraLight Italic.ttf") format("truetype");
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Sweet Rosetia Sans - Commercial font from Runsell Type */
+@font-face {
+  font-family: "Sweet Rosetia Sans";
+  src: url("/fonts/sweet-sans-pro-regular.woff2") format("woff2"),
+    url("/fonts/sweet-sans-pro-regular.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* IvyPresto Display Thin - Use Adobe Fonts if available, otherwise falls back to Playfair Display */
 /* To use IvyPresto: Add Adobe Fonts link in layout.tsx head and uncomment below */
 /*

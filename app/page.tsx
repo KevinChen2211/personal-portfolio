@@ -14,12 +14,17 @@ export default function Home() {
       style={{ backgroundColor: bgColor }}
     >
       {/* Header Navigation */}
-      <header className="w-full px-4 md:px-8 py-4 md:py-5 flex items-center justify-between relative z-20">
+      <header className="w-full px-6 md:px-12 lg:px-16 py-5 md:py-6 flex items-center justify-between relative z-20">
         {/* Name - Left */}
         <Link
           href="/"
-          className="text-xs md:text-sm font-light tracking-wide hover:opacity-70 transition-opacity"
-          style={{ color: textColor, fontFamily: "var(--font-geist-sans)" }}
+          className="text-xs md:text-sm tracking-wide hover:opacity-70 transition-opacity"
+          style={{
+            color: textColor,
+            fontFamily:
+              '"Sweet Rosetia Sans", "Juana", var(--font-display), "Playfair Display", "Times New Roman", serif',
+            fontWeight: "normal",
+          }}
         >
           <span className="font-bold">KEVIN CHEN</span>
         </Link>
@@ -32,7 +37,7 @@ export default function Home() {
             style={{
               color: textColor,
               fontFamily:
-                "var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
             }}
           >
             Projects
@@ -43,7 +48,7 @@ export default function Home() {
             style={{
               color: textColor,
               fontFamily:
-                "var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
             }}
           >
             Gallery
@@ -54,7 +59,7 @@ export default function Home() {
             style={{
               color: textColor,
               fontFamily:
-                "var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
             }}
           >
             Journal
@@ -65,7 +70,7 @@ export default function Home() {
             style={{
               color: textColor,
               fontFamily:
-                "var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
             }}
           >
             Contact
@@ -152,14 +157,18 @@ export default function Home() {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div
-          className="md:hidden fixed inset-0 z-30 pt-16 px-4"
+          className="md:hidden fixed inset-0 z-30 pt-20 px-6"
           style={{ backgroundColor: bgColor }}
         >
           <nav className="flex flex-col gap-4">
             <Link
               href="/projects"
               className="text-sm font-light tracking-wide"
-              style={{ color: textColor, fontFamily: "var(--font-geist-sans)" }}
+              style={{
+                color: textColor,
+                fontFamily:
+                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+              }}
               onClick={() => setMobileMenuOpen(false)}
             >
               Projects
@@ -167,7 +176,11 @@ export default function Home() {
             <Link
               href="/gallery"
               className="text-sm font-light tracking-wide"
-              style={{ color: textColor, fontFamily: "var(--font-geist-sans)" }}
+              style={{
+                color: textColor,
+                fontFamily:
+                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+              }}
               onClick={() => setMobileMenuOpen(false)}
             >
               Gallery
@@ -175,7 +188,11 @@ export default function Home() {
             <Link
               href="/blog"
               className="text-sm font-light tracking-wide"
-              style={{ color: textColor, fontFamily: "var(--font-geist-sans)" }}
+              style={{
+                color: textColor,
+                fontFamily:
+                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+              }}
               onClick={() => setMobileMenuOpen(false)}
             >
               Journal
@@ -183,7 +200,11 @@ export default function Home() {
             <Link
               href="/contact"
               className="text-sm font-light tracking-wide"
-              style={{ color: textColor, fontFamily: "var(--font-geist-sans)" }}
+              style={{
+                color: textColor,
+                fontFamily:
+                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+              }}
               onClick={() => setMobileMenuOpen(false)}
             >
               Contact
@@ -240,8 +261,8 @@ export default function Home() {
       )}
 
       {/* Main Content Area */}
-      <main className="relative px-4 md:px-8 lg:px-12 pt-6 md:pt-8 pb-8 md:pb-10 min-h-[calc(100vh-100px)] flex items-start">
-        <div className="max-w-[50vw] lg:max-w-[50vw] relative w-full">
+      <main className="relative px-6 md:px-12 lg:px-20 xl:px-24 pt-8 md:pt-12 pb-12 md:pb-16 min-h-[calc(100vh-100px)] flex items-start">
+        <div className="max-w-[70vw] lg:max-w-[70vw] relative w-full">
           {/* Hero Text - Large Serif Display */}
           {/* 
             NOTE: To use IvyPresto Display Thin instead of Playfair Display:
@@ -254,14 +275,15 @@ export default function Home() {
             className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-[1.5] md:leading-[1.4]"
             style={{
               fontFamily:
-                "var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-              fontWeight: 300,
+                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+              fontWeight: 500,
               color: textColor,
               fontStyle: "normal",
               letterSpacing: "-0.01em",
             }}
           >
-            Kevin Chen (/keh-vin chen/) is an{" "}
+            Kevin Chen <span className="italic">(/keh-vin chen/)</span> is a
+            multidisciplinary{" "}
             <span className="italic underline decoration-1 underline-offset-4">
               engineer
             </span>{" "}
