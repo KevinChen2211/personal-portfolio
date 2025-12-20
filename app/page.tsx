@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useState } from "react";
 
 export default function Home() {
@@ -206,7 +205,7 @@ export default function Home() {
             3. Or uncomment @font-face in globals.css if you have the font files
           */}
           <div
-            className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[1.5] md:leading-[1.4] pr-0 md:pr-32 lg:pr-48"
+            className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[1.5] md:leading-[1.4]"
             style={{
               fontFamily:
                 "var(--font-display), 'Playfair Display', 'Times New Roman', serif",
@@ -230,21 +229,6 @@ export default function Home() {
             </span>{" "}
             creating innovative solutions, digital experiences, and thoughtful
             projects.
-          </div>
-
-          {/* Subtle Image Element - Bottom Right */}
-          <div className="hidden md:block absolute -right-8 lg:-right-16 xl:-right-24 bottom-0 w-48 md:w-64 lg:w-80 xl:w-96 h-64 md:h-80 lg:h-96 xl:h-[28rem] opacity-50 pointer-events-none">
-            <div className="relative w-full h-full">
-              <Image
-                src="/gallery-images/Hello_Gorgeous1.jpg"
-                alt=""
-                fill
-                className="object-cover"
-                style={{ objectPosition: "center" }}
-                priority={false}
-                sizes="(max-width: 768px) 0px, 384px"
-              />
-            </div>
           </div>
         </div>
       </main>
