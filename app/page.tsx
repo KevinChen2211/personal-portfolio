@@ -216,13 +216,17 @@ export default function Home() {
               letterSpacing: "-0.01em",
             }}
           >
-            Kevin Chen is an{" "}
+            Kevin Chen (/keh-vin chen/) is an{" "}
             <span className="italic underline decoration-1 underline-offset-4">
-              engineer
+              Engineer
+            </span>{" "}
+            ,{" "}
+            <span className="italic underline decoration-1 underline-offset-4">
+              Computer Scientist
             </span>{" "}
             &{" "}
             <span className="italic underline decoration-1 underline-offset-4">
-              creative developer
+              artistically driven creator
             </span>{" "}
             creating innovative solutions, digital experiences, and thoughtful
             projects.
