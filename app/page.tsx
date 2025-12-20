@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 export default function Home() {
-  const bgColor = "#F0EEE9";
+  const bgColor = "#F7F3EA";
   const textColor = "#2C2C2C";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -14,14 +14,14 @@ export default function Home() {
       style={{ backgroundColor: bgColor }}
     >
       {/* Header Navigation */}
-      <header className="w-full px-6 md:px-12 py-6 md:py-8 flex items-center justify-between relative z-20">
+      <header className="w-full px-4 md:px-8 py-4 md:py-5 flex items-center justify-between relative z-20">
         {/* Name - Left */}
         <Link
           href="/"
-          className="text-sm md:text-base font-light tracking-wide hover:opacity-70 transition-opacity"
+          className="text-xs md:text-sm font-light tracking-wide hover:opacity-70 transition-opacity"
           style={{ color: textColor, fontFamily: "var(--font-geist-sans)" }}
         >
-          Kevin Chen
+          KEVIN CHEN
         </Link>
 
         {/* Navigation Links - Center-Right (Desktop) */}
@@ -58,14 +58,14 @@ export default function Home() {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden w-6 h-6 flex flex-col justify-center gap-1.5"
+          className="md:hidden w-5 h-5 flex flex-col justify-center gap-1"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
           style={{ color: textColor }}
         >
           <span
             className={`w-full h-px transition-all ${
-              mobileMenuOpen ? "rotate-45 translate-y-2" : ""
+              mobileMenuOpen ? "rotate-45 translate-y-1.5" : ""
             }`}
             style={{ backgroundColor: textColor }}
           />
@@ -77,19 +77,19 @@ export default function Home() {
           />
           <span
             className={`w-full h-px transition-all ${
-              mobileMenuOpen ? "-rotate-45 -translate-y-2" : ""
+              mobileMenuOpen ? "-rotate-45 -translate-y-1.5" : ""
             }`}
             style={{ backgroundColor: textColor }}
           />
         </button>
 
         {/* Social Icons - Right */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-3">
           <a
             href="https://www.linkedin.com/in/kevinsoftwarewiz"
             target="_blank"
             rel="noreferrer"
-            className="w-5 h-5 hover:opacity-70 transition-opacity"
+            className="w-4 h-4 hover:opacity-70 transition-opacity"
             aria-label="LinkedIn"
           >
             <svg
@@ -104,7 +104,7 @@ export default function Home() {
             href="https://github.com/KevinChen2211"
             target="_blank"
             rel="noreferrer"
-            className="w-5 h-5 hover:opacity-70 transition-opacity"
+            className="w-4 h-4 hover:opacity-70 transition-opacity"
             aria-label="GitHub"
           >
             <svg
@@ -121,13 +121,13 @@ export default function Home() {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div
-          className="md:hidden fixed inset-0 z-30 pt-20 px-6"
+          className="md:hidden fixed inset-0 z-30 pt-16 px-4"
           style={{ backgroundColor: bgColor }}
         >
-          <nav className="flex flex-col gap-6">
+          <nav className="flex flex-col gap-4">
             <Link
               href="/projects"
-              className="text-base font-light tracking-wide"
+              className="text-sm font-light tracking-wide"
               style={{ color: textColor, fontFamily: "var(--font-geist-sans)" }}
               onClick={() => setMobileMenuOpen(false)}
             >
@@ -135,7 +135,7 @@ export default function Home() {
             </Link>
             <Link
               href="/gallery"
-              className="text-base font-light tracking-wide"
+              className="text-sm font-light tracking-wide"
               style={{ color: textColor, fontFamily: "var(--font-geist-sans)" }}
               onClick={() => setMobileMenuOpen(false)}
             >
@@ -143,7 +143,7 @@ export default function Home() {
             </Link>
             <Link
               href="/blog"
-              className="text-base font-light tracking-wide"
+              className="text-sm font-light tracking-wide"
               style={{ color: textColor, fontFamily: "var(--font-geist-sans)" }}
               onClick={() => setMobileMenuOpen(false)}
             >
@@ -151,18 +151,18 @@ export default function Home() {
             </Link>
             <Link
               href="/contact"
-              className="text-base font-light tracking-wide"
+              className="text-sm font-light tracking-wide"
               style={{ color: textColor, fontFamily: "var(--font-geist-sans)" }}
               onClick={() => setMobileMenuOpen(false)}
             >
               Contact
             </Link>
-            <div className="flex items-center gap-4 pt-4">
+            <div className="flex items-center gap-3 pt-3">
               <a
                 href="https://www.linkedin.com/in/kevinsoftwarewiz"
                 target="_blank"
                 rel="noreferrer"
-                className="w-5 h-5"
+                className="w-4 h-4"
                 aria-label="LinkedIn"
               >
                 <svg
@@ -177,7 +177,7 @@ export default function Home() {
                 href="https://github.com/KevinChen2211"
                 target="_blank"
                 rel="noreferrer"
-                className="w-5 h-5"
+                className="w-4 h-4"
                 aria-label="GitHub"
               >
                 <svg
@@ -194,8 +194,8 @@ export default function Home() {
       )}
 
       {/* Main Content Area */}
-      <main className="relative px-6 md:px-12 lg:px-16 pt-8 md:pt-12 pb-12 md:pb-16 min-h-[calc(100vh-120px)] flex items-start">
-        <div className="max-w-4xl lg:max-w-5xl relative w-full">
+      <main className="relative px-4 md:px-8 lg:px-10 pt-6 md:pt-8 pb-8 md:pb-10 min-h-[calc(100vh-100px)] flex items-start">
+        <div className="max-w-3xl lg:max-w-4xl relative w-full">
           {/* Hero Text - Large Serif Display */}
           {/* 
             NOTE: To use IvyPresto Display Thin instead of Playfair Display:
@@ -205,7 +205,7 @@ export default function Home() {
             3. Or uncomment @font-face in globals.css if you have the font files
           */}
           <div
-            className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[1.5] md:leading-[1.4]"
+            className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl leading-[1.5] md:leading-[1.4]"
             style={{
               fontFamily:
                 "var(--font-display), 'Playfair Display', 'Times New Roman', serif",
