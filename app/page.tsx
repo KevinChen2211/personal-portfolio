@@ -221,7 +221,7 @@ export default function Home() {
             3. Or uncomment @font-face in globals.css if you have the font files
           */}
           <div
-            className="text-2xl md:text-2xl lg:text-3xl xl:text-4xl leading-[1.5] md:leading-[1.4]"
+            className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-[1.5] md:leading-[1.4]"
             style={{
               fontFamily:
                 "var(--font-display), 'Playfair Display', 'Times New Roman', serif",
