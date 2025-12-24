@@ -11,6 +11,7 @@ export default function Home() {
   const [showNavbar, setShowNavbar] = useState(true);
   const [navbarAtBottom, setNavbarAtBottom] = useState(false);
   const [visibleImages, setVisibleImages] = useState<Set<number>>(new Set());
+  const [showMobileMessage, setShowMobileMessage] = useState(true);
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // Image data with order, source, link, and label
@@ -64,6 +65,15 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Hide mobile message after 5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowMobileMessage(false);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   // Intersection Observer for fade-in animations
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -104,6 +114,22 @@ export default function Home() {
       className="min-h-screen w-full relative overflow-y-auto pt-6 md:pt-8"
       style={{ backgroundColor: bgColor }}
     >
+      {/* Mobile Message */}
+      {showMobileMessage && (
+        <div
+          className="md:hidden fixed top-[73px] left-0 right-0 z-40 px-4 py-2 text-center text-xs font-medium transition-opacity duration-500"
+          style={{
+            backgroundColor: bgColor,
+            color: textColor,
+            opacity: showMobileMessage ? 1 : 0,
+            fontFamily:
+              "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+          }}
+        >
+          For best viewing experience please use desktop
+        </div>
+      )}
+
       {/* Header Navigation */}
       <header
         className={`w-full px-6 md:px-12 lg:px-16 py-5 md:py-6 flex items-center justify-between fixed z-50 transition-all duration-300 ${
@@ -361,7 +387,7 @@ export default function Home() {
       )}
 
       {/* Main Content Area */}
-      <main className="relative px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 min-h-screen flex items-center pt-20 md:pt-0">
+      <main className="relative px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 min-h-screen flex items-center pt-24 md:pt-0">
         <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-12">
           {/* Hero Text - Large Serif Display */}
           <div className="w-full md:max-w-[60vw] lg:max-w-[50vw] relative">
@@ -398,10 +424,10 @@ export default function Home() {
           <div
             className="hidden md:block relative flex-shrink-0 ml-auto"
             style={{
-              width: "var(--portrait-width, 35vw)",
-              maxWidth: "var(--portrait-max-width, 500px)",
-              height: "var(--portrait-height, 60vh)",
-              maxHeight: "var(--portrait-max-height, 600px)",
+              width: "var(--portrait-width, 45vw)",
+              maxWidth: "var(--portrait-max-width, 700px)",
+              height: "var(--portrait-height, 75vh)",
+              maxHeight: "var(--portrait-max-height, 800px)",
             }}
           >
             <Image
@@ -411,7 +437,7 @@ export default function Home() {
               className="object-contain"
               quality={100}
               priority
-              sizes="35vw"
+              sizes="45vw"
             />
           </div>
         </div>
