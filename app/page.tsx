@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 
 export default function Home() {
-  const bgColor = "#F7F3EA";
+  const bgColor = "#ffffed";
   const textColor = "#2C2C2C";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -261,8 +262,8 @@ export default function Home() {
       )}
 
       {/* Main Content Area */}
-      <main className="relative px-6 md:px-12 lg:px-20 xl:px-24 pt-8 md:pt-12 pb-12 md:pb-16 min-h-[calc(100vh-100px)] flex items-start">
-        <div className="max-w-[70vw] lg:max-w-[70vw] relative w-full">
+      <main className="relative px-6 md:px-12 lg:px-20 xl:px-24 pt-8 md:pt-12 pb-12 md:pb-16 h-full flex items-start">
+        <div className="max-w-[70vw] lg:max-w-[55vw] relative w-full">
           {/* Hero Text - Large Serif Display */}
           {/* 
             NOTE: To use IvyPresto Display Thin instead of Playfair Display:
@@ -300,6 +301,33 @@ export default function Home() {
           </div>
         </div>
       </main>
+
+      {/* Portrait Image - Bottom Right */}
+      {/* Adjust scale by changing the transform scale value below */}
+      <div
+        className="hidden md:block fixed bottom-30 right-40 z-10 pointer-events-none"
+        style={{
+          width: "100%",
+          height: "100%",
+          transform: "scale(0.7)", // Change this value to adjust image scale (e.g., 0.5, 0.6, 0.8, etc.)
+          transformOrigin: "bottom right",
+        }}
+      >
+        <div className="relative w-full h-full">
+          <Image
+            src="/images/KevinChen.jpg"
+            alt="Kevin Chen"
+            fill
+            className="object-contain"
+            quality={100}
+            priority
+            sizes="100vw"
+            style={{
+              objectPosition: "right bottom",
+            }}
+          />
+        </div>
+      </div>
     </div>
   );
 }

@@ -13,7 +13,6 @@ export const collectionImages = [
   "/gallery-images/Hello_Gorgeous6.jpg",
   "/gallery-images/Hello_Gorgeous7.jpg",
   "/gallery-images/Hello_Gorgeous8.jpg",
-  "/gallery-images/Hello_Gorgeous9.jpg",
 ];
 
 // All images combined (for collection pages to search through)
