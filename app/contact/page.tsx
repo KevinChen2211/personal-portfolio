@@ -65,7 +65,7 @@ export default function ContactPage() {
           </Link>
           <Link
             href="/contact"
-            className="text-xs md:text-sm font-semibold tracking-wide hover:opacity-70 transition-opacity"
+            className="text-xs md:text-sm font-semibold tracking-wide hover:opacity-70 transition-opacity underline"
             style={{
               color: textColor,
               fontFamily:
@@ -127,11 +127,11 @@ export default function ContactPage() {
       </header>
 
       {/* Main Content Area */}
-      <main className="relative px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 min-h-screen flex items-center pt-24 md:pt-0">
-        <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-12">
+      <main className="relative px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 h-screen flex items-center pt-20 md:pt-0 overflow-hidden">
+        <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
           {/* Contact Image - Left Side */}
-          <div className="w-full md:w-[40vw] lg:w-[35vw] max-w-[600px] flex-shrink-0 order-2 md:order-1">
-            <div className="relative w-full aspect-[3/4] md:h-[70vh] max-h-[800px]">
+          <div className="w-full md:w-[35vw] lg:w-[30vw] max-w-[500px] flex-shrink-0 order-2 md:order-1">
+            <div className="relative w-full h-[40vh] md:h-[65vh] max-h-[600px]">
               <Image
                 src="/images/contact_me.jpg"
                 alt="Contact"
@@ -139,7 +139,7 @@ export default function ContactPage() {
                 className="object-contain"
                 quality={100}
                 priority
-                sizes="(max-width: 768px) 100vw, 40vw"
+                sizes="(max-width: 768px) 100vw, 35vw"
               />
             </div>
           </div>
@@ -147,7 +147,7 @@ export default function ContactPage() {
           {/* Contact Content - Right Side */}
           <div className="w-full md:flex-1 order-1 md:order-2">
             <div
-              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-[1.5] md:leading-[1.4] mb-8"
+              className="text-xl sm:text-2xl md:text-3xl lg:text-4xl leading-[1.4] md:leading-[1.3] mb-4 md:mb-6"
               style={{
                 fontFamily:
                   "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
@@ -165,7 +165,7 @@ export default function ContactPage() {
             </div>
 
             <div
-              className="text-lg md:text-xl leading-relaxed mb-8"
+              className="text-base md:text-lg leading-relaxed mb-6 md:mb-8"
               style={{
                 fontFamily:
                   "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
@@ -175,38 +175,38 @@ export default function ContactPage() {
               }}
             >
               I'm always open to discussing new projects, creative ideas, or
-              opportunities to be part of your vision. Whether you're looking
-              for a collaborator, have a project in mind, or just want to say
-              hello, I'd love to hear from you.
+              opportunities to be part of your vision.
             </div>
 
-            <div className="space-y-6 mb-8">
+            <div className="space-y-4 mb-6 md:mb-8">
               <div>
                 <h3
-                  className="text-base md:text-lg font-semibold mb-2"
+                  className="text-sm md:text-base font-semibold mb-1 md:mb-2"
                   style={{
                     color: textColor,
                     fontFamily:
                       "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
                   }}
                 >
-                  Email
+                  Instagram
                 </h3>
                 <a
-                  href="mailto:contact@kevinchen.com"
-                  className="text-base md:text-lg hover:opacity-70 transition-opacity hover:underline"
+                  href="https://www.instagram.com/kewinchen_/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm md:text-base hover:opacity-70 transition-opacity hover:underline"
                   style={{
                     color: textColor,
                     fontFamily:
                       "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
                   }}
                 >
-                  contact@kevinchen.com
+                  @kewinchen_
                 </a>
               </div>
               <div>
                 <h3
-                  className="text-base md:text-lg font-semibold mb-2"
+                  className="text-sm md:text-base font-semibold mb-1 md:mb-2"
                   style={{
                     color: textColor,
                     fontFamily:
@@ -219,7 +219,7 @@ export default function ContactPage() {
                   href="https://www.linkedin.com/in/kevinsoftwarewiz"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-base md:text-lg hover:opacity-70 transition-opacity hover:underline"
+                  className="text-sm md:text-base hover:opacity-70 transition-opacity hover:underline"
                   style={{
                     color: textColor,
                     fontFamily:
@@ -231,23 +231,25 @@ export default function ContactPage() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-3">
               <a
-                href="mailto:contact@kevinchen.com"
-                className="px-6 py-3 text-sm md:text-base font-semibold text-center hover:opacity-70 transition-opacity border border-current"
+                href="https://www.instagram.com/kewinchen_/"
+                target="_blank"
+                rel="noreferrer"
+                className="px-5 py-2.5 text-xs md:text-sm font-semibold text-center hover:opacity-70 transition-opacity border border-current"
                 style={{
                   color: textColor,
                   fontFamily:
                     "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
                 }}
               >
-                Send Email
+                Follow on Instagram
               </a>
               <a
                 href="https://www.linkedin.com/in/kevinsoftwarewiz"
                 target="_blank"
                 rel="noreferrer"
-                className="px-6 py-3 text-sm md:text-base font-semibold text-center hover:opacity-70 transition-opacity border border-current"
+                className="px-5 py-2.5 text-xs md:text-sm font-semibold text-center hover:opacity-70 transition-opacity border border-current"
                 style={{
                   color: textColor,
                   fontFamily:
@@ -260,9 +262,6 @@ export default function ContactPage() {
           </div>
         </div>
       </main>
-
-      {/* Bottom padding */}
-      <div className="h-32" />
     </div>
   );
 }

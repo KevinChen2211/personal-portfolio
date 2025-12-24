@@ -253,7 +253,7 @@ export default function Home() {
       </header>
 
       {/* Main Content Area */}
-      <main className="relative px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 min-h-screen flex items-center pt-24 md:pt-0">
+      <main className="relative px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 min-h-screen flex items-center pt-24 md:pt-30">
         <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-12">
           {/* Hero Text - Large Serif Display */}
           <div className="w-full md:max-w-[60vw] lg:max-w-[50vw] relative">
