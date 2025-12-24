@@ -48,7 +48,7 @@ export default function Home() {
             // Hide navbar when scrolling down past threshold, show when scrolling up or at top
             if (currentScrollY > 100 && scrollDifference > 0) {
               setShowNavbar(false);
-            } else if (currentScrollY <= 100 || scrollDifference < 0) {
+            } else {
               setShowNavbar(true);
             }
           }
@@ -359,65 +359,62 @@ export default function Home() {
 
       {/* Main Content Area */}
       <main className="relative px-6 md:px-12 lg:px-20 xl:px-24 min-h-screen flex items-center">
-        <div className="max-w-[70vw] lg:max-w-[55vw] relative w-full">
+        <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-12">
           {/* Hero Text - Large Serif Display */}
-          {/* 
-            NOTE: To use IvyPresto Display Thin instead of Playfair Display:
-            1. Add Adobe Fonts link in layout.tsx <head>:
-               <link rel="stylesheet" href="https://use.typekit.net/[your-kit-id].css">
-            2. Update fontFamily below to: "ivypresto-display, var(--font-display), serif"
-            3. Or uncomment @font-face in globals.css if you have the font files
-          */}
-          <div
-            className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-[1.5] md:leading-[1.4]"
-            style={{
-              fontFamily:
-                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-              fontWeight: 500,
-              color: textColor,
-              fontStyle: "normal",
-              letterSpacing: "-0.01em",
-            }}
-          >
-            Kevin Chen <span className="italic">(/keh-vin chen/)</span> is a
-            multidisciplinary{" "}
-            <span className="italic underline decoration-1 underline-offset-4">
-              engineer
-            </span>{" "}
-            ,{" "}
-            <span className="italic underline decoration-1 underline-offset-4">
-              computer scientist
-            </span>{" "}
-            &{" "}
-            <span className="italic underline decoration-1 underline-offset-4">
-              artistically driven creator
-            </span>{" "}
-            exploring innovative solutions, digital experiences, and creative
-            projects.
+          <div className="max-w-[70vw] lg:max-w-[55vw] relative w-full">
+            {/* 
+              NOTE: To use IvyPresto Display Thin instead of Playfair Display:
+              1. Add Adobe Fonts link in layout.tsx <head>:
+                 <link rel="stylesheet" href="https://use.typekit.net/[your-kit-id].css">
+              2. Update fontFamily below to: "ivypresto-display, var(--font-display), serif"
+              3. Or uncomment @font-face in globals.css if you have the font files
+            */}
+            <div
+              className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-[1.5] md:leading-[1.4]"
+              style={{
+                fontFamily:
+                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                fontWeight: 500,
+                color: textColor,
+                fontStyle: "normal",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              Kevin Chen <span className="italic">(/keh-vin chen/)</span> is a
+              multidisciplinary{" "}
+              <span className="italic underline decoration-1 underline-offset-4">
+                engineer
+              </span>{" "}
+              ,{" "}
+              <span className="italic underline decoration-1 underline-offset-4">
+                computer scientist
+              </span>{" "}
+              &{" "}
+              <span className="italic underline decoration-1 underline-offset-4">
+                artistically driven creator
+              </span>{" "}
+              exploring innovative solutions, digital experiences, and creative
+              projects.
+            </div>
+          </div>
+
+          {/* Kevin Chen Portrait Image */}
+          <div className="hidden md:block relative w-[35vw] max-w-[500px] h-[60vh] max-h-[600px] flex-shrink-0">
+            <Image
+              src="/images/KevinChen.jpg"
+              alt="Kevin Chen"
+              fill
+              className="object-contain"
+              quality={100}
+              priority
+              sizes="35vw"
+            />
           </div>
         </div>
       </main>
 
-      {/* Portrait Image - Right Side */}
-      <div className="hidden md:block fixed right-0 top-1/2 -translate-y-1/2 z-10 pointer-events-none w-[40vw] max-w-[600px] h-[80vh] max-h-[800px]">
-        <div className="relative w-full h-full">
-          <Image
-            src="/images/KevinChen.jpg"
-            alt="Kevin Chen"
-            fill
-            className="object-contain"
-            quality={100}
-            priority
-            sizes="40vw"
-            style={{
-              objectPosition: "right center",
-            }}
-          />
-        </div>
-      </div>
-
       {/* Scrollable Image Gallery Section */}
-      <section className="relative w-full py-20 pb-32">
+      <section className="relative w-full pt-0 pb-32 min-h-screen">
         {images.map((image, index) => {
           const isLeft = index % 2 === 0;
           const isVisible = visibleImages.has(index);
@@ -431,7 +428,7 @@ export default function Home() {
               }}
               className={`w-full flex ${
                 isLeft ? "justify-start" : "justify-end"
-              } mb-[40vh] px-6 md:px-12 lg:px-20 xl:px-24`}
+              } mb-[20vh] px-6 md:px-12 lg:px-20 xl:px-24`}
               style={{
                 opacity: isVisible ? 1 : 0,
                 transform: isVisible ? "translateY(0)" : "translateY(30px)",
@@ -439,27 +436,27 @@ export default function Home() {
               }}
             >
               <div
-                className={`flex items-end gap-4 ${
-                  isLeft ? "flex-row" : "flex-row-reverse"
+                className={`flex flex-col ${
+                  isLeft ? "items-start" : "items-end"
                 }`}
               >
-                <div className="relative inline-block max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw]">
+                <div className="relative inline-block max-w-[85vw] md:max-w-[50vw] lg:max-w-[45vw] mb-3">
                   <Link href={image.link} className="block">
                     <Image
                       src={image.src}
                       alt={image.label}
                       width={3000}
                       height={2000}
-                      className="object-contain w-full h-auto"
+                      className="object-contain w-full h-auto max-h-[85vh]"
                       quality={100}
-                      sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 60vw"
+                      sizes="(max-width: 768px) 85vw, (max-width: 1024px) 50vw, 45vw"
                       priority={index < 2}
                     />
                   </Link>
                 </div>
                 <Link
                   href={image.link}
-                  className="text-xs md:text-sm opacity-70 hover:opacity-100 hover:underline transition-opacity pb-2 whitespace-nowrap"
+                  className="text-xs md:text-sm font-semibold opacity-90 hover:opacity-100 hover:underline transition-opacity"
                   style={{
                     color: textColor,
                     fontFamily:
@@ -475,7 +472,7 @@ export default function Home() {
       </section>
 
       {/* Bottom padding for navbar when at bottom */}
-      {navbarAtBottom && <div className="h-24" />}
+      <div className="h-32" />
     </div>
   );
 }
