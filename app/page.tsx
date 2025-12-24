@@ -358,19 +358,12 @@ export default function Home() {
       )}
 
       {/* Main Content Area */}
-      <main className="relative px-6 md:px-12 lg:px-20 xl:px-24 min-h-screen flex items-center">
-        <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-12">
+      <main className="relative px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 min-h-screen flex items-center pt-20 md:pt-0">
+        <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-12">
           {/* Hero Text - Large Serif Display */}
-          <div className="max-w-[70vw] lg:max-w-[55vw] relative w-full">
-            {/* 
-              NOTE: To use IvyPresto Display Thin instead of Playfair Display:
-              1. Add Adobe Fonts link in layout.tsx <head>:
-                 <link rel="stylesheet" href="https://use.typekit.net/[your-kit-id].css">
-              2. Update fontFamily below to: "ivypresto-display, var(--font-display), serif"
-              3. Or uncomment @font-face in globals.css if you have the font files
-            */}
+          <div className="w-full md:max-w-[60vw] lg:max-w-[50vw] relative">
             <div
-              className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-[1.5] md:leading-[1.4]"
+              className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-[1.5] md:leading-[1.4]"
               style={{
                 fontFamily:
                   "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
@@ -428,43 +421,71 @@ export default function Home() {
               }}
               className={`w-full flex ${
                 isLeft ? "justify-start" : "justify-end"
-              } mb-[20vh] px-6 md:px-12 lg:px-20 xl:px-24`}
+              } mb-[20vh] px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24`}
               style={{
                 opacity: isVisible ? 1 : 0,
                 transform: isVisible ? "translateY(0)" : "translateY(30px)",
                 transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
               }}
             >
-              <div
-                className={`flex flex-col ${
-                  isLeft ? "items-start" : "items-end"
-                }`}
-              >
-                <div className="relative inline-block max-w-[85vw] md:max-w-[50vw] lg:max-w-[45vw] mb-3">
-                  <Link href={image.link} className="block">
-                    <Image
-                      src={image.src}
-                      alt={image.label}
-                      width={3000}
-                      height={2000}
-                      className="object-contain w-full h-auto max-h-[85vh]"
-                      quality={100}
-                      sizes="(max-width: 768px) 85vw, (max-width: 1024px) 50vw, 45vw"
-                      priority={index < 2}
-                    />
-                  </Link>
-                </div>
-                <Link
-                  href={image.link}
-                  className="text-xs md:text-sm font-semibold opacity-90 hover:opacity-100 hover:underline transition-opacity"
-                  style={{
-                    color: textColor,
-                    fontFamily:
-                      "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-                  }}
-                >
-                  {image.label}
-                </Link>
+              <div className="flex flex-col md:flex-row items-start md:items-end gap-3 md:gap-6 w-full md:w-auto">
+                {isLeft ? (
+                  <>
+                    <div className="relative inline-block w-full md:w-auto max-w-[90vw] md:max-w-[50vw] lg:max-w-[45vw]">
+                      <Link href={image.link} className="block">
+                        <Image
+                          src={image.src}
+                          alt={image.label}
+                          width={3000}
+                          height={2000}
+                          className="object-contain w-full h-auto max-h-[85vh]"
+                          quality={100}
+                          sizes="(max-width: 768px) 90vw, (max-width: 1024px) 50vw, 45vw"
+                          priority={index < 2}
+                        />
+                      </Link>
+                    </div>
+                    <Link
+                      href={image.link}
+                      className="text-xs md:text-sm font-semibold opacity-90 hover:opacity-100 hover:underline transition-opacity pb-2 md:pb-0 md:ml-auto md:text-right"
+                      style={{
+                        color: textColor,
+                        fontFamily:
+                          "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                      }}
+                    >
+                      {image.label}
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href={image.link}
+                      className="text-xs md:text-sm font-semibold opacity-90 hover:opacity-100 hover:underline transition-opacity pb-2 md:pb-0 md:mr-auto md:text-left order-2 md:order-1"
+                      style={{
+                        color: textColor,
+                        fontFamily:
+                          "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                      }}
+                    >
+                      {image.label}
+                    </Link>
+                    <div className="relative inline-block w-full md:w-auto max-w-[90vw] md:max-w-[50vw] lg:max-w-[45vw] order-1 md:order-2">
+                      <Link href={image.link} className="block">
+                        <Image
+                          src={image.src}
+                          alt={image.label}
+                          width={3000}
+                          height={2000}
+                          className="object-contain w-full h-auto max-h-[85vh]"
+                          quality={100}
+                          sizes="(max-width: 768px) 90vw, (max-width: 1024px) 50vw, 45vw"
+                          priority={index < 2}
+                        />
+                      </Link>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           );
