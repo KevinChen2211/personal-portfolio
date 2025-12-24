@@ -287,16 +287,8 @@ export default function Home() {
           </div>
 
           {/* Kevin Chen Portrait Image */}
-          <div className="relative flex-shrink-0 w-full md:w-auto md:ml-auto mb-6 md:mb-0">
-            <div
-              className="relative w-full h-[50vh] max-h-[400px] md:w-[55vw] md:max-w-[900px] md:h-[80vh] md:max-h-[900px]"
-              style={{
-                width: "var(--portrait-width)",
-                maxWidth: "var(--portrait-max-width)",
-                height: "var(--portrait-height)",
-                maxHeight: "var(--portrait-max-height)",
-              }}
-            >
+          <div className="relative flex-shrink-0 w-full md:w-[55vw] md:max-w-[600px] md:ml-auto mb-6 md:mb-0">
+            <div className="relative w-full h-[50vh] max-h-[400px] md:h-[80vh] md:max-h-[900px]">
               <Image
                 src="/images/KevinChen.jpg"
                 alt="Kevin Chen"
