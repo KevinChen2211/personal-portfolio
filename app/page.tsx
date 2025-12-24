@@ -443,22 +443,17 @@ export default function Home() {
                   isLeft ? "flex-row" : "flex-row-reverse"
                 }`}
               >
-                <div className="relative inline-block">
+                <div className="relative inline-block max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw]">
                   <Link href={image.link} className="block">
                     <Image
                       src={image.src}
                       alt={image.label}
                       width={3000}
                       height={2000}
-                      className="object-contain"
+                      className="object-contain w-full h-auto"
                       quality={100}
-                      sizes="(max-width: 1920px) 100vw, 1920px"
+                      sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 60vw"
                       priority={index < 2}
-                      style={{
-                        width: "auto",
-                        height: "auto",
-                        maxWidth: "none",
-                      }}
                     />
                   </Link>
                 </div>
