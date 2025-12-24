@@ -341,9 +341,9 @@ export default function Home() {
               ref={(el) => {
                 imageRefs.current[index] = el;
               }}
-              className={`w-full flex ${justifyClass} mb-[20vh] px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 ${
-                isLastImage ? "pb-[0vh]" : ""
-              }`}
+              className={`w-full flex ${justifyClass} ${
+                isLastImage ? "mb-0" : "mb-[20vh]"
+              } px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24`}
               style={{
                 opacity: isVisible ? 1 : 0,
                 transform: isVisible ? "translateY(0)" : "translateY(30px)",
@@ -383,7 +383,16 @@ export default function Home() {
       </section>
 
       {/* Bottom padding for navbar when at bottom */}
-      <div className="h-32" />
+      <footer
+        className="w-full py-12 flex justify-center items-center"
+        style={{
+          backgroundColor: bgColor,
+          color: textColor,
+          fontFamily: "'Juana', var(--font-display), 'Playfair Display', serif",
+        }}
+      >
+        © Kevin Chen
+      </footer>
     </div>
   );
 }
