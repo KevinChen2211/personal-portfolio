@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "./components/ThemeProvider";
 
@@ -13,8 +13,19 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Playfair Display as fallback for IvyPresto Display Thin
+// To use IvyPresto Display Thin, add it via Adobe Fonts and replace this
+// Note: Playfair Display doesn't have weight 300, so we use 400 and apply font-weight: 300 in CSS
+// which will use browser font synthesis for a thinner appearance
+const playfairDisplay = Playfair_Display({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
+});
+
 export const metadata: Metadata = {
-  title: "Kevin Chen — Portfolio",
+  title: "Kevin Chen",
   description: "Engineer & Creative Developer. Portfolio for Kevin Chen.",
 };
 
@@ -26,6 +37,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* 
+          To use IvyPresto Display Thin via Adobe Fonts:
+          1. Get your Adobe Fonts kit ID from fonts.adobe.com
+          2. Add this line before the script tag:
+             <link rel="stylesheet" href="https://use.typekit.net/[your-kit-id].css">
+          3. Update the fontFamily in page.tsx to use "ivypresto-display" as the first font
+        */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -47,7 +65,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} antialiased`}
         suppressHydrationWarning
       >
         <ThemeProvider>{children}</ThemeProvider>
