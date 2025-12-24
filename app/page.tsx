@@ -342,7 +342,7 @@ export default function Home() {
                 imageRefs.current[index] = el;
               }}
               className={`w-full flex ${justifyClass} mb-[20vh] px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 ${
-                isLastImage ? "pb-[-10vh]" : ""
+                isLastImage ? "pb-[50vh]" : ""
               }`}
               style={{
                 opacity: isVisible ? 1 : 0,

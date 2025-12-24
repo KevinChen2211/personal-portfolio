@@ -13,7 +13,10 @@ export default function ContactPage() {
       style={{ backgroundColor: bgColor }}
     >
       {/* Header Navigation */}
-      <header className="w-full px-6 md:px-12 lg:px-16 py-5 md:py-6 flex items-center justify-between fixed z-50 top-0" style={{ backgroundColor: bgColor }}>
+      <header
+        className="w-full px-6 md:px-12 lg:px-16 py-5 md:py-6 flex items-center justify-between fixed z-50 top-0"
+        style={{ backgroundColor: bgColor }}
+      >
         {/* Name - Left */}
         <Link
           href="/"
@@ -127,8 +130,11 @@ export default function ContactPage() {
       </header>
 
       {/* Main Content Area */}
-      <main className="relative px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 flex items-center" style={{ height: "calc(100vh - 73px)", marginTop: "73px" }}>
-        <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-10">
+      <main
+        className="relative px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 flex items-center"
+        style={{ height: "calc(100vh - 73px)", marginTop: "73px" }}
+      >
+        <div className="w-full flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-10">
           {/* Contact Image - Left Side */}
           <div className="w-full md:w-[45vw] lg:w-[40vw] max-w-[700px] flex-shrink-0 order-2 md:order-1">
             <div className="relative w-full h-[45vh] md:h-[75vh] max-h-[700px]">
