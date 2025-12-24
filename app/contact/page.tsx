@@ -9,7 +9,7 @@ export default function ContactPage() {
 
   return (
     <div
-      className="min-h-screen w-full relative overflow-y-auto pt-6 md:pt-8"
+      className="h-screen w-full relative overflow-hidden pt-6 md:pt-8"
       style={{ backgroundColor: bgColor }}
     >
       {/* Header Navigation */}
@@ -127,11 +127,11 @@ export default function ContactPage() {
       </header>
 
       {/* Main Content Area */}
-      <main className="relative px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 h-screen flex items-center pt-20 md:pt-0 overflow-hidden">
-        <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
+      <main className="relative px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 flex items-center" style={{ height: "calc(100vh - 73px)", marginTop: "73px" }}>
+        <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-10">
           {/* Contact Image - Left Side */}
-          <div className="w-full md:w-[35vw] lg:w-[30vw] max-w-[500px] flex-shrink-0 order-2 md:order-1">
-            <div className="relative w-full h-[40vh] md:h-[65vh] max-h-[600px]">
+          <div className="w-full md:w-[45vw] lg:w-[40vw] max-w-[700px] flex-shrink-0 order-2 md:order-1">
+            <div className="relative w-full h-[45vh] md:h-[75vh] max-h-[700px]">
               <Image
                 src="/images/contact_me.jpg"
                 alt="Contact"
@@ -139,15 +139,15 @@ export default function ContactPage() {
                 className="object-contain"
                 quality={100}
                 priority
-                sizes="(max-width: 768px) 100vw, 35vw"
+                sizes="(max-width: 768px) 100vw, 45vw"
               />
             </div>
           </div>
 
           {/* Contact Content - Right Side */}
-          <div className="w-full md:flex-1 order-1 md:order-2">
+          <div className="w-full md:flex-1 order-1 md:order-2 flex flex-col justify-center">
             <div
-              className="text-xl sm:text-2xl md:text-3xl lg:text-4xl leading-[1.4] md:leading-[1.3] mb-4 md:mb-6"
+              className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl leading-[1.4] md:leading-[1.3] mb-3 md:mb-5"
               style={{
                 fontFamily:
                   "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
@@ -165,7 +165,7 @@ export default function ContactPage() {
             </div>
 
             <div
-              className="text-base md:text-lg leading-relaxed mb-6 md:mb-8"
+              className="text-sm md:text-base leading-relaxed mb-4 md:mb-6"
               style={{
                 fontFamily:
                   "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
@@ -178,10 +178,10 @@ export default function ContactPage() {
               opportunities to be part of your vision.
             </div>
 
-            <div className="space-y-4 mb-6 md:mb-8">
+            <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
               <div>
                 <h3
-                  className="text-sm md:text-base font-semibold mb-1 md:mb-2"
+                  className="text-xs md:text-sm font-semibold mb-1"
                   style={{
                     color: textColor,
                     fontFamily:
@@ -194,7 +194,7 @@ export default function ContactPage() {
                   href="https://www.instagram.com/kewinchen_/"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-sm md:text-base hover:opacity-70 transition-opacity hover:underline"
+                  className="text-xs md:text-sm hover:opacity-70 transition-opacity hover:underline"
                   style={{
                     color: textColor,
                     fontFamily:
@@ -206,7 +206,7 @@ export default function ContactPage() {
               </div>
               <div>
                 <h3
-                  className="text-sm md:text-base font-semibold mb-1 md:mb-2"
+                  className="text-xs md:text-sm font-semibold mb-1"
                   style={{
                     color: textColor,
                     fontFamily:
@@ -219,7 +219,7 @@ export default function ContactPage() {
                   href="https://www.linkedin.com/in/kevinsoftwarewiz"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-sm md:text-base hover:opacity-70 transition-opacity hover:underline"
+                  className="text-xs md:text-sm hover:opacity-70 transition-opacity hover:underline break-all"
                   style={{
                     color: textColor,
                     fontFamily:
@@ -231,12 +231,12 @@ export default function ContactPage() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
               <a
                 href="https://www.instagram.com/kewinchen_/"
                 target="_blank"
                 rel="noreferrer"
-                className="px-5 py-2.5 text-xs md:text-sm font-semibold text-center hover:opacity-70 transition-opacity border border-current"
+                className="px-4 py-2 md:px-5 md:py-2.5 text-xs md:text-sm font-semibold text-center hover:opacity-70 transition-opacity border border-current"
                 style={{
                   color: textColor,
                   fontFamily:
@@ -249,7 +249,7 @@ export default function ContactPage() {
                 href="https://www.linkedin.com/in/kevinsoftwarewiz"
                 target="_blank"
                 rel="noreferrer"
-                className="px-5 py-2.5 text-xs md:text-sm font-semibold text-center hover:opacity-70 transition-opacity border border-current"
+                className="px-4 py-2 md:px-5 md:py-2.5 text-xs md:text-sm font-semibold text-center hover:opacity-70 transition-opacity border border-current"
                 style={{
                   color: textColor,
                   fontFamily:

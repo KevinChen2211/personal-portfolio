@@ -304,12 +304,13 @@ export default function Home() {
       </main>
 
       {/* Scrollable Image Gallery Section */}
-      <section className="relative w-full pt-0 pb-32 min-h-screen">
+      <section className="relative w-full pt-0">
         {images.map((image, index) => {
           // 4-position cycle: 0, 1, 3, 2 (left, middle-left, right, middle-right)
           const positionMap = [0, 1, 3, 2];
           const position = positionMap[index % 4];
           const isVisible = visibleImages.has(index);
+          const isLastImage = index === images.length - 1;
 
           // Determine alignment based on position
           let justifyClass = "";
@@ -340,7 +341,9 @@ export default function Home() {
               ref={(el) => {
                 imageRefs.current[index] = el;
               }}
-              className={`w-full flex ${justifyClass} mb-[20vh] px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24`}
+              className={`w-full flex ${justifyClass} mb-[20vh] px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 ${
+                isLastImage ? "pb-[-10vh]" : ""
+              }`}
               style={{
                 opacity: isVisible ? 1 : 0,
                 transform: isVisible ? "translateY(0)" : "translateY(30px)",
