@@ -80,17 +80,20 @@ export default function Home() {
       },
       {
         threshold: 0.1,
-        rootMargin: "0px 0px -100px 0px",
+        rootMargin: "0px 0px -50px 0px",
       }
     );
 
-    const refs = imageRefs.current;
-    refs.forEach((ref) => {
-      if (ref) observer.observe(ref);
-    });
+    // Use setTimeout to ensure DOM is ready
+    const timeoutId = setTimeout(() => {
+      imageRefs.current.forEach((ref) => {
+        if (ref) observer.observe(ref);
+      });
+    }, 100);
 
     return () => {
-      refs.forEach((ref) => {
+      clearTimeout(timeoutId);
+      imageRefs.current.forEach((ref) => {
         if (ref) observer.unobserve(ref);
       });
     };
@@ -409,8 +412,31 @@ export default function Home() {
       {/* Scrollable Image Gallery Section */}
       <section className="relative w-full pt-0 pb-32 min-h-screen">
         {images.map((image, index) => {
-          const isLeft = index % 2 === 0;
+          // 4-position cycle: left, middle-left, middle-right, right
+          const position = index % 4;
           const isVisible = visibleImages.has(index);
+
+          // Determine alignment based on position
+          let justifyClass = "";
+          let textAlignClass = "";
+
+          if (position === 0) {
+            // Left side
+            justifyClass = "justify-start";
+            textAlignClass = "md:text-right";
+          } else if (position === 1) {
+            // Middle but slightly left
+            justifyClass = "justify-start md:justify-center md:pr-[15%]";
+            textAlignClass = "md:text-right";
+          } else if (position === 2) {
+            // Middle but slightly right
+            justifyClass = "justify-end md:justify-center md:pl-[15%]";
+            textAlignClass = "md:text-left";
+          } else {
+            // Right side
+            justifyClass = "justify-end";
+            textAlignClass = "md:text-left";
+          }
 
           return (
             <div
@@ -419,73 +445,39 @@ export default function Home() {
               ref={(el) => {
                 imageRefs.current[index] = el;
               }}
-              className={`w-full flex ${
-                isLeft ? "justify-start" : "justify-end"
-              } mb-[20vh] px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24`}
+              className={`w-full flex ${justifyClass} mb-[20vh] px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24`}
               style={{
                 opacity: isVisible ? 1 : 0,
                 transform: isVisible ? "translateY(0)" : "translateY(30px)",
                 transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
               }}
             >
-              <div className="flex flex-col md:flex-row items-start md:items-end gap-3 md:gap-6 w-full md:w-auto">
-                {isLeft ? (
-                  <>
-                    <div className="relative inline-block w-full md:w-auto max-w-[90vw] md:max-w-[50vw] lg:max-w-[45vw]">
-                      <Link href={image.link} className="block">
-                        <Image
-                          src={image.src}
-                          alt={image.label}
-                          width={3000}
-                          height={2000}
-                          className="object-contain w-full h-auto max-h-[85vh]"
-                          quality={100}
-                          sizes="(max-width: 768px) 90vw, (max-width: 1024px) 50vw, 45vw"
-                          priority={index < 2}
-                        />
-                      </Link>
-                    </div>
-                    <Link
-                      href={image.link}
-                      className="text-xs md:text-sm font-semibold opacity-90 hover:opacity-100 hover:underline transition-opacity pb-2 md:pb-0 md:ml-auto md:text-right"
-                      style={{
-                        color: textColor,
-                        fontFamily:
-                          "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-                      }}
-                    >
-                      {image.label}
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      href={image.link}
-                      className="text-xs md:text-sm font-semibold opacity-90 hover:opacity-100 hover:underline transition-opacity pb-2 md:pb-0 md:mr-auto md:text-left order-2 md:order-1"
-                      style={{
-                        color: textColor,
-                        fontFamily:
-                          "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-                      }}
-                    >
-                      {image.label}
-                    </Link>
-                    <div className="relative inline-block w-full md:w-auto max-w-[90vw] md:max-w-[50vw] lg:max-w-[45vw] order-1 md:order-2">
-                      <Link href={image.link} className="block">
-                        <Image
-                          src={image.src}
-                          alt={image.label}
-                          width={3000}
-                          height={2000}
-                          className="object-contain w-full h-auto max-h-[85vh]"
-                          quality={100}
-                          sizes="(max-width: 768px) 90vw, (max-width: 1024px) 50vw, 45vw"
-                          priority={index < 2}
-                        />
-                      </Link>
-                    </div>
-                  </>
-                )}
+              <div className="flex flex-col items-start w-full md:w-auto max-w-[90vw] md:max-w-[50vw] lg:max-w-[45vw]">
+                <div className="relative inline-block w-full mb-3">
+                  <Link href={image.link} className="block">
+                    <Image
+                      src={image.src}
+                      alt={image.label}
+                      width={3000}
+                      height={2000}
+                      className="object-contain w-full h-auto max-h-[85vh]"
+                      quality={100}
+                      sizes="(max-width: 768px) 90vw, (max-width: 1024px) 50vw, 45vw"
+                      priority={index < 2}
+                    />
+                  </Link>
+                </div>
+                <Link
+                  href={image.link}
+                  className={`text-xs md:text-sm font-semibold opacity-90 hover:opacity-100 hover:underline transition-opacity w-full ${textAlignClass}`}
+                  style={{
+                    color: textColor,
+                    fontFamily:
+                      "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                  }}
+                >
+                  {image.label}
+                </Link>
               </div>
             </div>
           );
