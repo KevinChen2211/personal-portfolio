@@ -205,7 +205,7 @@ export default function Home() {
         {/* Social Icons - Right */}
         <div className="hidden md:flex items-center gap-2">
           <a
-            href="https://www.linkedin.com/in/kevinsoftwarewiz"
+            href="https://www.linkedin.com/in/kevinchenengineer/"
             target="_blank"
             rel="noreferrer"
             className="hover:opacity-70 transition-opacity inline-block"
@@ -342,7 +342,7 @@ export default function Home() {
                 imageRefs.current[index] = el;
               }}
               className={`w-full flex ${justifyClass} mb-[20vh] px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 ${
-                isLastImage ? "pb-[50vh]" : ""
+                isLastImage ? "pb-[0vh]" : ""
               }`}
               style={{
                 opacity: isVisible ? 1 : 0,

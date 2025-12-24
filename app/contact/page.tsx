@@ -82,7 +82,7 @@ export default function ContactPage() {
         {/* Social Icons - Right */}
         <div className="hidden md:flex items-center gap-2">
           <a
-            href="https://www.linkedin.com/in/kevinsoftwarewiz"
+            href="https://www.linkedin.com/in/kevinchenengineer/"
             target="_blank"
             rel="noreferrer"
             className="hover:opacity-70 transition-opacity inline-block"
@@ -136,8 +136,8 @@ export default function ContactPage() {
       >
         <div className="w-full flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-10">
           {/* Contact Image - Left Side */}
-          <div className="w-full md:w-[45vw] lg:w-[40vw] max-w-[700px] flex-shrink-0 order-2 md:order-1">
-            <div className="relative w-full h-[45vh] md:h-[75vh] max-h-[700px]">
+          <div className="w-full md:w-[50vw] lg:w-[45vw] max-w-[800px] flex-shrink-0 order-2 md:order-1">
+            <div className="relative w-full h-[50vh] md:h-[85vh] max-h-[900px]">
               <Image
                 src="/images/contact_me.jpg"
                 alt="Contact"
@@ -145,7 +145,7 @@ export default function ContactPage() {
                 className="object-contain"
                 quality={100}
                 priority
-                sizes="(max-width: 768px) 100vw, 45vw"
+                sizes="(max-width: 768px) 100vw, 50vw"
               />
             </div>
           </div>
@@ -166,8 +166,9 @@ export default function ContactPage() {
               Let's{" "}
               <span className="italic underline decoration-1 underline-offset-4">
                 connect
-              </span>{" "}
-              and explore how we can work together.
+              </span>
+              {", "}
+              feel free to reach out.
             </div>
 
             <div
@@ -180,8 +181,7 @@ export default function ContactPage() {
                 fontStyle: "normal",
               }}
             >
-              I'm always open to discussing new projects, creative ideas, or
-              opportunities to be part of your vision.
+              Always down for a good chat, about literally anything
             </div>
 
             <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
@@ -222,7 +222,7 @@ export default function ContactPage() {
                   LinkedIn
                 </h3>
                 <a
-                  href="https://www.linkedin.com/in/kevinsoftwarewiz"
+                  href="https://www.linkedin.com/in/kevinchenengineer/"
                   target="_blank"
                   rel="noreferrer"
                   className="text-xs md:text-sm hover:opacity-70 transition-opacity hover:underline break-all"
@@ -232,7 +232,7 @@ export default function ContactPage() {
                       "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
                   }}
                 >
-                  linkedin.com/in/kevinsoftwarewiz
+                  linkedin.com/in/kevinchenengineer/
                 </a>
               </div>
             </div>
@@ -252,7 +252,7 @@ export default function ContactPage() {
                 Follow on Instagram
               </a>
               <a
-                href="https://www.linkedin.com/in/kevinsoftwarewiz"
+                href="https://www.linkedin.com/in/kevinchenengineer/"
                 target="_blank"
                 rel="noreferrer"
                 className="px-4 py-2 md:px-5 md:py-2.5 text-xs md:text-sm font-semibold text-center hover:opacity-70 transition-opacity border border-current"
