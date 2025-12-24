@@ -2,20 +2,116 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
   const bgColor = "#ffffed";
   const textColor = "#2C2C2C";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showNavbar, setShowNavbar] = useState(true);
+  const [navbarAtBottom, setNavbarAtBottom] = useState(false);
+  const [visibleImages, setVisibleImages] = useState<Set<number>>(new Set());
+  const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Image data with order, source, link, and label
+  const images = [
+    { src: "/images/Gallery.jpg", link: "/gallery", label: "Gallery" },
+    { src: "/images/Projects.jpg", link: "/projects", label: "Projects" },
+    { src: "/images/Gallery2.jpg", link: "/gallery", label: "Gallery" },
+    { src: "/images/Journal.jpg", link: "/blog", label: "Journal" },
+    { src: "/images/Gallery3.jpg", link: "/gallery", label: "Gallery" },
+    { src: "/images/Contact.jpg", link: "/contact", label: "Contact" },
+  ];
+
+  // Scroll detection for navbar visibility
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          const windowHeight = window.innerHeight;
+          const documentHeight = document.documentElement.scrollHeight;
+          const isAtBottom =
+            currentScrollY + windowHeight >= documentHeight - 10;
+          const scrollDifference = currentScrollY - lastScrollY;
+
+          // Show navbar at bottom when at the very bottom
+          if (isAtBottom) {
+            setNavbarAtBottom(true);
+            setShowNavbar(true);
+          } else {
+            setNavbarAtBottom(false);
+
+            // Hide navbar when scrolling down past threshold, show when scrolling up or at top
+            if (currentScrollY > 100 && scrollDifference > 0) {
+              setShowNavbar(false);
+            } else if (currentScrollY <= 100 || scrollDifference < 0) {
+              setShowNavbar(true);
+            }
+          }
+
+          lastScrollY = currentScrollY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Intersection Observer for fade-in animations
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = parseInt(
+              (entry.target as HTMLElement).dataset.index || "0",
+              10
+            );
+            setVisibleImages((prev) => new Set(prev).add(index));
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "0px 0px -100px 0px",
+      }
+    );
+
+    const refs = imageRefs.current;
+    refs.forEach((ref) => {
+      if (ref) observer.observe(ref);
+    });
+
+    return () => {
+      refs.forEach((ref) => {
+        if (ref) observer.unobserve(ref);
+      });
+    };
+  }, []);
 
   return (
     <div
-      className="min-h-screen w-full relative overflow-hidden pt-6 md:pt-8"
+      className="min-h-screen w-full relative overflow-y-auto pt-6 md:pt-8"
       style={{ backgroundColor: bgColor }}
     >
       {/* Header Navigation */}
-      <header className="w-full px-6 md:px-12 lg:px-16 py-5 md:py-6 flex items-center justify-between relative z-20">
+      <header
+        className={`w-full px-6 md:px-12 lg:px-16 py-5 md:py-6 flex items-center justify-between fixed z-50 transition-all duration-300 ${
+          showNavbar
+            ? navbarAtBottom
+              ? "bottom-0 top-auto"
+              : "top-0"
+            : "-translate-y-full"
+        }`}
+        style={{ backgroundColor: bgColor }}
+      >
         {/* Name - Left */}
         <Link
           href="/"
@@ -262,7 +358,7 @@ export default function Home() {
       )}
 
       {/* Main Content Area */}
-      <main className="relative px-6 md:px-12 lg:px-20 xl:px-24 pt-8 md:pt-12 pb-12 md:pb-16 h-full flex items-start">
+      <main className="relative px-6 md:px-12 lg:px-20 xl:px-24 min-h-screen flex items-center">
         <div className="max-w-[70vw] lg:max-w-[55vw] relative w-full">
           {/* Hero Text - Large Serif Display */}
           {/* 
@@ -302,17 +398,8 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Portrait Image - Bottom Right */}
-      {/* Adjust scale by changing the transform scale value below */}
-      <div
-        className="hidden md:block fixed bottom-30 right-40 z-10 pointer-events-none"
-        style={{
-          width: "100%",
-          height: "100%",
-          transform: "scale(0.7)", // Change this value to adjust image scale (e.g., 0.5, 0.6, 0.8, etc.)
-          transformOrigin: "bottom right",
-        }}
-      >
+      {/* Portrait Image - Right Side */}
+      <div className="hidden md:block fixed right-0 top-1/2 -translate-y-1/2 z-10 pointer-events-none w-[40vw] max-w-[600px] h-[80vh] max-h-[800px]">
         <div className="relative w-full h-full">
           <Image
             src="/images/KevinChen.jpg"
@@ -321,13 +408,79 @@ export default function Home() {
             className="object-contain"
             quality={100}
             priority
-            sizes="100vw"
+            sizes="40vw"
             style={{
-              objectPosition: "right bottom",
+              objectPosition: "right center",
             }}
           />
         </div>
       </div>
+
+      {/* Scrollable Image Gallery Section */}
+      <section className="relative w-full py-20 pb-32">
+        {images.map((image, index) => {
+          const isLeft = index % 2 === 0;
+          const isVisible = visibleImages.has(index);
+
+          return (
+            <div
+              key={index}
+              data-index={index}
+              ref={(el) => {
+                imageRefs.current[index] = el;
+              }}
+              className={`w-full flex ${
+                isLeft ? "justify-start" : "justify-end"
+              } mb-[40vh] px-6 md:px-12 lg:px-20 xl:px-24`}
+              style={{
+                opacity: isVisible ? 1 : 0,
+                transform: isVisible ? "translateY(0)" : "translateY(30px)",
+                transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
+              }}
+            >
+              <div
+                className={`flex items-end gap-4 ${
+                  isLeft ? "flex-row" : "flex-row-reverse"
+                }`}
+              >
+                <div className="relative inline-block">
+                  <Link href={image.link} className="block">
+                    <Image
+                      src={image.src}
+                      alt={image.label}
+                      width={3000}
+                      height={2000}
+                      className="object-contain"
+                      quality={100}
+                      sizes="(max-width: 1920px) 100vw, 1920px"
+                      priority={index < 2}
+                      style={{
+                        width: "auto",
+                        height: "auto",
+                        maxWidth: "none",
+                      }}
+                    />
+                  </Link>
+                </div>
+                <Link
+                  href={image.link}
+                  className="text-xs md:text-sm opacity-70 hover:opacity-100 hover:underline transition-opacity pb-2 whitespace-nowrap"
+                  style={{
+                    color: textColor,
+                    fontFamily:
+                      "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                  }}
+                >
+                  {image.label}
+                </Link>
+              </div>
+            </div>
+          );
+        })}
+      </section>
+
+      {/* Bottom padding for navbar when at bottom */}
+      {navbarAtBottom && <div className="h-24" />}
     </div>
   );
 }
