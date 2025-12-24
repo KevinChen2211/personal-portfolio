@@ -25,7 +25,7 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Kevin Chen — Portfolio",
+  title: "Kevin Chen",
   description: "Engineer & Creative Developer. Portfolio for Kevin Chen.",
 };
 

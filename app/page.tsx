@@ -10,7 +10,7 @@ export default function Home() {
 
   return (
     <div
-      className="min-h-screen w-full relative overflow-hidden"
+      className="min-h-screen w-full relative overflow-hidden pt-6 md:pt-8"
       style={{ backgroundColor: bgColor }}
     >
       {/* Header Navigation */}
