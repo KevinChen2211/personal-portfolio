@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
-  const bgColor = "#ffffed";
+  const bgColor = "#FAF2E6";
   const textColor = "#2C2C2C";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showNavbar, setShowNavbar] = useState(true);
@@ -133,7 +133,7 @@ export default function Home() {
         <nav className="hidden md:flex items-center gap-8 ml-4">
           <Link
             href="/projects"
-            className="text-sm font-light tracking-wide hover:opacity-70 transition-opacity"
+            className="text-sm font-semibold tracking-wide hover:opacity-70 transition-opacity"
             style={{
               color: textColor,
               fontFamily:
@@ -144,7 +144,7 @@ export default function Home() {
           </Link>
           <Link
             href="/gallery"
-            className="text-sm font-light tracking-wide hover:opacity-70 transition-opacity"
+            className="text-sm font-semibold tracking-wide hover:opacity-70 transition-opacity"
             style={{
               color: textColor,
               fontFamily:
@@ -155,7 +155,7 @@ export default function Home() {
           </Link>
           <Link
             href="/blog"
-            className="text-sm font-light tracking-wide hover:opacity-70 transition-opacity"
+            className="text-sm font-semibold tracking-wide hover:opacity-70 transition-opacity"
             style={{
               color: textColor,
               fontFamily:
@@ -166,7 +166,7 @@ export default function Home() {
           </Link>
           <Link
             href="/contact"
-            className="text-sm font-light tracking-wide hover:opacity-70 transition-opacity"
+            className="text-sm font-semibold tracking-wide hover:opacity-70 transition-opacity"
             style={{
               color: textColor,
               fontFamily:
@@ -395,7 +395,15 @@ export default function Home() {
           </div>
 
           {/* Kevin Chen Portrait Image */}
-          <div className="hidden md:block relative w-[35vw] max-w-[500px] h-[60vh] max-h-[600px] flex-shrink-0">
+          <div
+            className="hidden md:block relative flex-shrink-0 ml-auto"
+            style={{
+              width: "var(--portrait-width, 35vw)",
+              maxWidth: "var(--portrait-max-width, 500px)",
+              height: "var(--portrait-height, 60vh)",
+              maxHeight: "var(--portrait-max-height, 600px)",
+            }}
+          >
             <Image
               src="/images/KevinChen.jpg"
               alt="Kevin Chen"
@@ -412,8 +420,9 @@ export default function Home() {
       {/* Scrollable Image Gallery Section */}
       <section className="relative w-full pt-0 pb-32 min-h-screen">
         {images.map((image, index) => {
-          // 4-position cycle: left, middle-left, middle-right, right
-          const position = index % 4;
+          // 4-position cycle: 0, 1, 3, 2 (left, middle-left, right, middle-right)
+          const positionMap = [0, 1, 3, 2];
+          const position = positionMap[index % 4];
           const isVisible = visibleImages.has(index);
 
           // Determine alignment based on position
@@ -433,7 +442,7 @@ export default function Home() {
             justifyClass = "justify-end md:justify-center md:pl-[15%]";
             textAlignClass = "md:text-left";
           } else {
-            // Right side
+            // Right side (position 3)
             justifyClass = "justify-end";
             textAlignClass = "md:text-left";
           }
