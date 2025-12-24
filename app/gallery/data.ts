@@ -2,6 +2,8 @@
 export const galleryImages = [
   "/gallery-images/Hello_Gorgeous1.jpg",
   "/gallery-images/test.jpg",
+  "/gallery-images/test.jpg",
+  "/gallery-images/test.jpg",
 ];
 
 // Images that only appear in collection pages (not in main gallery)

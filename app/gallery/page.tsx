@@ -2,13 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useTheme } from "../components/ThemeProvider";
-import { getActivePalette } from "../color-palettes";
 import { galleryImages, parseCollection } from "./data";
+import Navbar from "../components/Navbar";
 
 export default function GalleryPage() {
-  const { theme } = useTheme();
-  const palette = getActivePalette(theme);
+  const bgColor = "#141414";
+  const textColor = "#FAF2E6";
 
   const trackRef = useRef<HTMLDivElement | null>(null);
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
@@ -238,22 +237,22 @@ export default function GalleryPage() {
 
   return (
     <div
-      className="min-h-screen px-6 sm:px-10 py-16 relative overflow-hidden"
-      style={{ backgroundColor: "#141414", color: palette.text }}
+      className="min-h-screen w-full relative overflow-hidden"
+      style={{ backgroundColor: bgColor, color: textColor }}
     >
-      <div className="max-w-6xl mx-auto">
-        <Link
-          href="/"
-          className="inline-block mb-8 text-lg transition-all duration-300 hover:underline hover:translate-x-[-4px]"
-          style={{ color: palette.primary }}
-        >
-          ← Back to Home
-        </Link>
-        <h1 className="text-5xl sm:text-6xl font-bold mb-4">Gallery</h1>
-        <div
-          className="w-24 h-1 mb-12 rounded-full"
-          style={{ backgroundColor: palette.primary }}
-        />
+      <Navbar />
+      <div className="px-6 sm:px-10 md:px-12 lg:px-20 xl:px-24 pt-24 pb-16">
+        <div className="max-w-6xl mx-auto">
+          <h1
+            className="text-4xl sm:text-5xl md:text-6xl font-semibold mb-4"
+            style={{
+              fontFamily:
+                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+            }}
+          >
+            Gallery
+          </h1>
+        </div>
       </div>
 
       {/* IMAGE TRACK */}
@@ -328,9 +327,11 @@ export default function GalleryPage() {
                 href={`/gallery/collection/${expandedCollection.slug}`}
                 className="fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight transition-opacity duration-500 hover:opacity-80"
                 style={{
-                  color: palette.text,
+                  color: textColor,
                   opacity: showCollectionTitle ? 1 : 0,
                   pointerEvents: showCollectionTitle ? "auto" : "none",
+                  fontFamily:
+                    "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
                 }}
               >
                 {expandedCollection.name}
@@ -339,8 +340,10 @@ export default function GalleryPage() {
               <div
                 className="fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight transition-opacity duration-500 pointer-events-none"
                 style={{
-                  color: palette.text,
+                  color: textColor,
                   opacity: showCollectionTitle ? 1 : 0,
+                  fontFamily:
+                    "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
                 }}
               >
                 {expandedCollection.name}
