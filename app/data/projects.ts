@@ -3,6 +3,8 @@ export interface Project {
   description: string;
   highlights: string[];
   icon?: string;
+  image?: string;
+  slug: string;
 }
 
 export const projects: Project[] = [
@@ -19,6 +21,8 @@ export const projects: Project[] = [
       "Organized networking events with industry professionals",
     ],
     icon: "🤖",
+    image: "/projects-images/combatrobots.jpg",
+    slug: "rmit-battlebots",
   },
   {
     title: "Custom ISA and CPU Datapath Design",
@@ -31,6 +35,8 @@ export const projects: Project[] = [
       "Validated design through comprehensive simulation and testing",
     ],
     icon: "⚙️",
+    image: "/projects-images/custom-cpu.png",
+    slug: "custom-cpu",
   },
   {
     title: "DIY Semiconductors",
@@ -42,6 +48,8 @@ export const projects: Project[] = [
       "Exploring innovative approaches to reduce cost barriers in semiconductor manufacturing",
     ],
     icon: "🔬",
+    image: "/projects-images/semiconductor.jpg",
+    slug: "diy-semiconductors",
   },
   {
     title: "AWS Web Application",
@@ -55,6 +63,8 @@ export const projects: Project[] = [
       "Optimized costs through efficient use of AWS serverless services",
     ],
     icon: "☁️",
+    image: "/projects-images/aws.png",
+    slug: "aws-web-application",
   },
   {
     title: "CAN Bus Communication and Control",
@@ -67,6 +77,8 @@ export const projects: Project[] = [
       "Optimized for low-latency communication in automotive applications",
     ],
     icon: "🚗",
+    image: "/projects-images/can_bus.png",
+    slug: "can-bus",
   },
   {
     title: "Yoga and Meditation App",
@@ -80,5 +92,7 @@ export const projects: Project[] = [
       "Ensured cross-platform compatibility for iOS and Android",
     ],
     icon: "🧘",
+    image: "/projects-images/yoga.png",
+    slug: "yoga-meditation-app",
   },
 ];

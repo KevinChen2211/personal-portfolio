@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRef } from "react";
 import { useScrollAnimation } from "../components/useScrollAnimation";
 import { projects, type Project } from "../data/projects";
@@ -22,19 +23,42 @@ const ProjectCard = ({
   return (
     <div
       ref={cardRef}
-      className="p-4 sm:p-6 rounded-lg transition-all duration-500 hover:shadow-lg hover:scale-[1.02] touch-manipulation border"
+      className="flex flex-col transition-all duration-500 hover:scale-[1.02] touch-manipulation"
       style={{
-        backgroundColor: bgColor,
-        borderColor: textColor,
         opacity: isVisible ? 1 : 0,
         transform: `translateY(${isVisible ? 0 : 30}px)`,
         transitionDelay: `${index * 100}ms`,
       }}
     >
-      <div className="flex items-center gap-3 mb-4">
-        {project.icon && <span className="text-3xl">{project.icon}</span>}
+      <Link href={`/projects/${project.slug}`} className="group">
+        <div className="relative w-full mb-3 overflow-hidden">
+          <div
+            className="relative w-full"
+            style={{
+              aspectRatio: "0.75 / 1",
+            }}
+          >
+            {project.image ? (
+              <Image
+                src={project.image}
+                alt={project.title}
+                fill
+                className="object-cover group-hover:opacity-90 transition-opacity"
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                quality={90}
+              />
+            ) : (
+              <div
+                className="w-full h-full flex items-center justify-center"
+                style={{ backgroundColor: textColor, opacity: 0.1 }}
+              >
+                {project.icon && <span className="text-6xl">{project.icon}</span>}
+              </div>
+            )}
+          </div>
+        </div>
         <h3
-          className="text-xl font-semibold flex-1"
+          className="text-sm md:text-base font-semibold text-center group-hover:underline transition-all"
           style={{
             color: textColor,
             fontFamily:
@@ -43,52 +67,7 @@ const ProjectCard = ({
         >
           {project.title}
         </h3>
-      </div>
-      <p
-        className="text-sm mb-4 leading-relaxed"
-        style={{
-          color: textColor,
-          fontFamily:
-            "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-          opacity: 0.8,
-        }}
-      >
-        {project.description}
-      </p>
-      <div className="mt-4">
-        <h4
-          className="text-sm font-semibold mb-2"
-          style={{
-            color: textColor,
-            fontFamily:
-              "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-          }}
-        >
-          Key Achievements:
-        </h4>
-        <ul className="space-y-2">
-          {project.highlights.map((highlight, idx) => (
-            <li
-              key={idx}
-              className="flex items-start text-xs leading-relaxed"
-              style={{
-                color: textColor,
-                fontFamily:
-                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-                opacity: 0.8,
-              }}
-            >
-              <span
-                className="mr-2 mt-1 flex-shrink-0"
-                style={{ color: textColor }}
-              >
-                •
-              </span>
-              <span>{highlight}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
+      </Link>
     </div>
   );
 };
@@ -115,9 +94,9 @@ export default function ProjectsPage() {
           >
             Projects
           </h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {projects.map((project, index) => (
-              <ProjectCard key={project.title} project={project} index={index} />
+              <ProjectCard key={project.slug} project={project} index={index} />
             ))}
           </div>
         </div>
