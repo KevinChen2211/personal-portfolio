@@ -53,8 +53,9 @@ const JournalCard = ({
                 alt={post.title}
                 fill
                 className="object-cover"
-                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                quality={90}
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 33vw, 800px"
+                quality={100}
+                priority={index < 3}
               />
             ) : (
               <div
