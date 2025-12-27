@@ -60,11 +60,11 @@ const ProjectCard = ({
           </div>
         </div>
         <h3
-          className="text-sm md:text-base font-semibold text-center group-hover:underline transition-all"
+          className="text-lg md:text-xl lg:text-2xl font-semibold text-center group-hover:underline transition-all"
           style={{
             color: textColor,
             fontFamily:
-              "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+              '"Mencken Std Head Narrow", "Juana", var(--font-display), "Playfair Display", "Times New Roman", serif',
           }}
         >
           {project.title}

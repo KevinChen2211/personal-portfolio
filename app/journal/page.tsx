@@ -1,11 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { blogPosts } from "../data/blogs";
 import { useRef } from "react";
 import { useScrollAnimation } from "../components/useScrollAnimation";
 import Navbar from "../components/Navbar";
 import { formatDate } from "../utils/date";
+
+// Extract first image from blog content
+function getFirstImage(content: string): string | null {
+  const imageMatch = content.match(/!\[IMAGE:(.+?)\]/);
+  return imageMatch ? imageMatch[1] : null;
+}
 
 // Journal Card Component with scroll animations
 const JournalCard = ({
@@ -15,26 +22,92 @@ const JournalCard = ({
   post: (typeof blogPosts)[0];
   index: number;
 }) => {
-  const cardRef = useRef<HTMLElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
   const { isVisible } = useScrollAnimation(cardRef, { threshold: 0.1 });
   const bgColor = "#FAF2E6";
   const textColor = "#2C2C2C";
+  const imageUrl = getFirstImage(post.content);
 
   return (
-    <Link href={`/journal/${post.slug}`} className="block group">
-      <article
-        ref={cardRef}
-        className="p-4 sm:p-6 rounded-lg transition-all duration-500 hover:shadow-lg hover:scale-[1.02] cursor-pointer touch-manipulation border"
-        style={{
-          backgroundColor: bgColor,
-          borderColor: textColor,
-          opacity: isVisible ? 1 : 0,
-          transform: `translateY(${isVisible ? 0 : 30}px)`,
-          transitionDelay: `${index * 100}ms`,
-        }}
-      >
+    <div
+      ref={cardRef}
+      className="flex flex-col transition-all duration-500 hover:scale-[1.02] touch-manipulation"
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: `translateY(${isVisible ? 0 : 30}px)`,
+        transitionDelay: `${index * 100}ms`,
+      }}
+    >
+      <Link href={`/journal/${post.slug}`} className="group">
+        {/* Image */}
+        <div className="relative w-full mb-3 overflow-hidden">
+          <div
+            className="relative w-full"
+            style={{
+              aspectRatio: "0.75 / 1",
+            }}
+          >
+            {imageUrl ? (
+              <Image
+                src={imageUrl}
+                alt={post.title}
+                fill
+                className="object-cover group-hover:opacity-90 transition-opacity"
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                quality={90}
+              />
+            ) : (
+              <div
+                className="w-full h-full flex items-center justify-center"
+                style={{ backgroundColor: textColor, opacity: 0.1 }}
+              >
+                <span
+                  className="text-4xl"
+                  style={{ color: textColor, opacity: 0.3 }}
+                >
+                  📝
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Tags */}
+        {post.tags && post.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-2 justify-center">
+            {post.tags.map((tag) => (
+              <span
+                key={tag}
+                className="px-2 py-0.5 rounded text-xs font-medium"
+                style={{
+                  backgroundColor: `${textColor}15`,
+                  color: textColor,
+                  border: `1px solid ${textColor}40`,
+                  fontFamily:
+                    "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                  opacity: 0.8,
+                }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Title */}
+        <h3
+          className="text-lg md:text-xl lg:text-2xl font-semibold text-center group-hover:underline transition-all mb-2"
+          style={{
+            color: textColor,
+            fontFamily: '"Mencken Std Head Narrow", "Juana", var(--font-display), "Playfair Display", "Times New Roman", serif',
+          }}
+        >
+          {post.title}
+        </h3>
+
+        {/* Date */}
         <div
-          className="text-sm mb-3 font-medium"
+          className="text-xs md:text-sm text-center"
           style={{
             color: textColor,
             fontFamily:
@@ -44,37 +117,8 @@ const JournalCard = ({
         >
           {formatDate(post.date)}
         </div>
-        <h3
-          className="text-xl font-semibold mb-4 group-hover:underline transition-all duration-300"
-          style={{
-            color: textColor,
-            fontFamily:
-              "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-          }}
-        >
-          {post.title}
-        </h3>
-        <p
-          className="text-sm mb-4 leading-relaxed long-content"
-          style={{
-            color: textColor,
-            opacity: 0.8,
-          }}
-        >
-          {post.excerpt}
-        </p>
-        <div
-          className="text-sm font-medium inline-flex items-center gap-2"
-          style={{
-            color: textColor,
-            fontFamily:
-              "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-          }}
-        >
-          Read more →
-        </div>
-      </article>
-    </Link>
+      </Link>
+    </div>
   );
 };
 
@@ -88,19 +132,9 @@ export default function JournalPage() {
       style={{ backgroundColor: bgColor }}
     >
       <Navbar />
-      <main className="px-6 sm:px-10 md:px-12 lg:px-20 xl:px-24 py-24 md:py-32">
-        <div className="max-w-6xl mx-auto">
-          <h1
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold mb-6"
-            style={{
-              color: textColor,
-              fontFamily:
-                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-            }}
-          >
-            Journal
-          </h1>
-          <div className="space-y-6">
+      <main className="px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-24 md:py-32">
+        <div className="max-w-[98vw] xl:max-w-[1800px] mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-8 md:gap-12 lg:gap-16 xl:gap-20">
             {blogPosts.map((post, index) => (
               <JournalCard key={post.id} post={post} index={index} />
             ))}

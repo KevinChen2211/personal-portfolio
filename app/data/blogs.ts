@@ -18,12 +18,12 @@ export const blogPosts: BlogPost[] = [
     excerpt:
       "Growth rarely happens in moments of ease. Over the past few years as a student, an engineer, and someone who is always trying to build something new, I've learned that being uncomfortable isn't something to avoid. It's something to seek out.",
     content: `# The Art of being Uncomfortable
-
+    
+![IMAGE:/blog-images/choosing-discomfort-pushing-beyond-familiar-1.jpg]
 Growth rarely happens in moments of ease. Over the past few years as a student, an engineer, and someone who is always trying to build something new I've learned that being uncomfortable isn't something to avoid. It's something to seek out.
 
 Discomfort is the space between where I am and where I want to be. It's the feeling that tells me I'm doing something new, something uncertain, something that requires me to stretch further than before. And while it's rarely pleasant, it's almost always the place where I learn the most.
 
-![IMAGE:/blog-images/choosing-discomfort-pushing-beyond-familiar-1.jpg]
 
 ## The Value of Being Uncomfortable
 
@@ -43,8 +43,6 @@ I've also seen how avoiding discomfort limits potential. Some of the best moment
 
 Discomfort, for me, isn't just a challenge. It's a philosophy. It reminds me that improvement is a deliberate choice, and that the most rewarding opportunities often begin with uncertainty.
 
-![IMAGE:/blog-images/choosing-discomfort-pushing-beyond-familiar-3.jpg]
-
 ## Growing Through the Unfamiliar
 
 I won't pretend that choosing discomfort is easy. There are days I hesitate. Days self-doubt creeps in. Days I question whether I've taken on too much. But I've learned that the feeling of being uncomfortable is temporary. What it creates skills, resilience, new opportunities is lasting.
@@ -54,10 +52,7 @@ The more I push myself into situations that stretch my abilities, the broader my
 And that's why I continue to choose it. Not because it feels good in the moment, but because of who I become by moving through it.`,
     author: "Kevin Chen",
     tags: [
-      "Personal Growth",
-      "Mindset",
-      "Engineering",
-      "Leadership",
+      "Personal Thoughts",
       "Self-Improvement",
     ],
   },
@@ -69,7 +64,7 @@ And that's why I continue to choose it. Not because it feels good in the moment,
     excerpt:
       "A comprehensive overview of the technologies, tools, and practices I used to build this modern portfolio website, from Next.js and React to Git version control and Vercel hosting.",
     content: `# Building My Portfolio: A Deep Dive into the Tech Stack
-
+![IMAGE:/blog-images/Portfolio.jpg]
 When I set out to build my personal portfolio website, I wanted to create something that not only showcases my work but also demonstrates modern web development practices. In this post, I'll walk you through the complete tech stack I used to bring this site to life.
 
 ![IMAGE:/blog-images/next-js-seeklogo.svg]
@@ -161,12 +156,7 @@ This tech stack - Next.js, React, TypeScript, Tailwind CSS, Git, and Vercel - pr
 If you're building your own portfolio or web application, I highly recommend exploring these technologies. They've made the development process enjoyable and the end result something I'm proud to showcase.`,
     author: "Kevin Chen",
     tags: [
-      "Next.js",
-      "React",
-      "TypeScript",
-      "Tailwind CSS",
-      "Git",
-      "Vercel",
+      "Engineering",
       "Web Development",
     ],
   },

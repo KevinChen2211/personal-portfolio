@@ -50,6 +50,15 @@
   font-display: swap;
 }
 
+/* Mencken Std Head Narrow - For journal and project titles */
+@font-face {
+  font-family: "Mencken Std Head Narrow";
+  src: url("/fonts/fonnts.com-Mencken-Std-Head-Narrow-.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Utility class for long paragraphs and content */
 .long-content {
   font-family: "Articulat CF Medium", -apple-system, BlinkMacSystemFont,
