@@ -58,9 +58,9 @@ export default function Navbar() {
           Gallery
         </Link>
         <Link
-          href="/blog"
+          href="/journal"
           className={`text-xs md:text-sm font-semibold tracking-wide hover:opacity-70 transition-opacity ${
-            isActive("/blog") ? "underline" : ""
+            isActive("/journal") ? "underline" : ""
           }`}
           style={{
             color: textColor,

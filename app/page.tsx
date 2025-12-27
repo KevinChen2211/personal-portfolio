@@ -18,7 +18,7 @@ export default function Home() {
     { src: "/images/Gallery.jpg", link: "/gallery", label: "Gallery" },
     { src: "/images/Projects.jpg", link: "/projects", label: "Projects" },
     { src: "/images/Gallery2.jpg", link: "/gallery", label: "Gallery" },
-    { src: "/images/Journal.jpg", link: "/blog", label: "Journal" },
+    { src: "/images/Journal.jpg", link: "/journal", label: "Journal" },
     { src: "/images/Gallery3.jpg", link: "/gallery", label: "Gallery" },
     { src: "/images/Contact.jpg", link: "/contact", label: "Contact" },
   ];
@@ -179,7 +179,7 @@ export default function Home() {
             Gallery
           </Link>
           <Link
-            href="/blog"
+            href="/journal"
             className="text-xs md:text-sm font-semibold tracking-wide hover:opacity-70 transition-opacity"
             style={{
               color: textColor,
