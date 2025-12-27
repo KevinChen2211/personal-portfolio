@@ -540,9 +540,10 @@ export default function GalleryPage() {
               <div
                 className="fixed bottom-8 right-8 flex flex-row gap-3 max-w-[60vw] overflow-x-auto transition-opacity duration-500"
                 style={{
-                  opacity: showCollectionTitle ? 1 : 0,
+                  opacity: showCollectionTitle || isTransitioning ? 1 : 0,
                   zIndex: 60,
-                  pointerEvents: showCollectionTitle ? "auto" : "none",
+                  pointerEvents:
+                    showCollectionTitle || isTransitioning ? "auto" : "none",
                 }}
               >
                 {allCollections.map((collection, idx) => {
