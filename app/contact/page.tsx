@@ -58,10 +58,8 @@ export default function ContactPage() {
             </div>
 
             <div
-              className="text-sm md:text-base leading-relaxed mb-4 md:mb-6"
+              className="text-sm md:text-base leading-relaxed mb-4 md:mb-6 "
               style={{
-                fontFamily:
-                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
                 fontWeight: 400,
                 color: textColor,
                 fontStyle: "normal",
@@ -76,8 +74,6 @@ export default function ContactPage() {
                   className="text-xs md:text-sm font-semibold mb-1"
                   style={{
                     color: textColor,
-                    fontFamily:
-                      "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
                   }}
                 >
                   Instagram
@@ -89,8 +85,6 @@ export default function ContactPage() {
                   className="text-xs md:text-sm hover:opacity-70 transition-opacity hover:underline"
                   style={{
                     color: textColor,
-                    fontFamily:
-                      "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
                   }}
                 >
                   @kewinchen_
@@ -101,8 +95,6 @@ export default function ContactPage() {
                   className="text-xs md:text-sm font-semibold mb-1"
                   style={{
                     color: textColor,
-                    fontFamily:
-                      "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
                   }}
                 >
                   LinkedIn
@@ -114,8 +106,6 @@ export default function ContactPage() {
                   className="text-xs md:text-sm hover:opacity-70 transition-opacity hover:underline break-all"
                   style={{
                     color: textColor,
-                    fontFamily:
-                      "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
                   }}
                 >
                   linkedin.com/in/kevinchenengineer/
@@ -131,8 +121,6 @@ export default function ContactPage() {
                 className="px-4 py-2 md:px-5 md:py-2.5 text-xs md:text-sm font-semibold text-center hover:opacity-70 transition-opacity border border-current"
                 style={{
                   color: textColor,
-                  fontFamily:
-                    "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
                 }}
               >
                 Follow on Instagram
@@ -144,8 +132,6 @@ export default function ContactPage() {
                 className="px-4 py-2 md:px-5 md:py-2.5 text-xs md:text-sm font-semibold text-center hover:opacity-70 transition-opacity border border-current"
                 style={{
                   color: textColor,
-                  fontFamily:
-                    "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
                 }}
               >
                 Connect on LinkedIn

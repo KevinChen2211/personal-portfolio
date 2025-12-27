@@ -95,7 +95,9 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 
           {/* Project Title */}
           <div className="flex items-center gap-4 mb-6">
-            {project.icon && <span className="text-4xl md:text-5xl">{project.icon}</span>}
+            {project.icon && (
+              <span className="text-4xl md:text-5xl">{project.icon}</span>
+            )}
             <h1
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold"
               style={{
@@ -110,11 +112,9 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 
           {/* Project Description */}
           <p
-            className="text-base md:text-lg mb-8 leading-relaxed"
+            className="text-base md:text-lg mb-8 leading-relaxed long-content"
             style={{
               color: textColor,
-              fontFamily:
-                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
               opacity: 0.85,
             }}
           >
@@ -134,26 +134,48 @@ export default function ProjectPage({ params }: ProjectPageProps) {
               Key Achievements
             </h2>
             <ul className="space-y-3">
-              {project.highlights.map((highlight, idx) => (
-                <li
-                  key={idx}
-                  className="flex items-start text-sm md:text-base leading-relaxed"
-                  style={{
-                    color: textColor,
-                    fontFamily:
-                      "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-                    opacity: 0.8,
-                  }}
-                >
-                  <span
-                    className="mr-3 mt-2 flex-shrink-0"
-                    style={{ color: textColor }}
+              {project.highlights.map((highlight, idx) => {
+                // Check if highlight contains a URL
+                const urlRegex = /(https?:\/\/[^\s]+)/g;
+                const parts = highlight.split(urlRegex);
+
+                return (
+                  <li
+                    key={idx}
+                    className="flex items-start text-sm md:text-base leading-relaxed long-content"
+                    style={{
+                      color: textColor,
+                      opacity: 0.8,
+                    }}
                   >
-                    •
-                  </span>
-                  <span>{highlight}</span>
-                </li>
-              ))}
+                    <span
+                      className="mr-3 mt-2 flex-shrink-0"
+                      style={{ color: textColor }}
+                    >
+                      •
+                    </span>
+                    <span>
+                      {parts.map((part, partIdx) => {
+                        if (part.match(urlRegex)) {
+                          return (
+                            <a
+                              key={partIdx}
+                              href={part}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="underline hover:opacity-70 transition-opacity"
+                              style={{ color: textColor }}
+                            >
+                              {part}
+                            </a>
+                          );
+                        }
+                        return part;
+                      })}
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </div>
@@ -171,4 +193,3 @@ export default function ProjectPage({ params }: ProjectPageProps) {
     </div>
   );
 }
-

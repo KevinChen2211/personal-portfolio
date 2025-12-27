@@ -62,11 +62,9 @@ const BlogCard = ({
           {post.title}
         </h3>
         <p
-          className="text-sm mb-4 leading-relaxed"
+          className="text-sm mb-4 leading-relaxed long-content"
           style={{
             color: textColor,
-            fontFamily:
-              "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
             opacity: 0.8,
           }}
         >

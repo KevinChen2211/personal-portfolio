@@ -41,6 +41,21 @@
   font-display: swap;
 }
 
+/* Articulat CF Medium - For long paragraphs and content */
+@font-face {
+  font-family: "Articulat CF Medium";
+  src: url("/fonts/Articulat CF Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Utility class for long paragraphs and content */
+.long-content {
+  font-family: "Articulat CF Medium", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
 /* IvyPresto Display Thin - Use Adobe Fonts if available, otherwise falls back to Playfair Display */
 /* To use IvyPresto: Add Adobe Fonts link in layout.tsx head and uncomment below */
 /*

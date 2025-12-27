@@ -11,7 +11,10 @@ export const projects: Project[] = [
   {
     title: "Advanced RMIT Combat-Robotics",
     description:
-      "Leading a competitive robotics club focused on combat robotics design, engineering, and competition. Organized workshops, competitions, and industry partnerships.",
+      "The Advanced RMIT Combat Robotics initiative represents a student-led, competition-driven engineering program focused on the end-to-end design, \
+      construction, and operation of combat robots. Over multiple design cycles, the club guided students through the complete engineering lifecycle, \
+      from concept ideation and CAD modelling to manufacturing, electronics integration, software development, and live competition testing. Emphasis \
+      was placed on iterative design, failure analysis, and rapid prototyping, mirroring professional engineering workflows.",
     highlights: [
       "Led 80+ students through 4 robot design cycles",
       "Won state competitions and secured additional funding",
@@ -19,6 +22,7 @@ export const projects: Project[] = [
       "Delivered STEM workshops to high schools in collaboration with RMIT and I Belong",
       "Initiated sponsorships and organized club events",
       "Organized networking events with industry professionals",
+      "Visit the website: https://rmitbattlebots.com/",
     ],
     image: "/projects-images/combatrobots.jpg",
     slug: "rmit-battlebots",

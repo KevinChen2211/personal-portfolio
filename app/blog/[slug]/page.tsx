@@ -136,7 +136,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                       className="list-disc list-inside mb-4 space-y-2 ml-4"
                     >
                       {currentList.map((item, idx) => (
-                        <li key={idx} className="leading-relaxed">
+                        <li key={idx} className="leading-relaxed long-content">
                           {parseInlineMarkdown(item)}
                         </li>
                       ))}
@@ -234,8 +234,10 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                   const imageMatch = trimmed.match(/!\[IMAGE:(.+?)\]/);
                   if (imageMatch) {
                     const imagePath = imageMatch[1];
-                    const isSvg = imagePath.toLowerCase().endsWith('.svg');
-                    const isLogo = imagePath.includes('next-js') || imagePath.includes('Vercel');
+                    const isSvg = imagePath.toLowerCase().endsWith(".svg");
+                    const isLogo =
+                      imagePath.includes("next-js") ||
+                      imagePath.includes("Vercel");
                     const isPhoto = !isLogo && !isSvg;
                     elements.push(
                       <div
@@ -244,51 +246,64 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                       >
                         <div
                           className={`relative rounded-lg overflow-hidden ${
-                            isLogo ? "p-4 sm:p-8 max-w-full sm:max-w-[400px]" : ""
+                            isLogo
+                              ? "p-4 sm:p-8 max-w-full sm:max-w-[400px]"
+                              : ""
                           }`}
                           style={{
                             backgroundColor: isLogo ? "#ffffff" : "transparent",
-                            border: isLogo ? `1px solid ${palette.border}` : "none",
-                            boxShadow: isLogo ? `0 4px 12px ${palette.primary}10` : "none",
+                            border: isLogo
+                              ? `1px solid ${palette.border}`
+                              : "none",
+                            boxShadow: isLogo
+                              ? `0 4px 12px ${palette.primary}10`
+                              : "none",
                             width: "100%",
                           }}
                         >
-                            {isSvg ? (
-                              // Use regular img tag for SVGs for better compatibility
-                              <img
-                                src={imagePath}
-                                alt=""
-                                className="object-contain w-full h-auto"
-                                style={{
-                                  maxWidth: "100%",
-                                  width: "100%",
-                                  height: "auto",
-                                  display: "block",
-                                }}
-                                onError={(e) => {
-                                  console.error('Image failed to load:', imagePath);
-                                  (e.target as HTMLImageElement).style.display = 'none';
-                                }}
-                              />
-                            ) : (
-                              <Image
-                                src={imagePath}
-                                alt=""
-                                width={800}
-                                height={600}
-                                className="object-contain w-full h-auto"
-                                style={{
-                                  maxWidth: "100%",
-                                  height: "auto",
-                                  display: "block",
-                                }}
-                                unoptimized={false}
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
-                                onError={(e) => {
-                                  console.error('Image failed to load:', imagePath);
-                                }}
-                              />
-                            )}
+                          {isSvg ? (
+                            // Use regular img tag for SVGs for better compatibility
+                            <img
+                              src={imagePath}
+                              alt=""
+                              className="object-contain w-full h-auto"
+                              style={{
+                                maxWidth: "100%",
+                                width: "100%",
+                                height: "auto",
+                                display: "block",
+                              }}
+                              onError={(e) => {
+                                console.error(
+                                  "Image failed to load:",
+                                  imagePath
+                                );
+                                (e.target as HTMLImageElement).style.display =
+                                  "none";
+                              }}
+                            />
+                          ) : (
+                            <Image
+                              src={imagePath}
+                              alt=""
+                              width={800}
+                              height={600}
+                              className="object-contain w-full h-auto"
+                              style={{
+                                maxWidth: "100%",
+                                height: "auto",
+                                display: "block",
+                              }}
+                              unoptimized={false}
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
+                              onError={(e) => {
+                                console.error(
+                                  "Image failed to load:",
+                                  imagePath
+                                );
+                              }}
+                            />
+                          )}
                         </div>
                         {isPhoto && (
                           <p
@@ -368,7 +383,10 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
 
                 // Regular paragraph
                 elements.push(
-                  <p key={`p-${index}`} className="mb-4 leading-relaxed">
+                  <p
+                    key={`p-${index}`}
+                    className="mb-4 leading-relaxed long-content"
+                  >
                     {parseInlineMarkdown(trimmed)}
                   </p>
                 );
