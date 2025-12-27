@@ -252,6 +252,22 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
       return;
     }
 
+    // Handle horizontal rule (---)
+    if (trimmed === "---" || trimmed.match(/^-{3,}$/)) {
+      flushList();
+      elements.push(
+        <hr
+          key={`hr-${index}`}
+          className="my-8 border-t"
+          style={{
+            borderColor: palette.border,
+            opacity: 0.3,
+          }}
+        />
+      );
+      return;
+    }
+
     // Handle list items
     if (trimmed.startsWith("- ")) {
       currentList.push(trimmed.replace("- ", ""));
