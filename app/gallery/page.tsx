@@ -456,16 +456,19 @@ export default function GalleryPage() {
             {/* Other collections preview in bottom right */}
             {otherCollections.length > 0 && (
               <div
-                className="fixed bottom-8 right-8 z-60 flex flex-row gap-3 max-w-[60vw] overflow-x-auto transition-opacity duration-500"
+                className="fixed bottom-8 right-8 flex flex-row gap-3 max-w-[60vw] overflow-x-auto transition-opacity duration-500"
                 style={{
                   opacity: showCollectionTitle ? 1 : 0,
+                  zIndex: 60,
+                  pointerEvents: showCollectionTitle ? "auto" : "none",
                 }}
               >
                 {otherCollections.map((collection) => (
                   <div
                     key={collection.galleryImageIndex}
                     className="cursor-pointer group relative flex-shrink-0"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       const img =
                         imageRefs.current[collection.galleryImageIndex];
                       if (img) {
@@ -476,12 +479,12 @@ export default function GalleryPage() {
                     <img
                       src={collection.previewImage}
                       alt={collection.name}
-                      className="w-20 h-28 sm:w-24 sm:h-32 object-cover transition-transform duration-300 group-hover:scale-110"
-                      style={{ aspectRatio: "40 / 56" }}
+                      className="relative z-10 w-20 h-28 sm:w-24 sm:h-32 object-cover transition-transform duration-300 group-hover:scale-110 rounded-sm"
                       draggable={false}
+                      loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300" />
-                    <div className="absolute bottom-0 left-0 right-0 p-1 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300">
+                    <div className="absolute inset-0 z-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 pointer-events-none rounded-sm" />
+                    <div className="absolute bottom-0 left-0 right-0 z-0 p-1 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 pointer-events-none rounded-b-sm">
                       <p className="text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 truncate">
                         {collection.name}
                       </p>
