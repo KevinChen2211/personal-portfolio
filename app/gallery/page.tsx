@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { galleryImages, parseCollection } from "./data";
+import { galleryImages, parseCollection, allImages } from "./data";
 import Navbar from "../components/Navbar";
 
 export default function GalleryPage() {
@@ -33,7 +33,57 @@ export default function GalleryPage() {
   const [expandedObjectPosition, setExpandedObjectPosition] =
     useState<string>("100% center");
   const [isClosing, setIsClosing] = useState(false);
+  const [hoveredTitle, setHoveredTitle] = useState(false);
   const hasCollectionLink = !!expandedCollection?.slug;
+
+  // Calculate collection info
+  const getCollectionInfo = () => {
+    if (!expandedImageSrc || !expandedCollection) return null;
+
+    const collectionImages = allImages.filter(
+      (src) => parseCollection(src).slug === expandedCollection.slug
+    );
+
+    const currentIndex = collectionImages.findIndex(
+      (src) => src === expandedImageSrc
+    );
+
+    return {
+      currentIndex: currentIndex >= 0 ? currentIndex + 1 : 1,
+      total: collectionImages.length,
+      images: collectionImages,
+    };
+  };
+
+  const collectionInfo = getCollectionInfo();
+
+  // Get other collections (excluding current) that have images in galleryImages
+  const getOtherCollections = () => {
+    if (!expandedCollection) return [];
+
+    const collectionsMap = new Map<
+      string,
+      { name: string; galleryImageIndex: number; previewImage: string }
+    >();
+
+    galleryImages.forEach((src, index) => {
+      const { slug, name } = parseCollection(src);
+      if (slug !== expandedCollection.slug) {
+        if (!collectionsMap.has(slug)) {
+          collectionsMap.set(slug, {
+            name,
+            galleryImageIndex: index,
+            previewImage: src,
+          });
+        }
+      }
+    });
+
+    return Array.from(collectionsMap.values());
+  };
+
+  const otherCollections =
+    expandedImageIndex !== null ? getOtherCollections() : [];
 
   useEffect(() => {
     expandedIndexRef.current = expandedImageIndex;
@@ -205,6 +255,7 @@ export default function GalleryPage() {
             setExpandedCollection(null);
             setShowCollectionTitle(true);
             setIsClosing(false);
+            setHoveredTitle(false);
           }, 1000);
         });
       });
@@ -240,7 +291,7 @@ export default function GalleryPage() {
       className="min-h-screen w-full relative overflow-hidden"
       style={{ backgroundColor: bgColor, color: textColor }}
     >
-      <Navbar />
+      <Navbar isExpanded={expandedImageIndex !== null} isClosing={isClosing} />
 
       {/* IMAGE TRACK */}
       <div
@@ -312,18 +363,48 @@ export default function GalleryPage() {
             {hasCollectionLink ? (
               <Link
                 href={`/gallery/collection/${expandedCollection.slug}`}
-                className="fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center text-4xl sm:text-5xl md:text-6xl tracking-tight transition-opacity duration-500 hover:opacity-80 "
+                className="fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center text-4xl sm:text-5xl md:text-6xl tracking-tight transition-opacity duration-500 hover:opacity-80"
                 style={{
                   color: textColor,
                   opacity: showCollectionTitle ? 1 : 0,
                   pointerEvents: showCollectionTitle ? "auto" : "none",
                 }}
+                onMouseEnter={() => setHoveredTitle(true)}
+                onMouseLeave={() => setHoveredTitle(false)}
               >
                 {expandedCollection.name}
+                {hoveredTitle && collectionInfo && (
+                  <sup className="text-2xl sm:text-3xl md:text-4xl ml-2 opacity-80">
+                    {collectionInfo.total}
+                  </sup>
+                )}
               </Link>
             ) : (
               <div
-                className="fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight transition-opacity duration-500 pointer-events-none"
+                className="fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight transition-opacity duration-500"
+                style={{
+                  color: textColor,
+                  opacity: showCollectionTitle ? 1 : 0,
+                  pointerEvents: showCollectionTitle ? "auto" : "none",
+                  fontFamily:
+                    "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                }}
+                onMouseEnter={() => setHoveredTitle(true)}
+                onMouseLeave={() => setHoveredTitle(false)}
+              >
+                {expandedCollection.name}
+                {hoveredTitle && collectionInfo && (
+                  <sup className="text-2xl sm:text-3xl md:text-4xl ml-2 opacity-80">
+                    {collectionInfo.total}
+                  </sup>
+                )}
+              </div>
+            )}
+
+            {/* Collection number at bottom middle */}
+            {collectionInfo && (
+              <div
+                className="fixed bottom-8 left-1/2 z-60 -translate-x-1/2 text-center text-lg sm:text-xl md:text-2xl transition-opacity duration-500"
                 style={{
                   color: textColor,
                   opacity: showCollectionTitle ? 1 : 0,
@@ -331,7 +412,45 @@ export default function GalleryPage() {
                     "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
                 }}
               >
-                {expandedCollection.name}
+                {collectionInfo.currentIndex}-{collectionInfo.total}
+              </div>
+            )}
+
+            {/* Other collections preview in bottom right */}
+            {otherCollections.length > 0 && (
+              <div
+                className="fixed bottom-8 right-8 z-60 flex flex-col gap-3 max-h-[60vh] overflow-y-auto transition-opacity duration-500"
+                style={{
+                  opacity: showCollectionTitle ? 1 : 0,
+                }}
+              >
+                {otherCollections.map((collection) => (
+                  <div
+                    key={collection.galleryImageIndex}
+                    className="cursor-pointer group relative"
+                    onClick={() => {
+                      const img =
+                        imageRefs.current[collection.galleryImageIndex];
+                      if (img) {
+                        img.click();
+                      }
+                    }}
+                  >
+                    <img
+                      src={collection.previewImage}
+                      alt={collection.name}
+                      className="w-20 h-28 sm:w-24 sm:h-32 object-cover transition-transform duration-300 group-hover:scale-110"
+                      style={{ aspectRatio: "40 / 56" }}
+                      draggable={false}
+                    />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300" />
+                    <div className="absolute bottom-0 left-0 right-0 p-1 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300">
+                      <p className="text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 truncate">
+                        {collection.name}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
             <img
