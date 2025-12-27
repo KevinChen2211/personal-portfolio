@@ -35,6 +35,18 @@ export default function GalleryPage() {
   const [isClosing, setIsClosing] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
   const [hoveredTitle, setHoveredTitle] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionDirection, setTransitionDirection] = useState<
+    "left" | "right" | null
+  >(null);
+  const [nextImageData, setNextImageData] = useState<{
+    src: string;
+    index: number;
+    collection: { name: string; slug: string };
+    objectPosition: string;
+  } | null>(null);
+  const [nextImageSlideIn, setNextImageSlideIn] = useState(false);
+  const [disableCommitAnimation, setDisableCommitAnimation] = useState(false);
   const hasCollectionLink = !!expandedCollection?.slug;
 
   // Calculate collection info
@@ -295,13 +307,75 @@ export default function GalleryPage() {
   ------------------------------- */
   useEffect(() => {
     const handleExpandedWheel = (e: WheelEvent) => {
-      if (expandedIndexRef.current === null || isClosing) return;
+      if (expandedIndexRef.current === null || isClosing || isTransitioning)
+        return;
       e.preventDefault();
       shrinkImage();
     };
     window.addEventListener("wheel", handleExpandedWheel, { passive: false });
     return () => window.removeEventListener("wheel", handleExpandedWheel);
-  }, [expandedImageIndex, isClosing]);
+  }, [expandedImageIndex, isClosing, isTransitioning]);
+
+  /* -------------------------------
+     Handle collection transition animation
+  ------------------------------- */
+  useEffect(() => {
+    if (!isTransitioning || !nextImageData || !transitionDirection) return;
+
+    // Hide title during transition
+    setShowCollectionTitle(false);
+    setNextImageSlideIn(false);
+
+    // Transition duration matches existing (1000ms)
+    const transitionDuration = 1000;
+
+    // Start the slide-in animation after a brief delay to ensure DOM is ready
+    const timeoutId = setTimeout(() => {
+      // Trigger the slide-in animation
+      setNextImageSlideIn(true);
+
+      // After transition completes, swap the images
+      setTimeout(() => {
+        const newImg = imageRefs.current[nextImageData.index];
+        if (!newImg) {
+          setIsTransitioning(false);
+          setTransitionDirection(null);
+          setNextImageData(null);
+          setNextImageSlideIn(false);
+          setShowCollectionTitle(true);
+          return;
+        }
+
+        // First, reset transition state to hide the transition image
+        setIsTransitioning(false);
+        setTransitionDirection(null);
+        setNextImageSlideIn(false);
+        setDisableCommitAnimation(true);
+        // Then update to the new image state (this happens after transition is hidden)
+        requestAnimationFrame(() => {
+          setExpandedImageIndex(nextImageData.index);
+          setExpandedImageSrc(nextImageData.src);
+          setExpandedCollection(nextImageData.collection);
+          setExpandedObjectPosition(nextImageData.objectPosition);
+          setExpandedImageStyle({
+            top: window.innerHeight / 2,
+            left: window.innerWidth / 2,
+            width: window.innerWidth,
+            height: window.innerHeight,
+          });
+
+          // Clear next image data and show title
+          setNextImageData(null);
+          setShowCollectionTitle(true);
+          requestAnimationFrame(() => {
+            setDisableCommitAnimation(false);
+          });
+        });
+      }, transitionDuration);
+    }, 50);
+
+    return () => clearTimeout(timeoutId);
+  }, [isTransitioning, nextImageData, transitionDirection]);
 
   return (
     <div
@@ -466,57 +540,123 @@ export default function GalleryPage() {
                   pointerEvents: showCollectionTitle ? "auto" : "none",
                 }}
               >
-                {allCollections.map((collection) => (
-                  <div
-                    key={collection.galleryImageIndex}
-                    className="cursor-pointer relative flex-shrink-0"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const img =
-                        imageRefs.current[collection.galleryImageIndex];
-                      if (img) {
-                        img.click();
-                      }
-                    }}
-                  >
-                    <img
-                      src={collection.previewImage}
-                      alt={collection.name}
-                      className="relative z-10 w-20 h-28 sm:w-24 sm:h-32 object-cover rounded-sm"
-                      style={{
-                        border: collection.isCurrent
-                          ? "2px solid rgba(250, 242, 230, 0.8)"
-                          : "2px solid transparent",
+                {allCollections.map((collection, idx) => {
+                  const currentCollectionIndex = allCollections.findIndex(
+                    (c) => c.isCurrent
+                  );
+                  const direction =
+                    idx < currentCollectionIndex ? "left" : "right";
+
+                  return (
+                    <div
+                      key={collection.galleryImageIndex}
+                      className="cursor-pointer relative flex-shrink-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (
+                          isTransitioning ||
+                          isClosing ||
+                          collection.isCurrent
+                        )
+                          return;
+
+                        const img =
+                          imageRefs.current[collection.galleryImageIndex];
+                        if (!img) return;
+
+                        const rect = img.getBoundingClientRect();
+                        const currentObjectPosition =
+                          getComputedStyle(img).objectPosition;
+
+                        setIsTransitioning(true);
+                        setTransitionDirection(direction);
+                        setNextImageData({
+                          src: collection.previewImage,
+                          index: collection.galleryImageIndex,
+                          collection: parseCollection(collection.previewImage),
+                          objectPosition: currentObjectPosition,
+                        });
                       }}
-                      draggable={false}
-                      loading="lazy"
-                    />
-                    <div className="absolute bottom-0 left-0 right-0 z-0 p-1 bg-black bg-opacity-60 rounded-b-sm">
-                      <p className="text-xs text-white truncate">
-                        {collection.name}
-                      </p>
+                    >
+                      <img
+                        src={collection.previewImage}
+                        alt={collection.name}
+                        className="relative z-10 w-20 h-28 sm:w-24 sm:h-32 object-cover rounded-sm"
+                        style={{
+                          border: collection.isCurrent
+                            ? "2px solid rgba(250, 242, 230, 0.8)"
+                            : "2px solid transparent",
+                        }}
+                        draggable={false}
+                        loading="lazy"
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 z-0 p-1 bg-black bg-opacity-60 rounded-b-sm">
+                        <p className="text-xs text-white truncate">
+                          {collection.name}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
-            <img
-              src={expandedImageSrc}
-              draggable={false}
-              className="transition-all duration-1000 ease-out"
-              style={{
-                width: `${expandedImageStyle.width}px`,
-                height: `${expandedImageStyle.height}px`,
-                aspectRatio: "40 / 56",
-                objectFit: "cover",
-                objectPosition: expandedObjectPosition,
-                position: "fixed",
-                top: `${expandedImageStyle.top}px`,
-                left: `${expandedImageStyle.left}px`,
-                transform: "translate(-50%, -50%)",
-                zIndex: 50,
-              }}
-            />
+            {/* Current expanded image */}
+            {expandedImageSrc && (
+              <img
+                src={expandedImageSrc}
+                draggable={false}
+                className={
+                  disableCommitAnimation
+                    ? "transition-none"
+                    : "transition-all duration-1000 ease-out"
+                }
+                style={{
+                  width: `${expandedImageStyle.width}px`,
+                  height: `${expandedImageStyle.height}px`,
+                  aspectRatio: "40 / 56",
+                  objectFit: "cover",
+                  objectPosition: expandedObjectPosition,
+                  position: "fixed",
+                  top: `${expandedImageStyle.top}px`,
+                  left: `${expandedImageStyle.left}px`,
+                  transform:
+                    isTransitioning && transitionDirection
+                      ? `translate(calc(-50% ${
+                          transitionDirection === "left" ? "+" : "-"
+                        } 100vw), -50%)`
+                      : "translate(-50%, -50%)",
+                  zIndex: isTransitioning ? 50 : 50,
+                }}
+              />
+            )}
+
+            {/* Next image sliding in */}
+            {isTransitioning &&
+              nextImageData &&
+              transitionDirection &&
+              expandedImageStyle && (
+                <img
+                  src={nextImageData.src}
+                  draggable={false}
+                  className="transition-all duration-1000 ease-out"
+                  style={{
+                    width: `${expandedImageStyle.width}px`,
+                    height: `${expandedImageStyle.height}px`,
+                    aspectRatio: "40 / 56",
+                    objectFit: "cover",
+                    objectPosition: nextImageData.objectPosition,
+                    position: "fixed",
+                    top: `${expandedImageStyle.top}px`,
+                    left: `${expandedImageStyle.left}px`,
+                    transform: nextImageSlideIn
+                      ? "translate(-50%, -50%)"
+                      : transitionDirection === "left"
+                      ? "translate(calc(-50% - 100vw), -50%)"
+                      : "translate(calc(-50% + 100vw), -50%)",
+                    zIndex: 51,
+                  }}
+                />
+              )}
           </>
         )}
     </div>
