@@ -7,7 +7,7 @@ import Navbar from "../components/Navbar";
 
 export default function GalleryPage() {
   const bgColor = "#FAF2E6";
-  const textColor = "#2C2C2C";
+  const textColor = "#FAF2E6";
 
   const trackRef = useRef<HTMLDivElement | null>(null);
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
@@ -312,13 +312,11 @@ export default function GalleryPage() {
             {hasCollectionLink ? (
               <Link
                 href={`/gallery/collection/${expandedCollection.slug}`}
-                className="fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight transition-opacity duration-500 hover:opacity-80"
+                className="fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center text-4xl sm:text-5xl md:text-6xl tracking-tight transition-opacity duration-500 hover:opacity-80 "
                 style={{
                   color: textColor,
                   opacity: showCollectionTitle ? 1 : 0,
                   pointerEvents: showCollectionTitle ? "auto" : "none",
-                  fontFamily:
-                    "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
                 }}
               >
                 {expandedCollection.name}
