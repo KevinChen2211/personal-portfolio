@@ -14,6 +14,7 @@ export default function GalleryPage() {
   const scrollToImageRef = useRef<((index: number) => void) | null>(null);
   const currentScrollPercentageRef = useRef<number>(-50);
   const expandedIndexRef = useRef<number | null>(null);
+  const previousCollectionSlugRef = useRef<string | null>(null);
 
   const [expandedImageIndex, setExpandedImageIndex] = useState<number | null>(
     null
@@ -378,9 +379,10 @@ export default function GalleryPage() {
         setDisableCommitAnimation(true);
 
         requestAnimationFrame(() => {
+          const newCollection = nextImageData.collection;
           setExpandedImageIndex(nextImageData.index);
           setExpandedImageSrc(nextImageData.src);
-          setExpandedCollection(nextImageData.collection);
+          setExpandedCollection(newCollection);
           setExpandedObjectPosition(nextImageData.objectPosition);
           setExpandedImageStyle({
             top: window.innerHeight / 2,
@@ -401,9 +403,13 @@ export default function GalleryPage() {
               setDisableCommitAnimation(false);
               setShowCollectionTitle(true);
               // Trigger collection name animation after transition completes
-              setCollectionNameAnimate(false);
+              // Always animate when switching via preview (since we're switching to a different collection)
+              // Use double RAF to ensure DOM has updated with new collection name
               requestAnimationFrame(() => {
-                setCollectionNameAnimate(true);
+                requestAnimationFrame(() => {
+                  setCollectionNameAnimate(true);
+                  previousCollectionSlugRef.current = newCollection.slug;
+                });
               });
             });
           });
@@ -442,12 +448,14 @@ export default function GalleryPage() {
               const rect = img.getBoundingClientRect();
               setIsOpening(true);
               setIsClosing(false);
+              const newCollection = parseCollection(src);
               setExpandedImageIndex(i);
               setExpandedImageSrc(src);
-              setExpandedCollection(parseCollection(src));
+              setExpandedCollection(newCollection);
               setShowCollectionTitle(true);
               // Reset and trigger collection name animation on initial open
               setCollectionNameAnimate(false);
+              previousCollectionSlugRef.current = newCollection.slug;
               requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                   setCollectionNameAnimate(true);
@@ -657,6 +665,8 @@ export default function GalleryPage() {
 
                         setIsTransitioning(true);
                         setTransitionDirection(direction);
+                        // Reset animation state when starting transition
+                        setCollectionNameAnimate(false);
                         setNextImageData({
                           src: collection.previewImage,
                           index: collection.galleryImageIndex,
