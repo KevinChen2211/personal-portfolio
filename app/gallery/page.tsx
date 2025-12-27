@@ -48,6 +48,7 @@ export default function GalleryPage() {
   } | null>(null);
   const [nextImageSlideIn, setNextImageSlideIn] = useState(false);
   const [disableCommitAnimation, setDisableCommitAnimation] = useState(false);
+  const [collectionNameAnimate, setCollectionNameAnimate] = useState(false);
   const hasCollectionLink = !!expandedCollection?.slug;
 
   // Calculate collection info
@@ -310,6 +311,7 @@ export default function GalleryPage() {
             setIsOpening(false);
             setHoveredTitle(false);
             setIsSuperscriptExiting(false);
+            setCollectionNameAnimate(false);
           }, 1000);
         });
       });
@@ -398,6 +400,11 @@ export default function GalleryPage() {
             requestAnimationFrame(() => {
               setDisableCommitAnimation(false);
               setShowCollectionTitle(true);
+              // Trigger collection name animation after transition completes
+              setCollectionNameAnimate(false);
+              requestAnimationFrame(() => {
+                setCollectionNameAnimate(true);
+              });
             });
           });
         });
@@ -439,6 +446,13 @@ export default function GalleryPage() {
               setExpandedImageSrc(src);
               setExpandedCollection(parseCollection(src));
               setShowCollectionTitle(true);
+              // Reset and trigger collection name animation on initial open
+              setCollectionNameAnimate(false);
+              requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                  setCollectionNameAnimate(true);
+                });
+              });
               const currentObjectPosition =
                 getComputedStyle(img).objectPosition;
 
@@ -503,7 +517,17 @@ export default function GalleryPage() {
                 onMouseLeave={handleSuperscriptMouseLeave}
               >
                 <span className="relative inline-block">
-                  {expandedCollection.name}
+                  <span className="inline-block overflow-hidden">
+                    <span
+                      className={`block transition-transform duration-1000 ease-in-out ${
+                        collectionNameAnimate
+                          ? "translate-y-0"
+                          : "translate-y-full"
+                      }`}
+                    >
+                      {expandedCollection.name}
+                    </span>
+                  </span>
                   {collectionInfo && (
                     <sup
                       className="absolute left-full text-xl sm:text-1xl md:text-1xl ml-2 whitespace-nowrap overflow-hidden"
@@ -542,7 +566,17 @@ export default function GalleryPage() {
                 onMouseLeave={handleSuperscriptMouseLeave}
               >
                 <span className="relative inline-block">
-                  {expandedCollection.name}
+                  <span className="inline-block overflow-hidden">
+                    <span
+                      className={`block transition-transform duration-1000 ease-in-out ${
+                        collectionNameAnimate
+                          ? "translate-y-0"
+                          : "translate-y-full"
+                      }`}
+                    >
+                      {expandedCollection.name}
+                    </span>
+                  </span>
                   {collectionInfo && (
                     <sup
                       className="absolute left-full text-xl sm:text-1xl md:text-1xl ml-2 whitespace-nowrap overflow-hidden"
