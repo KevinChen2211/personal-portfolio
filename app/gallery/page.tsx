@@ -6,8 +6,8 @@ import { galleryImages, parseCollection } from "./data";
 import Navbar from "../components/Navbar";
 
 export default function GalleryPage() {
-  const bgColor = "#141414";
-  const textColor = "#FAF2E6";
+  const bgColor = "#FAF2E6";
+  const textColor = "#2C2C2C";
 
   const trackRef = useRef<HTMLDivElement | null>(null);
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
@@ -241,19 +241,6 @@ export default function GalleryPage() {
       style={{ backgroundColor: bgColor, color: textColor }}
     >
       <Navbar />
-      <div className="px-6 sm:px-10 md:px-12 lg:px-20 xl:px-24 pt-24 pb-16">
-        <div className="max-w-6xl mx-auto">
-          <h1
-            className="text-4xl sm:text-5xl md:text-6xl font-semibold mb-4"
-            style={{
-              fontFamily:
-                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-            }}
-          >
-            Gallery
-          </h1>
-        </div>
-      </div>
 
       {/* IMAGE TRACK */}
       <div
