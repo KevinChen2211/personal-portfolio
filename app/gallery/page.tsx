@@ -33,6 +33,7 @@ export default function GalleryPage() {
   const [expandedObjectPosition, setExpandedObjectPosition] =
     useState<string>("100% center");
   const [isClosing, setIsClosing] = useState(false);
+  const [isOpening, setIsOpening] = useState(false);
   const [hoveredTitle, setHoveredTitle] = useState(false);
   const hasCollectionLink = !!expandedCollection?.slug;
 
@@ -255,6 +256,7 @@ export default function GalleryPage() {
             setExpandedCollection(null);
             setShowCollectionTitle(true);
             setIsClosing(false);
+            setIsOpening(false);
             setHoveredTitle(false);
           }, 1000);
         });
@@ -312,6 +314,8 @@ export default function GalleryPage() {
               const img = imageRefs.current[i];
               if (!img) return;
               const rect = img.getBoundingClientRect();
+              setIsOpening(true);
+              setIsClosing(false);
               setExpandedImageIndex(i);
               setExpandedImageSrc(src);
               setExpandedCollection(parseCollection(src));
@@ -326,12 +330,19 @@ export default function GalleryPage() {
                 height: rect.height,
               });
               setExpandedObjectPosition(currentObjectPosition);
+              // Start fade in after a brief delay to ensure opacity starts at 0
               requestAnimationFrame(() => {
-                setExpandedImageStyle({
-                  top: window.innerHeight / 2,
-                  left: window.innerWidth / 2,
-                  width: window.innerWidth,
-                  height: window.innerHeight,
+                requestAnimationFrame(() => {
+                  setExpandedImageStyle({
+                    top: window.innerHeight / 2,
+                    left: window.innerWidth / 2,
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                  });
+                  // Fade in the background
+                  setTimeout(() => {
+                    setIsOpening(false);
+                  }, 10);
                 });
               });
             }}
@@ -357,7 +368,7 @@ export default function GalleryPage() {
               className="fixed inset-0 z-40 transition-opacity duration-1000"
               style={{
                 backgroundColor: "#141414",
-                opacity: isClosing ? 0 : 1,
+                opacity: isClosing || isOpening ? 0 : 1,
               }}
             />
             {hasCollectionLink ? (
