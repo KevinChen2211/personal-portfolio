@@ -58,6 +58,18 @@ export default function GalleryPage() {
 
   const collectionInfo = getCollectionInfo();
 
+  // Calculate gallery position info
+  const getGalleryPositionInfo = () => {
+    if (expandedImageIndex === null) return null;
+
+    return {
+      currentIndex: expandedImageIndex + 1,
+      total: galleryImages.length,
+    };
+  };
+
+  const galleryPositionInfo = getGalleryPositionInfo();
+
   // Get other collections (excluding current) that have images in galleryImages
   const getOtherCollections = () => {
     if (!expandedCollection) return [];
@@ -412,18 +424,16 @@ export default function GalleryPage() {
               </div>
             )}
 
-            {/* Collection number at bottom middle */}
-            {collectionInfo && (
+            {/* Gallery position number at bottom middle */}
+            {galleryPositionInfo && (
               <div
                 className="fixed bottom-8 left-1/2 z-60 -translate-x-1/2 text-center text-lg sm:text-xl md:text-2xl transition-opacity duration-500"
                 style={{
                   color: textColor,
                   opacity: showCollectionTitle ? 1 : 0,
-                  fontFamily:
-                    "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
                 }}
               >
-                {collectionInfo.currentIndex}-{collectionInfo.total}
+                {galleryPositionInfo.currentIndex} — {galleryPositionInfo.total}
               </div>
             )}
 
