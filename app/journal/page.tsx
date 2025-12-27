@@ -5,9 +5,10 @@ import { blogPosts } from "../data/blogs";
 import { useRef } from "react";
 import { useScrollAnimation } from "../components/useScrollAnimation";
 import Navbar from "../components/Navbar";
+import { formatDate } from "../utils/date";
 
-// Blog Card Component with scroll animations
-const BlogCard = ({
+// Journal Card Component with scroll animations
+const JournalCard = ({
   post,
   index,
 }: {
@@ -18,14 +19,6 @@ const BlogCard = ({
   const { isVisible } = useScrollAnimation(cardRef, { threshold: 0.1 });
   const bgColor = "#FAF2E6";
   const textColor = "#2C2C2C";
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
 
   return (
     <Link href={`/journal/${post.slug}`} className="block group">
@@ -109,7 +102,7 @@ export default function JournalPage() {
           </h1>
           <div className="space-y-6">
             {blogPosts.map((post, index) => (
-              <BlogCard key={post.id} post={post} index={index} />
+              <JournalCard key={post.id} post={post} index={index} />
             ))}
           </div>
         </div>
