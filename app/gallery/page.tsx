@@ -347,11 +347,9 @@ export default function GalleryPage() {
         }
 
         // First, reset transition state to hide the transition image
-        setIsTransitioning(false);
-        setTransitionDirection(null);
-        setNextImageSlideIn(false);
+        // 1️⃣ Commit the expanded image FIRST (no animation)
         setDisableCommitAnimation(true);
-        // Then update to the new image state (this happens after transition is hidden)
+
         requestAnimationFrame(() => {
           setExpandedImageIndex(nextImageData.index);
           setExpandedImageSrc(nextImageData.src);
@@ -364,11 +362,18 @@ export default function GalleryPage() {
             height: window.innerHeight,
           });
 
-          // Clear next image data and show title
-          setNextImageData(null);
-          setShowCollectionTitle(true);
+          // 2️⃣ NEXT frame: remove transition image
           requestAnimationFrame(() => {
-            setDisableCommitAnimation(false);
+            setIsTransitioning(false);
+            setTransitionDirection(null);
+            setNextImageSlideIn(false);
+            setNextImageData(null);
+
+            // 3️⃣ Re-enable animations
+            requestAnimationFrame(() => {
+              setDisableCommitAnimation(false);
+              setShowCollectionTitle(true);
+            });
           });
         });
       }, transitionDuration);
