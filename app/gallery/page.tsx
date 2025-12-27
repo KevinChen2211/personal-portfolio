@@ -456,7 +456,7 @@ export default function GalleryPage() {
             {/* Other collections preview in bottom right */}
             {otherCollections.length > 0 && (
               <div
-                className="fixed bottom-8 right-8 z-60 flex flex-col gap-3 max-h-[60vh] overflow-y-auto transition-opacity duration-500"
+                className="fixed bottom-8 right-8 z-60 flex flex-row gap-3 max-w-[60vw] overflow-x-auto transition-opacity duration-500"
                 style={{
                   opacity: showCollectionTitle ? 1 : 0,
                 }}
@@ -464,7 +464,7 @@ export default function GalleryPage() {
                 {otherCollections.map((collection) => (
                   <div
                     key={collection.galleryImageIndex}
-                    className="cursor-pointer group relative"
+                    className="cursor-pointer group relative flex-shrink-0"
                     onClick={() => {
                       const img =
                         imageRefs.current[collection.galleryImageIndex];
