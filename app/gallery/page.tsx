@@ -35,6 +35,7 @@ export default function GalleryPage() {
   const [isClosing, setIsClosing] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
   const [hoveredTitle, setHoveredTitle] = useState(false);
+  const [isSuperscriptExiting, setIsSuperscriptExiting] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState<
     "left" | "right" | null
@@ -81,6 +82,29 @@ export default function GalleryPage() {
   };
 
   const galleryPositionInfo = getGalleryPositionInfo();
+
+  // Superscript hover animation handlers
+  const handleSuperscriptMouseEnter = () => {
+    setHoveredTitle(true);
+    setIsSuperscriptExiting(false);
+  };
+
+  const handleSuperscriptMouseLeave = () => {
+    setHoveredTitle(false);
+    setIsSuperscriptExiting(true);
+  };
+
+  const handleSuperscriptTransitionEnd = () => {
+    if (isSuperscriptExiting) {
+      setIsSuperscriptExiting(false);
+    }
+  };
+
+  const getSuperscriptTransform = () => {
+    if (hoveredTitle) return "translateY(0)"; // Visible
+    if (isSuperscriptExiting) return "translateY(-100%)"; // Exit upward
+    return "translateY(100%)"; // Hidden below (reset position)
+  };
 
   // Get all collections (including current) that have images in galleryImages
   const getAllCollections = () => {
@@ -285,6 +309,7 @@ export default function GalleryPage() {
             setIsClosing(false);
             setIsOpening(false);
             setHoveredTitle(false);
+            setIsSuperscriptExiting(false);
           }, 1000);
         });
       });
@@ -347,7 +372,7 @@ export default function GalleryPage() {
         }
 
         // First, reset transition state to hide the transition image
-        // 1️⃣ Commit the expanded image FIRST (no animation)
+        //  Commit the expanded image FIRST (no animation)
         setDisableCommitAnimation(true);
 
         requestAnimationFrame(() => {
@@ -362,14 +387,14 @@ export default function GalleryPage() {
             height: window.innerHeight,
           });
 
-          // 2️⃣ NEXT frame: remove transition image
+          // NEXT frame: remove transition image
           requestAnimationFrame(() => {
             setIsTransitioning(false);
             setTransitionDirection(null);
             setNextImageSlideIn(false);
             setNextImageData(null);
 
-            // 3️⃣ Re-enable animations
+            // Re-enable animations
             requestAnimationFrame(() => {
               setDisableCommitAnimation(false);
               setShowCollectionTitle(true);
@@ -468,26 +493,37 @@ export default function GalleryPage() {
             {hasCollectionLink ? (
               <Link
                 href={`/gallery/collection/${expandedCollection.slug}`}
-                className="fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center text-4xl sm:text-5xl md:text-6xl tracking-tight transition-opacity duration-500 hover:opacity-80"
+                className="fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center text-4xl sm:text-5xl md:text-5xl tracking-tight transition-opacity duration-500 hover:opacity-80"
                 style={{
                   color: textColor,
                   opacity: showCollectionTitle ? 1 : 0,
                   pointerEvents: showCollectionTitle ? "auto" : "none",
                 }}
-                onMouseEnter={() => setHoveredTitle(true)}
-                onMouseLeave={() => setHoveredTitle(false)}
+                onMouseEnter={handleSuperscriptMouseEnter}
+                onMouseLeave={handleSuperscriptMouseLeave}
               >
                 <span className="relative inline-block">
                   {expandedCollection.name}
                   {collectionInfo && (
                     <sup
-                      className="absolute left-full text-2xl sm:text-3xl md:text-4xl ml-2 transition-opacity duration-300 whitespace-nowrap"
+                      className="absolute left-full text-xl sm:text-1xl md:text-1xl ml-2 whitespace-nowrap overflow-hidden"
                       style={{
-                        opacity: hoveredTitle ? 0.8 : 0,
                         pointerEvents: "none",
                       }}
                     >
-                      {collectionInfo.total}
+                      <span
+                        className="block"
+                        style={{
+                          transform: getSuperscriptTransform(),
+                          transition:
+                            isSuperscriptExiting || hoveredTitle
+                              ? "transform 0.3s ease-in-out"
+                              : "none",
+                        }}
+                        onTransitionEnd={handleSuperscriptTransitionEnd}
+                      >
+                        {collectionInfo.total}
+                      </span>
                     </sup>
                   )}
                 </span>
@@ -502,20 +538,31 @@ export default function GalleryPage() {
                   fontFamily:
                     "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
                 }}
-                onMouseEnter={() => setHoveredTitle(true)}
-                onMouseLeave={() => setHoveredTitle(false)}
+                onMouseEnter={handleSuperscriptMouseEnter}
+                onMouseLeave={handleSuperscriptMouseLeave}
               >
                 <span className="relative inline-block">
                   {expandedCollection.name}
                   {collectionInfo && (
                     <sup
-                      className="absolute left-full text-2xl sm:text-3xl md:text-4xl ml-2 transition-opacity duration-300 whitespace-nowrap"
+                      className="absolute left-full text-xl sm:text-1xl md:text-1xl ml-2 whitespace-nowrap overflow-hidden"
                       style={{
-                        opacity: hoveredTitle ? 0.8 : 0,
                         pointerEvents: "none",
                       }}
                     >
-                      {collectionInfo.total}
+                      <span
+                        className="block"
+                        style={{
+                          transform: getSuperscriptTransform(),
+                          transition:
+                            isSuperscriptExiting || hoveredTitle
+                              ? "transform 0.3s ease-in-out"
+                              : "none",
+                        }}
+                        onTransitionEnd={handleSuperscriptTransitionEnd}
+                      >
+                        {collectionInfo.total}
+                      </span>
                     </sup>
                   )}
                 </span>
