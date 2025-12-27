@@ -31,7 +31,7 @@ const JournalCard = ({
   return (
     <div
       ref={cardRef}
-      className="flex flex-col transition-all duration-500 hover:scale-[1.02] touch-manipulation"
+      className="flex flex-col transition-all duration-500 touch-manipulation"
       style={{
         opacity: isVisible ? 1 : 0,
         transform: `translateY(${isVisible ? 0 : 30}px)`,
@@ -52,7 +52,7 @@ const JournalCard = ({
                 src={imageUrl}
                 alt={post.title}
                 fill
-                className="object-cover group-hover:opacity-90 transition-opacity"
+                className="object-cover"
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 quality={90}
               />
@@ -96,10 +96,11 @@ const JournalCard = ({
 
         {/* Title */}
         <h3
-          className="text-lg md:text-xl lg:text-2xl font-semibold text-center group-hover:underline transition-all mb-2"
+          className="text-4xl md:text-4xl lg:text-6xl xl:text-6xl text-center group-hover:underline transition-all mb-2"
           style={{
             color: textColor,
-            fontFamily: '"Mencken Std Head Narrow", "Juana", var(--font-display), "Playfair Display", "Times New Roman", serif',
+            fontFamily:
+              '"Mencken Std Head Narrow", "Juana", var(--font-display), "Playfair Display", "Times New Roman", serif',
           }}
         >
           {post.title}
@@ -154,4 +155,3 @@ export default function JournalPage() {
     </div>
   );
 }
-
