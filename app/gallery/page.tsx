@@ -395,12 +395,20 @@ export default function GalleryPage() {
                 onMouseEnter={() => setHoveredTitle(true)}
                 onMouseLeave={() => setHoveredTitle(false)}
               >
-                {expandedCollection.name}
-                {hoveredTitle && collectionInfo && (
-                  <sup className="text-2xl sm:text-3xl md:text-4xl ml-2 opacity-80">
-                    {collectionInfo.total}
-                  </sup>
-                )}
+                <span className="relative inline-block">
+                  {expandedCollection.name}
+                  {collectionInfo && (
+                    <sup
+                      className="absolute left-full text-2xl sm:text-3xl md:text-4xl ml-2 transition-opacity duration-300 whitespace-nowrap"
+                      style={{
+                        opacity: hoveredTitle ? 0.8 : 0,
+                        pointerEvents: "none",
+                      }}
+                    >
+                      {collectionInfo.total}
+                    </sup>
+                  )}
+                </span>
               </Link>
             ) : (
               <div
@@ -415,12 +423,20 @@ export default function GalleryPage() {
                 onMouseEnter={() => setHoveredTitle(true)}
                 onMouseLeave={() => setHoveredTitle(false)}
               >
-                {expandedCollection.name}
-                {hoveredTitle && collectionInfo && (
-                  <sup className="text-2xl sm:text-3xl md:text-4xl ml-2 opacity-80">
-                    {collectionInfo.total}
-                  </sup>
-                )}
+                <span className="relative inline-block">
+                  {expandedCollection.name}
+                  {collectionInfo && (
+                    <sup
+                      className="absolute left-full text-2xl sm:text-3xl md:text-4xl ml-2 transition-opacity duration-300 whitespace-nowrap"
+                      style={{
+                        opacity: hoveredTitle ? 0.8 : 0,
+                        pointerEvents: "none",
+                      }}
+                    >
+                      {collectionInfo.total}
+                    </sup>
+                  )}
+                </span>
               </div>
             )}
 
