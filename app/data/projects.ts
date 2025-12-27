@@ -9,7 +9,7 @@ export interface Project {
 
 export const projects: Project[] = [
   {
-    title: "RMIT BattleBots",
+    title: "Advanced RMIT Combat-Robotics",
     description:
       "Leading a competitive robotics club focused on combat robotics design, engineering, and competition. Organized workshops, competitions, and industry partnerships.",
     highlights: [
@@ -20,7 +20,6 @@ export const projects: Project[] = [
       "Initiated sponsorships and organized club events",
       "Organized networking events with industry professionals",
     ],
-    icon: "🤖",
     image: "/projects-images/combatrobots.jpg",
     slug: "rmit-battlebots",
   },
@@ -34,7 +33,6 @@ export const projects: Project[] = [
       "Optimized instruction pipeline for performance and efficiency",
       "Validated design through comprehensive simulation and testing",
     ],
-    icon: "⚙️",
     image: "/projects-images/custom-cpu.png",
     slug: "custom-cpu",
   },
@@ -47,7 +45,6 @@ export const projects: Project[] = [
       "Research etching, doping, and deposition processes using consumer-grade tools while prioritizing accuracy",
       "Exploring innovative approaches to reduce cost barriers in semiconductor manufacturing",
     ],
-    icon: "🔬",
     image: "/projects-images/semiconductor.jpg",
     slug: "diy-semiconductors",
   },
@@ -62,7 +59,6 @@ export const projects: Project[] = [
       "Designed scalable architecture to handle growing user base",
       "Optimized costs through efficient use of AWS serverless services",
     ],
-    icon: "☁️",
     image: "/projects-images/aws.png",
     slug: "aws-web-application",
   },
@@ -76,7 +72,6 @@ export const projects: Project[] = [
       "Designed robust error handling and message filtering systems",
       "Optimized for low-latency communication in automotive applications",
     ],
-    icon: "🚗",
     image: "/projects-images/can_bus.png",
     slug: "can-bus",
   },
@@ -91,7 +86,6 @@ export const projects: Project[] = [
       "Delivered polished UI/UX with smooth animations and intuitive navigation",
       "Ensured cross-platform compatibility for iOS and Android",
     ],
-    icon: "🧘",
     image: "/projects-images/yoga.png",
     slug: "yoga-meditation-app",
   },

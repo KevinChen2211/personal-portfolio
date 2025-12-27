@@ -77,21 +77,15 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 
           {/* Project Image */}
           {project.image && (
-            <div className="relative w-full mb-8 overflow-hidden">
-              <div
-                className="relative w-full"
-                style={{
-                  aspectRatio: "0.75 / 1",
-                  maxWidth: "600px",
-                  margin: "0 auto",
-                }}
-              >
+            <div className="relative w-full mb-8 flex justify-center">
+              <div className="relative w-full max-w-4xl">
                 <Image
                   src={project.image}
                   alt={project.title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 600px"
+                  width={1200}
+                  height={1600}
+                  className="object-contain w-full h-auto"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 90vw, 1200px"
                   quality={90}
                   priority
                 />

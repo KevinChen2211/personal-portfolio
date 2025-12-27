@@ -52,7 +52,9 @@ const ProjectCard = ({
                 className="w-full h-full flex items-center justify-center"
                 style={{ backgroundColor: textColor, opacity: 0.1 }}
               >
-                {project.icon && <span className="text-6xl">{project.icon}</span>}
+                {project.icon && (
+                  <span className="text-6xl">{project.icon}</span>
+                )}
               </div>
             )}
           </div>
@@ -82,19 +84,9 @@ export default function ProjectsPage() {
       style={{ backgroundColor: bgColor }}
     >
       <Navbar />
-      <main className="px-6 sm:px-10 md:px-12 lg:px-20 xl:px-24 py-24 md:py-32">
-        <div className="max-w-6xl mx-auto">
-          <h1
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold mb-6"
-            style={{
-              color: textColor,
-              fontFamily:
-                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-            }}
-          >
-            Projects
-          </h1>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+      <main className="px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-24 md:py-32">
+        <div className="max-w-[98vw] xl:max-w-[1800px] mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-8 md:gap-12 lg:gap-16 xl:gap-20">
             {projects.map((project, index) => (
               <ProjectCard key={project.slug} project={project} index={index} />
             ))}
