@@ -70,33 +70,36 @@ export default function GalleryPage() {
 
   const galleryPositionInfo = getGalleryPositionInfo();
 
-  // Get other collections (excluding current) that have images in galleryImages
-  const getOtherCollections = () => {
+  // Get all collections (including current) that have images in galleryImages
+  const getAllCollections = () => {
     if (!expandedCollection) return [];
 
     const collectionsMap = new Map<
       string,
-      { name: string; galleryImageIndex: number; previewImage: string }
+      {
+        name: string;
+        galleryImageIndex: number;
+        previewImage: string;
+        isCurrent: boolean;
+      }
     >();
 
     galleryImages.forEach((src, index) => {
       const { slug, name } = parseCollection(src);
-      if (slug !== expandedCollection.slug) {
-        if (!collectionsMap.has(slug)) {
-          collectionsMap.set(slug, {
-            name,
-            galleryImageIndex: index,
-            previewImage: src,
-          });
-        }
+      if (!collectionsMap.has(slug)) {
+        collectionsMap.set(slug, {
+          name,
+          galleryImageIndex: index,
+          previewImage: src,
+          isCurrent: slug === expandedCollection.slug,
+        });
       }
     });
 
     return Array.from(collectionsMap.values());
   };
 
-  const otherCollections =
-    expandedImageIndex !== null ? getOtherCollections() : [];
+  const allCollections = expandedImageIndex !== null ? getAllCollections() : [];
 
   useEffect(() => {
     expandedIndexRef.current = expandedImageIndex;
@@ -453,8 +456,8 @@ export default function GalleryPage() {
               </div>
             )}
 
-            {/* Other collections preview in bottom right */}
-            {otherCollections.length > 0 && (
+            {/* All collections preview in bottom right */}
+            {allCollections.length > 0 && (
               <div
                 className="fixed bottom-8 right-8 flex flex-row gap-3 max-w-[60vw] overflow-x-auto transition-opacity duration-500"
                 style={{
@@ -463,10 +466,10 @@ export default function GalleryPage() {
                   pointerEvents: showCollectionTitle ? "auto" : "none",
                 }}
               >
-                {otherCollections.map((collection) => (
+                {allCollections.map((collection) => (
                   <div
                     key={collection.galleryImageIndex}
-                    className="cursor-pointer group relative flex-shrink-0"
+                    className="cursor-pointer relative flex-shrink-0"
                     onClick={(e) => {
                       e.stopPropagation();
                       const img =
@@ -479,13 +482,17 @@ export default function GalleryPage() {
                     <img
                       src={collection.previewImage}
                       alt={collection.name}
-                      className="relative z-10 w-20 h-28 sm:w-24 sm:h-32 object-cover transition-transform duration-300 group-hover:scale-110 rounded-sm"
+                      className="relative z-10 w-20 h-28 sm:w-24 sm:h-32 object-cover rounded-sm"
+                      style={{
+                        border: collection.isCurrent
+                          ? "2px solid rgba(250, 242, 230, 0.8)"
+                          : "2px solid transparent",
+                      }}
                       draggable={false}
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 z-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 pointer-events-none rounded-sm" />
-                    <div className="absolute bottom-0 left-0 right-0 z-0 p-1 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 pointer-events-none rounded-b-sm">
-                      <p className="text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 truncate">
+                    <div className="absolute bottom-0 left-0 right-0 z-0 p-1 bg-black bg-opacity-60 rounded-b-sm">
+                      <p className="text-xs text-white truncate">
                         {collection.name}
                       </p>
                     </div>
