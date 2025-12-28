@@ -617,7 +617,9 @@ export default function GalleryPage() {
                 className="fixed bottom-8 left-1/2 z-60 -translate-x-1/2 text-center text-lg sm:text-xl md:text-2xl transition-opacity duration-500"
                 style={{
                   color: textColor,
-                  opacity: showCollectionTitle ? 1 : 0,
+                  opacity: isClosing ? 0 : 1,
+                  fontVariantNumeric: "tabular-nums",
+                  minWidth: "150px",
                 }}
               >
                 {galleryPositionInfo.currentIndex} — {galleryPositionInfo.total}
