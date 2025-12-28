@@ -1,124 +1,109 @@
 "use client";
 
-import { getActivePalette } from "../color-palettes";
-import { useTheme } from "../components/ThemeProvider";
-import ThemeToggle from "../components/ThemeToggle";
 import Link from "next/link";
+import Image from "next/image";
 import { useRef } from "react";
 import { useScrollAnimation } from "../components/useScrollAnimation";
 import { projects, type Project } from "../data/projects";
+import Navbar from "../components/Navbar";
 
 // Project Card Component for projects page
 const ProjectCard = ({
   project,
   index,
-  palette,
 }: {
   project: Project;
   index: number;
-  palette: ReturnType<typeof getActivePalette>;
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const { isVisible } = useScrollAnimation(cardRef, { threshold: 0.1 });
+  const bgColor = "#FAF2E6";
+  const textColor = "#2C2C2C";
 
   return (
     <div
       ref={cardRef}
-      className="p-4 sm:p-6 rounded-lg transition-all duration-500 hover:shadow-lg hover:scale-[1.02] touch-manipulation"
+      className="flex flex-col transition-all duration-500 touch-manipulation"
       style={{
-        backgroundColor: palette.surface,
-        border: `1px solid ${palette.border}`,
         opacity: isVisible ? 1 : 0,
         transform: `translateY(${isVisible ? 0 : 30}px)`,
         transitionDelay: `${index * 100}ms`,
       }}
     >
-      <div className="flex items-center gap-3 mb-4">
-        {project.icon && <span className="text-3xl">{project.icon}</span>}
+      <Link href={`/projects/${project.slug}`} className="group">
+        <div className="relative w-full mb-3 overflow-hidden">
+          <div
+            className="relative w-full"
+            style={{
+              aspectRatio: "0.75 / 1",
+            }}
+          >
+            {project.image ? (
+              <Image
+                src={project.image}
+                alt={project.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 33vw, 800px"
+                quality={100}
+                priority={index < 3}
+              />
+            ) : (
+              <div
+                className="w-full h-full flex items-center justify-center"
+                style={{ backgroundColor: textColor, opacity: 0.1 }}
+              >
+                {project.icon && (
+                  <span className="text-6xl">{project.icon}</span>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
         <h3
-          className="text-xl font-semibold flex-1"
-          style={{ color: palette.text }}
+          className="text-3xl md:text-3xl lg:text-4xl xl:text-4xl text-center group-hover:underline transition-all"
+          style={{
+            color: textColor,
+            fontFamily:
+              '"Mencken Std Head Narrow", "Juana", var(--font-display), "Playfair Display", "Times New Roman", serif',
+          }}
         >
           {project.title}
         </h3>
-      </div>
-      <p
-        className="text-sm mb-4 leading-relaxed"
-        style={{ color: palette.textSecondary }}
-      >
-        {project.description}
-      </p>
-      <div className="mt-4">
-        <h4
-          className="text-sm font-semibold mb-2"
-          style={{ color: palette.text }}
-        >
-          Key Achievements:
-        </h4>
-        <ul className="space-y-2">
-          {project.highlights.map((highlight, idx) => (
-            <li
-              key={idx}
-              className="flex items-start text-xs leading-relaxed"
-              style={{ color: palette.textSecondary }}
-            >
-              <span
-                className="mr-2 mt-1 flex-shrink-0"
-                style={{ color: palette.primary }}
-              >
-                •
-              </span>
-              <span>{highlight}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
+      </Link>
     </div>
   );
 };
 
 export default function ProjectsPage() {
-  const { theme } = useTheme();
-  const palette = getActivePalette(theme);
+  const bgColor = "#FAF2E6";
+  const textColor = "#2C2C2C";
 
   return (
     <div
-      className="min-h-screen px-6 sm:px-10 py-16 relative"
-      style={{
-        backgroundColor: palette.background,
-        color: palette.text,
-      }}
+      className="min-h-screen w-full relative"
+      style={{ backgroundColor: bgColor }}
     >
-      <ThemeToggle />
-      <div className="max-w-6xl mx-auto">
-        <Link
-          href="/"
-          className="inline-block mb-8 text-lg transition-all duration-300 hover:underline hover:translate-x-[-4px]"
-          style={{ color: palette.primary }}
-        >
-          ← Back to Home
-        </Link>
-        <h1
-          className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 transition-all duration-300 hover:scale-105"
-          style={{ color: palette.text }}
-        >
-          Projects
-        </h1>
-        <div
-          className="w-24 h-1 mb-12 rounded-full"
-          style={{ backgroundColor: palette.primary }}
-        />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
-            <ProjectCard
-              key={project.title}
-              project={project}
-              index={index}
-              palette={palette}
-            />
-          ))}
+      <Navbar />
+      <main className="px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-24 md:py-32">
+        <div className="max-w-[98vw] xl:max-w-[1800px] mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-8 md:gap-12 lg:gap-16 xl:gap-20">
+            {projects.map((project, index) => (
+              <ProjectCard key={project.slug} project={project} index={index} />
+            ))}
+          </div>
         </div>
-      </div>
+      </main>
+      <footer
+        className="w-full py-12 flex justify-center items-center"
+        style={{
+          backgroundColor: bgColor,
+          color: textColor,
+          fontFamily: "'Juana', var(--font-display), 'Playfair Display', serif",
+        }}
+      >
+        © Kevin Chen
+      </footer>
     </div>
   );
 }

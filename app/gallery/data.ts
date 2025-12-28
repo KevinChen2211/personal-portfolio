@@ -1,6 +1,7 @@
 // Images that appear in the main gallery page
 export const galleryImages = [
   "/gallery-images/Hello_Gorgeous1.jpg",
+  "/gallery-images/Sean_x_Amasi2.jpg",
   "/gallery-images/test.jpg",
 ];
 
@@ -13,7 +14,11 @@ export const collectionImages = [
   "/gallery-images/Hello_Gorgeous6.jpg",
   "/gallery-images/Hello_Gorgeous7.jpg",
   "/gallery-images/Hello_Gorgeous8.jpg",
-  "/gallery-images/Hello_Gorgeous9.jpg",
+  "/gallery-images/Sean_x_Amasi1.jpg",
+  "/gallery-images/Sean_x_Amasi3.jpg",
+  "/gallery-images/Sean_x_Amasi4.jpg",
+  "/gallery-images/Sean_x_Amasi5.jpg",
+  "/gallery-images/Sean_x_Amasi6.jpg",
 ];
 
 // All images combined (for collection pages to search through)

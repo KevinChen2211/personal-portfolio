@@ -10,7 +10,72 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
 }
+
+/* Juana Extra Light - Commercial font from Latinotype */
+@font-face {
+  font-family: "Juana";
+  src: url("/fonts/Juana ExtraLight.woff2") format("woff2"),
+    url("/fonts/Juana ExtraLight.ttf") format("truetype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Juana";
+  src: url("/fonts/Juana ExtraLight Italic.woff2") format("woff2"),
+    url("/fonts/Juana ExtraLight Italic.ttf") format("truetype");
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Sweet Rosetia Sans - Commercial font from Runsell Type */
+@font-face {
+  font-family: "Sweet Rosetia Sans";
+  src: url("/fonts/sweet-sans-pro-regular.woff2") format("woff2"),
+    url("/fonts/sweet-sans-pro-regular.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Articulat CF Medium - For long paragraphs and content */
+@font-face {
+  font-family: "Articulat CF Medium";
+  src: url("/fonts/Articulat CF Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Mencken Std Head Narrow - For journal and project titles */
+@font-face {
+  font-family: "Mencken Std Head Narrow";
+  src: url("/fonts/fonnts.com-Mencken-Std-Head-Narrow-.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Utility class for long paragraphs and content */
+.long-content {
+  font-family: "Articulat CF Medium", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* IvyPresto Display Thin - Use Adobe Fonts if available, otherwise falls back to Playfair Display */
+/* To use IvyPresto: Add Adobe Fonts link in layout.tsx head and uncomment below */
+/*
+@font-face {
+  font-family: 'IvyPresto Display';
+  src: url('path-to-ivypresto-display-thin.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+*/
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -70,69 +135,6 @@ html {
   /* Default visible state */
   opacity: 1;
   transform: translateY(0);
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px) translateX(0px);
-  }
-  33% {
-    transform: translateY(-30px) translateX(20px);
-  }
-  66% {
-    transform: translateY(20px) translateX(-15px);
-  }
-}
-
-@keyframes floatUp {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(calc(-100vh - 200px)) rotate(360deg);
-    opacity: 0;
-  }
-}
-
-@keyframes floatUpSlow {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 0;
-  }
-  5% {
-    opacity: 1;
-  }
-  95% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(calc(-100vh - 200px)) rotate(360deg);
-    opacity: 0;
-  }
-}
-
-@keyframes particleFloat {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  25% {
-    transform: translate(20px, -20px) scale(1.1);
-  }
-  50% {
-    transform: translate(-15px, -30px) scale(0.9);
-  }
-  75% {
-    transform: translate(10px, -10px) scale(1.05);
-  }
 }
 
 @keyframes pulse {

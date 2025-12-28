@@ -1,124 +1,145 @@
 "use client";
 
-import { getActivePalette } from "../color-palettes";
-import { useTheme } from "../components/ThemeProvider";
-import ThemeToggle from "../components/ThemeToggle";
 import Link from "next/link";
-import { useRef } from "react";
-import { useScrollAnimation } from "../components/useScrollAnimation";
+import Image from "next/image";
+import Navbar from "../components/Navbar";
 
 export default function ContactPage() {
-  const { theme } = useTheme();
-  const palette = getActivePalette(theme);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const { isVisible } = useScrollAnimation(contentRef, { threshold: 0.1 });
+  const bgColor = "#FAF2E6";
+  const textColor = "#2C2C2C";
 
   return (
     <div
-      className="min-h-screen px-6 sm:px-10 py-16 relative"
-      style={{
-        backgroundColor: palette.background,
-        color: palette.text,
-      }}
+      className="h-screen w-full relative overflow-hidden pt-6 md:pt-8"
+      style={{ backgroundColor: bgColor }}
     >
-      <ThemeToggle />
-      <div className="max-w-6xl mx-auto">
-        <Link
-          href="/"
-          className="inline-block mb-8 text-lg transition-all duration-300 hover:underline hover:translate-x-[-4px]"
-          style={{ color: palette.primary }}
-        >
-          ← Back to Home
-        </Link>
-        <h1
-          className="text-5xl sm:text-6xl font-bold mb-4 transition-all duration-300 hover:scale-105"
-          style={{ color: palette.text }}
-        >
-          Get In Touch
-        </h1>
-        <div
-          className="w-24 h-1 mb-12 rounded-full"
-          style={{ backgroundColor: palette.primary }}
-        />
-        <div
-          ref={contentRef}
-          className="p-8 rounded-lg mb-8 transition-all duration-500 hover:shadow-lg hover:scale-[1.02]"
-          style={{
-            backgroundColor: palette.surface,
-            border: `1px solid ${palette.border}`,
-            opacity: isVisible ? 1 : 0,
-            transform: `translateY(${isVisible ? 0 : 30}px)`,
-          }}
-        >
-          <p
-            className="text-xl mb-8"
-            style={{ color: palette.textSecondary }}
-          >
-            I'm always open to discussing new projects, creative ideas, or
-            opportunities to be part of your vision.
-          </p>
-          <div className="space-y-6">
-            <div>
-              <h3
-                className="text-lg font-semibold mb-2"
-                style={{ color: palette.text }}
-              >
-                Email
-              </h3>
-              <a
-                href="mailto:contact@kevinchen.com"
-                className="hover:underline"
-                style={{ color: palette.primary }}
-              >
-                contact@kevinchen.com
-              </a>
+      <Navbar />
+
+      {/* Main Content Area */}
+      <main
+        className="relative px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 flex items-center"
+        style={{ height: "calc(100vh - 73px)", marginTop: "73px" }}
+      >
+        <div className="w-full flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-10">
+          {/* Contact Image - Left Side */}
+          <div className="w-full md:w-[50vw] lg:w-[45vw] max-w-[800px] flex-shrink-0 order-2 md:order-1">
+            <div className="relative w-full h-[50vh] md:h-[85vh] max-h-[900px]">
+              <Image
+                src="/images/contact_me.jpg"
+                alt="Contact"
+                fill
+                className="object-contain"
+                quality={100}
+                priority
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
             </div>
-            <div>
-              <h3
-                className="text-lg font-semibold mb-2"
-                style={{ color: palette.text }}
-              >
-                LinkedIn
-              </h3>
+          </div>
+
+          {/* Contact Content - Right Side */}
+          <div className="w-full md:flex-1 order-1 md:order-2 flex flex-col justify-center">
+            <div
+              className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl leading-[1.4] md:leading-[1.3] mb-3 md:mb-5"
+              style={{
+                fontFamily:
+                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                fontWeight: 500,
+                color: textColor,
+                fontStyle: "normal",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              Let's{" "}
+              <span className="italic underline decoration-1 underline-offset-4">
+                connect
+              </span>
+              {", "}
+              feel free to reach out.
+            </div>
+
+            <div
+              className="text-sm md:text-base leading-relaxed mb-4 md:mb-6 "
+              style={{
+                fontWeight: 400,
+                color: textColor,
+                fontStyle: "normal",
+              }}
+            >
+              Always down for a good chat, about literally anything
+            </div>
+
+            <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
+              <div>
+                <h3
+                  className="text-xs md:text-sm font-semibold mb-1"
+                  style={{
+                    color: textColor,
+                  }}
+                >
+                  Instagram
+                </h3>
+                <a
+                  href="https://www.instagram.com/kewinchen_/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-xs md:text-sm hover:opacity-70 transition-opacity hover:underline"
+                  style={{
+                    color: textColor,
+                  }}
+                >
+                  @kewinchen_
+                </a>
+              </div>
+              <div>
+                <h3
+                  className="text-xs md:text-sm font-semibold mb-1"
+                  style={{
+                    color: textColor,
+                  }}
+                >
+                  LinkedIn
+                </h3>
+                <a
+                  href="https://www.linkedin.com/in/kevinchenengineer/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-xs md:text-sm hover:opacity-70 transition-opacity hover:underline break-all"
+                  style={{
+                    color: textColor,
+                  }}
+                >
+                  linkedin.com/in/kevinchenengineer/
+                </a>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
               <a
-                href="https://www.linkedin.com/in/kevinsoftwarewiz"
+                href="https://www.instagram.com/kewinchen_/"
                 target="_blank"
                 rel="noreferrer"
-                className="hover:underline"
-                style={{ color: palette.primary }}
+                className="px-4 py-2 md:px-5 md:py-2.5 text-xs md:text-sm font-semibold text-center hover:opacity-70 transition-opacity border border-current"
+                style={{
+                  color: textColor,
+                }}
               >
-                linkedin.com/in/kevinsoftwarewiz
+                Follow on Instagram
+              </a>
+              <a
+                href="https://www.linkedin.com/in/kevinchenengineer/"
+                target="_blank"
+                rel="noreferrer"
+                className="px-4 py-2 md:px-5 md:py-2.5 text-xs md:text-sm font-semibold text-center hover:opacity-70 transition-opacity border border-current"
+                style={{
+                  color: textColor,
+                }}
+              >
+                Connect on LinkedIn
               </a>
             </div>
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-4">
-          <Link
-            href="https://www.linkedin.com/in/kevinsoftwarewiz"
-            target="_blank"
-            rel="noreferrer"
-            className="px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 text-center"
-            style={{
-              backgroundColor: palette.primary,
-              color: palette.text,
-            }}
-          >
-            Connect on LinkedIn
-          </Link>
-          <a
-            href="mailto:contact@kevinchen.com"
-            className="px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 text-center"
-            style={{
-              backgroundColor: palette.surface,
-              color: palette.text,
-              border: `2px solid ${palette.primary}`,
-            }}
-          >
-            Send Email
-          </a>
-        </div>
-      </div>
+      </main>
     </div>
   );
 }
-

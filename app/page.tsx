@@ -1,991 +1,398 @@
 "use client";
 
-import { useEffect, useState, useMemo, useRef } from "react";
-import IntroAnimation from "./components/IntroAnimation";
-import SmoothScrollContainer from "./components/SmoothScrollContainer";
-import ScrollIndicator from "./components/ScrollIndicator";
-import ThemeToggle from "./components/ThemeToggle";
-import { getActivePalette } from "./color-palettes";
-import { useTheme } from "./components/ThemeProvider";
 import Link from "next/link";
-import { useScrollAnimation } from "./components/useScrollAnimation";
-import { projects, type Project } from "./data/projects";
-import { blogPosts } from "./data/blogs";
-import MagicText from "./components/MagicText";
+import Image from "next/image";
+import { useState, useEffect, useRef } from "react";
 
-// Gradient Background Component
-const GradientBackground = ({
-  palette,
-}: {
-  palette: ReturnType<typeof getActivePalette>;
-}) => {
-  const shapes = useMemo(() => {
-    return Array.from({ length: 20 }, (_, i) => ({
-      id: i,
-      size: Math.random() * 100 + 50,
-      left: Math.random() * 100,
-      delay: Math.random() * 20,
-      duration: Math.random() * 20 + 15,
-      opacity: Math.random() * 0.3 + 0.1,
-    }));
-  }, []);
+export default function Home() {
+  const bgColor = "#FAF2E6";
+  const textColor = "#2C2C2C";
+  const [showNavbar, setShowNavbar] = useState(true);
+  const [navbarAtBottom, setNavbarAtBottom] = useState(false);
+  const [visibleImages, setVisibleImages] = useState<Set<number>>(new Set());
+  const [showMobileMessage, setShowMobileMessage] = useState(true);
+  const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const additionalShapes = useMemo(() => {
-    return Array.from({ length: 15 }, (_, i) => ({
-      id: `shape-${i}`,
-      size: Math.random() * 80 + 30,
-      left: Math.random() * 100,
-      delay: Math.random() * 25,
-      duration: Math.random() * 30 + 25, // Slower duration
-      opacity: Math.random() * 0.2 + 0.05,
-      shape: Math.random() > 0.5 ? "circle" : "square",
-      rotation: Math.random() * 360,
-    }));
-  }, []);
+  // Image data with order, source, link, and label
+  const images = [
+    { src: "/images/Gallery.jpg", link: "/gallery", label: "Gallery" },
+    { src: "/images/Projects.jpg", link: "/projects", label: "Projects" },
+    { src: "/images/Gallery2.jpg", link: "/gallery", label: "Gallery" },
+    { src: "/images/Journal.jpg", link: "/journal", label: "Journal" },
+    { src: "/images/Gallery3.jpg", link: "/gallery", label: "Gallery" },
+    { src: "/images/Contact.jpg", link: "/contact", label: "Contact" },
+  ];
 
-  return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-      {/* Gradient background */}
-      <div
-        className="absolute inset-0 opacity-50"
-        style={{
-          background: `radial-gradient(circle at 20% 50%, ${palette.primary}60 0%, transparent 50%),
-                      radial-gradient(circle at 80% 80%, ${palette.secondary}60 0%, transparent 50%),
-                      radial-gradient(circle at 40% 20%, ${palette.accent}50 0%, transparent 50%),
-                      linear-gradient(135deg, ${palette.primary}25 0%, ${palette.secondary}25 50%, ${palette.accent}25 100%)`,
-        }}
-      />
-
-      {/* Animated gradient orbs */}
-      <div
-        className="absolute w-96 h-96 md:w-[500px] md:h-[500px] rounded-full blur-3xl opacity-30"
-        style={{
-          background: `radial-gradient(circle, ${palette.primary} 0%, transparent 70%)`,
-          top: "20%",
-          left: "10%",
-          animation: "float 20s ease-in-out infinite",
-          filter: `blur(60px)`,
-        }}
-      />
-      <div
-        className="absolute w-96 h-96 md:w-[500px] md:h-[500px] rounded-full blur-3xl opacity-30"
-        style={{
-          background: `radial-gradient(circle, ${palette.secondary} 0%, transparent 70%)`,
-          top: "60%",
-          right: "15%",
-          animation: "float 25s ease-in-out infinite reverse",
-          filter: `blur(60px)`,
-        }}
-      />
-      <div
-        className="absolute w-80 h-80 md:w-[400px] md:h-[400px] rounded-full blur-3xl opacity-25"
-        style={{
-          background: `radial-gradient(circle, ${palette.accent} 0%, transparent 70%)`,
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          animation: "float 30s ease-in-out infinite",
-          filter: `blur(50px)`,
-        }}
-      />
-
-      {/* Floating shapes */}
-      {shapes.map((shape) => (
-        <div
-          key={shape.id}
-          className="absolute rounded-full"
-          style={{
-            width: `${shape.size}px`,
-            height: `${shape.size}px`,
-            left: `${shape.left}%`,
-            background: `radial-gradient(circle, ${palette.primary}${Math.floor(
-              shape.opacity * 100
-            )} 0%, transparent 70%)`,
-            opacity: shape.opacity,
-            animation: `floatUpSlow ${shape.duration}s linear infinite`,
-            animationDelay: `${shape.delay}s`,
-            bottom: "-100px",
-            willChange: "transform",
-          }}
-        />
-      ))}
-
-      {/* Additional geometric shapes */}
-      {additionalShapes.map((shape) => (
-        <div
-          key={shape.id}
-          className="absolute"
-          style={{
-            width: `${shape.size}px`,
-            height: `${shape.size}px`,
-            left: `${shape.left}%`,
-            borderRadius: shape.shape === "circle" ? "50%" : "8px",
-            background: `linear-gradient(135deg, ${
-              palette.secondary
-            }${Math.floor(shape.opacity * 100)}, ${palette.accent}${Math.floor(
-              shape.opacity * 50
-            )})`,
-            opacity: shape.opacity,
-            animation: `floatUpSlow ${shape.duration}s linear infinite`,
-            animationDelay: `${shape.delay}s`,
-            bottom: "-100px",
-            transform: `rotate(${shape.rotation}deg)`,
-            willChange: "transform",
-          }}
-        />
-      ))}
-    </div>
-  );
-};
-
-// Section component with scroll animations
-const Section = ({
-  children,
-  className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
-  const sectionRef = useRef<HTMLElement>(null);
-  const { isVisible } = useScrollAnimation(sectionRef, {
-    threshold: 0.2,
-  });
-
-  return (
-    <section
-      ref={sectionRef}
-      className={`h-screen snap-start flex items-center justify-center px-4 sm:px-6 md:px-10 lg:px-16 relative z-10 overflow-y-auto md:overflow-hidden ${className}`}
-      style={{
-        opacity: isVisible ? 1 : 0.4,
-        transform: `translateY(${isVisible ? 0 : 20}px) scale(${
-          isVisible ? 1 : 0.98
-        })`,
-        transition:
-          "opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 1s cubic-bezier(0.4, 0, 0.2, 1)",
-      }}
-    >
-      {children}
-    </section>
-  );
-};
-
-// Animated Project Card Component with mouse tracking hover effect
-const AnimatedProjectCard = ({
-  project,
-  index,
-  palette,
-}: {
-  project: Project;
-  index: number;
-  palette: ReturnType<typeof getActivePalette>;
-}) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const { isVisible: cardVisible } = useScrollAnimation(cardRef, {
-    threshold: 0.1,
-  });
-
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isNearby, setIsNearby] = useState(false);
-
+  // Scroll detection for navbar visibility
   useEffect(() => {
-    const card = cardRef.current;
-    const container = document.getElementById("project-cards");
-    if (!card || !container) return;
+    let lastScrollY = window.scrollY;
+    let ticking = false;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      const cardRect = card.getBoundingClientRect();
-      const containerRect = container.getBoundingClientRect();
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          const windowHeight = window.innerHeight;
+          const documentHeight = document.documentElement.scrollHeight;
+          const isAtBottom =
+            currentScrollY + windowHeight >= documentHeight - 10;
+          const scrollDifference = currentScrollY - lastScrollY;
 
-      // Mouse position relative to card
-      const x = e.clientX - cardRect.left;
-      const y = e.clientY - cardRect.top;
+          // Show navbar at bottom when at the very bottom
+          if (isAtBottom) {
+            setNavbarAtBottom(true);
+            setShowNavbar(true);
+          } else {
+            setNavbarAtBottom(false);
 
-      // Mouse position relative to container
-      const containerX = e.clientX - containerRect.left;
-      const containerY = e.clientY - containerRect.top;
+            // Hide navbar when scrolling down past threshold, show when scrolling up or at top
+            if (currentScrollY > 100 && scrollDifference > 0) {
+              setShowNavbar(false);
+            } else {
+              setShowNavbar(true);
+            }
+          }
 
-      // Card center relative to container
-      const cardCenterX =
-        cardRect.left - containerRect.left + cardRect.width / 2;
-      const cardCenterY =
-        cardRect.top - containerRect.top + cardRect.height / 2;
-
-      // Calculate distance from mouse to card center
-      const distance = Math.sqrt(
-        Math.pow(containerX - cardCenterX, 2) +
-          Math.pow(containerY - cardCenterY, 2)
-      );
-
-      // Proximity threshold (adjust based on card size and gap)
-      const proximityThreshold = 250; // pixels
-
-      // Check if mouse is inside card or nearby
-      const isInside =
-        x >= 0 && x <= cardRect.width && y >= 0 && y <= cardRect.height;
-
-      const isClose = distance < proximityThreshold;
-
-      setIsNearby(isInside || isClose);
-
-      if (isInside || isClose) {
-        setMousePosition({ x, y });
-        card.style.setProperty("--mouse-x", `${x}px`);
-        card.style.setProperty("--mouse-y", `${y}px`);
+          lastScrollY = currentScrollY;
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
-    container.addEventListener("mousemove", handleMouseMove);
-
-    const handleMouseLeave = () => {
-      setIsNearby(false);
-    };
-
-    container.addEventListener("mouseleave", handleMouseLeave);
-
-    return () => {
-      container.removeEventListener("mousemove", handleMouseMove);
-      container.removeEventListener("mouseleave", handleMouseLeave);
-    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Use white/light color for the gradient effect (works on both themes)
-  const gradientColor1 = "rgba(255, 255, 255, 0.06)";
-  const gradientColor2 = "rgba(255, 255, 255, 0.4)";
+  // Hide mobile message after 5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowMobileMessage(false);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Intersection Observer for fade-in animations
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = parseInt(
+              (entry.target as HTMLElement).dataset.index || "0",
+              10
+            );
+            setVisibleImages((prev) => new Set(prev).add(index));
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
+      }
+    );
+
+    // Use setTimeout to ensure DOM is ready
+    const timeoutId = setTimeout(() => {
+      imageRefs.current.forEach((ref) => {
+        if (ref) observer.observe(ref);
+      });
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      imageRefs.current.forEach((ref) => {
+        if (ref) observer.unobserve(ref);
+      });
+    };
+  }, []);
 
   return (
     <div
-      ref={cardRef}
-      className="project-card relative rounded-xl cursor-pointer overflow-hidden group h-full"
-      style={
-        {
-          opacity: cardVisible ? 1 : 0,
-          transform: `translateY(${cardVisible ? 0 : 50}px) scale(${
-            cardVisible ? 1 : 0.95
-          })`,
-          transitionDelay: `${index * 100}ms`,
-          transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
-          backgroundColor: `rgba(${palette.primary}15)`,
-          borderRadius: "16px",
-          position: "relative",
-          minHeight: "350px",
-          height: "100%",
-          "--mouse-x": "0px",
-          "--mouse-y": "0px",
-        } as React.CSSProperties & { "--mouse-x": string; "--mouse-y": string }
-      }
+      className="min-h-screen w-full relative overflow-y-auto pt-6 md:pt-8"
+      style={{ backgroundColor: bgColor }}
     >
-      {/* Gradient overlay - outer glow */}
-      <div
-        className={`card-gradient-before absolute inset-0 rounded-lg pointer-events-none transition-opacity duration-500 ${
-          isNearby ? "card-nearby" : ""
-        }`}
-        style={{
-          background: `radial-gradient(800px circle at ${mousePosition.x}px ${mousePosition.y}px, ${gradientColor1}, transparent 40%)`,
-          borderRadius: "inherit",
-          opacity: 0,
-          zIndex: 3,
-        }}
-      />
-
-      {/* Gradient overlay - inner bright spot */}
-      <div
-        className={`card-gradient-after absolute inset-0 rounded-lg pointer-events-none transition-opacity duration-500 ${
-          isNearby ? "card-nearby" : ""
-        }`}
-        style={{
-          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, ${gradientColor2}, transparent 40%)`,
-          borderRadius: "inherit",
-          opacity: 0,
-          zIndex: 1,
-        }}
-      />
-
-      {/* Card content - inset to show border/gradient */}
-      <div
-        className="relative p-6 rounded-lg flex flex-col transition-all duration-300"
-        style={{
-          backgroundColor: palette.surface,
-          borderRadius: "inherit",
-          position: "absolute",
-          inset: "1px",
-          zIndex: 2,
-          height: "calc(100% - 2px)",
-          backdropFilter: "blur(10px)",
-          WebkitBackdropFilter: "blur(10px)",
-          boxShadow: isNearby
-            ? `0 8px 32px ${palette.primary}20, 0 0 0 1px ${palette.primary}15`
-            : "0 4px 16px rgba(0, 0, 0, 0.1)",
-        }}
-      >
-        <div className="flex items-center gap-3 mb-4">
-          {project.icon && <span className="text-3xl">{project.icon}</span>}
-          <h3
-            className="text-xl font-semibold flex-1"
-            style={{ color: palette.text }}
-          >
-            {project.title}
-          </h3>
-        </div>
-        <p
-          className="text-sm mb-4 leading-relaxed"
-          style={{ color: palette.textSecondary }}
-        >
-          {project.description}
-        </p>
-        <div className="mt-auto">
-          <ul className="space-y-1.5">
-            {project.highlights.slice(0, 2).map((highlight, idx) => (
-              <li
-                key={idx}
-                className="flex items-start text-xs leading-relaxed"
-                style={{ color: palette.textSecondary }}
-              >
-                <span
-                  className="mr-2 mt-1 flex-shrink-0"
-                  style={{ color: palette.primary }}
-                >
-                  •
-                </span>
-                <span className="line-clamp-2">{highlight}</span>
-              </li>
-            ))}
-            {project.highlights.length > 2 && (
-              <li
-                className="text-xs italic mt-1"
-                style={{ color: palette.textSecondary, opacity: 0.7 }}
-              >
-                +{project.highlights.length - 2} more achievements
-              </li>
-            )}
-          </ul>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Animated Blog Post Component
-const AnimatedBlogPost = ({
-  post,
-  palette,
-  index,
-}: {
-  post: (typeof blogPosts)[0];
-  palette: ReturnType<typeof getActivePalette>;
-  index: number;
-}) => {
-  const articleRef = useRef<HTMLElement>(null);
-  const { isVisible: articleVisible } = useScrollAnimation(articleRef, {
-    threshold: 0.1,
-  });
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-  return (
-    <Link href={`/blog/${post.slug}`} className="block group">
-      <article
-        ref={articleRef}
-        className="p-5 sm:p-7 rounded-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-lg cursor-pointer"
-        style={{
-          backgroundColor: palette.surface,
-          border: `1px solid ${palette.border}`,
-          opacity: articleVisible ? 1 : 0,
-          transform: `translateX(${articleVisible ? 0 : -30}px)`,
-          transitionDelay: `${index * 150}ms`,
-          backdropFilter: "blur(10px)",
-          WebkitBackdropFilter: "blur(10px)",
-          boxShadow: "0 4px 16px rgba(0, 0, 0, 0.1)",
-        }}
-      >
+      {/* Mobile Message */}
+      {showMobileMessage && (
         <div
-          className="text-sm mb-2 font-medium"
-          style={{ color: palette.primary }}
+          className="md:hidden fixed top-[73px] left-0 right-0 z-40 px-4 py-2 text-center text-xs font-medium transition-opacity duration-500"
+          style={{
+            backgroundColor: bgColor,
+            color: textColor,
+            opacity: showMobileMessage ? 1 : 0,
+            fontFamily:
+              "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+          }}
         >
-          {formatDate(post.date)}
+          For best viewing experience please use desktop
         </div>
-        <h3
-          className="text-lg sm:text-xl font-semibold mb-2 group-hover:underline transition-all duration-300"
-          style={{ color: palette.text }}
-        >
-          {post.title}
-        </h3>
-        <p
-          className="text-sm sm:text-base line-clamp-2"
-          style={{ color: palette.textSecondary }}
-        >
-          {post.excerpt}
-        </p>
-      </article>
-    </Link>
-  );
-};
+      )}
 
-// Animated Skill Badge Component
-const AnimatedSkillBadge = ({
-  skill,
-  index,
-  palette,
-}: {
-  skill: string;
-  index: number;
-  palette: ReturnType<typeof getActivePalette>;
-}) => {
-  const skillRef = useRef<HTMLSpanElement>(null);
-  const { isVisible: skillVisible } = useScrollAnimation(skillRef, {
-    threshold: 0.1,
-  });
-
-  return (
-    <span
-      ref={skillRef}
-      className="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-110 hover:shadow-md"
-      style={{
-        backgroundColor: palette.border,
-        color: palette.text,
-        opacity: skillVisible ? 1 : 1,
-        transform: `scale(${skillVisible ? 1 : 0.9})`,
-        transitionDelay: `${index * 50}ms`,
-        border: `1px solid ${palette.primary}20`,
-        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-      }}
-    >
-      {skill}
-    </span>
-  );
-};
-
-export default function Home() {
-  const { theme } = useTheme();
-  const palette = getActivePalette(theme);
-  const [showIntro, setShowIntro] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-  const [showContent, setShowContent] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-
-    // Check if user has already seen the intro in this session
-    const hasSeenIntro = sessionStorage.getItem("hasSeenIntro");
-
-    // Check if user is navigating back from another page
-    const isNavigatingBack =
-      typeof window !== "undefined" &&
-      document.referrer !== "" &&
-      document.referrer.includes(window.location.origin) &&
-      !document.referrer.endsWith(window.location.pathname);
-
-    // Only show intro on first visit, not when navigating back
-    if (!hasSeenIntro && !isNavigatingBack) {
-      setShowIntro(true);
-      // Start showing content slightly before intro completes for seamless transition
-      setTimeout(() => {
-        setShowContent(true);
-      }, 2200);
-    } else {
-      // If no intro, show content immediately
-      setShowContent(true);
-    }
-  }, []);
-
-  const handleIntroComplete = () => {
-    setShowIntro(false);
-    sessionStorage.setItem("hasSeenIntro", "true");
-  };
-
-  if (!isClient) {
-    return null;
-  }
-
-  return (
-    <>
-      {showIntro && <IntroAnimation onComplete={handleIntroComplete} />}
-      <div
-        className={`relative transition-opacity duration-1000 ease-in-out ${
-          showContent ? "opacity-100" : "opacity-0"
+      {/* Header Navigation */}
+      <header
+        className={`w-full px-6 md:px-12 lg:px-16 py-5 md:py-6 flex items-center justify-between fixed z-50 transition-all duration-300 ${
+          showNavbar
+            ? navbarAtBottom
+              ? "bottom-0 top-auto"
+              : "top-0"
+            : "-translate-y-full"
         }`}
+        style={{ backgroundColor: bgColor }}
+      >
+        {/* Name - Left */}
+        <Link
+          href="/"
+          className="text-xs md:text-sm tracking-wide hover:opacity-70 transition-opacity"
+          style={{
+            color: textColor,
+            fontFamily:
+              '"Sweet Rosetia Sans", "Juana", var(--font-display), "Playfair Display", "Times New Roman", serif',
+            fontWeight: "normal",
+          }}
+        >
+          <span className="font-bold">KEVIN CHEN</span>
+        </Link>
+
+        {/* Navigation Links */}
+        <nav className="flex items-center gap-4 md:gap-8 ml-4">
+          <Link
+            href="/projects"
+            className="text-xs md:text-sm font-semibold tracking-wide hover:opacity-70 transition-opacity"
+            style={{
+              color: textColor,
+              fontFamily:
+                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+            }}
+          >
+            Projects
+          </Link>
+          <Link
+            href="/gallery"
+            className="text-xs md:text-sm font-semibold tracking-wide hover:opacity-70 transition-opacity"
+            style={{
+              color: textColor,
+              fontFamily:
+                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+            }}
+          >
+            Gallery
+          </Link>
+          <Link
+            href="/journal"
+            className="text-xs md:text-sm font-semibold tracking-wide hover:opacity-70 transition-opacity"
+            style={{
+              color: textColor,
+              fontFamily:
+                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+            }}
+          >
+            Journal
+          </Link>
+          <Link
+            href="/contact"
+            className="text-xs md:text-sm font-semibold tracking-wide hover:opacity-70 transition-opacity"
+            style={{
+              color: textColor,
+              fontFamily:
+                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+            }}
+          >
+            Contact
+          </Link>
+        </nav>
+
+        {/* Social Icons - Right */}
+        <div className="hidden md:flex items-center gap-2">
+          <a
+            href="https://www.linkedin.com/in/kevinchenengineer/"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:opacity-70 transition-opacity inline-block"
+            aria-label="LinkedIn"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              style={{ color: textColor, width: "20px", height: "20px" }}
+            >
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+            </svg>
+          </a>
+          <a
+            href="https://github.com/KevinChen2211"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:opacity-70 transition-opacity inline-block"
+            aria-label="GitHub"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              style={{ color: textColor, width: "20px", height: "20px" }}
+            >
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+            </svg>
+          </a>
+          <a
+            href="https://www.instagram.com/kewinchen_/"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:opacity-70 transition-opacity inline-block"
+            aria-label="Instagram"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              style={{ color: textColor, width: "20px", height: "20px" }}
+            >
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+            </svg>
+          </a>
+        </div>
+      </header>
+
+      {/* Main Content Area */}
+      <main className="relative px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 min-h-screen flex items-center pt-24 md:pt-30">
+        <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-12">
+          {/* Hero Text - Large Serif Display */}
+          <div className="w-full md:max-w-[60vw] lg:max-w-[50vw] relative">
+            <div
+              className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-[1.5] md:leading-[1.4]"
+              style={{
+                fontFamily:
+                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                fontWeight: 500,
+                color: textColor,
+                fontStyle: "normal",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              Kevin Chen <span className="italic">(/keh-vin chen/)</span> is a
+              multidisciplinary{" "}
+              <span className="italic underline decoration-1 underline-offset-4">
+                engineer
+              </span>{" "}
+              ,{" "}
+              <span className="italic underline decoration-1 underline-offset-4">
+                computer scientist
+              </span>{" "}
+              &{" "}
+              <span className="italic underline decoration-1 underline-offset-4">
+                artistically driven creator
+              </span>{" "}
+              exploring innovative solutions, digital experiences, and creative
+              projects.
+            </div>
+          </div>
+
+          {/* Kevin Chen Portrait Image */}
+          <div className="relative flex-shrink-0 w-full md:w-[55vw] md:max-w-[600px] md:ml-auto mb-6 md:mb-0">
+            <div className="relative w-full h-[50vh] max-h-[400px] md:h-[80vh] md:max-h-[900px]">
+              <Image
+                src="/images/KevinChen.jpg"
+                alt="Kevin Chen"
+                fill
+                className="object-contain"
+                quality={100}
+                priority
+                sizes="(max-width: 768px) 100vw, 55vw"
+              />
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Scrollable Image Gallery Section */}
+      <section className="relative w-full pt-0">
+        {images.map((image, index) => {
+          // 4-position cycle: 0, 1, 3, 2 (left, middle-left, right, middle-right)
+          const positionMap = [0, 1, 3, 2];
+          const position = positionMap[index % 4];
+          const isVisible = visibleImages.has(index);
+          const isLastImage = index === images.length - 1;
+
+          // Determine alignment based on position
+          let justifyClass = "";
+          let textAlignClass = "";
+
+          if (position === 0) {
+            // Left side
+            justifyClass = "justify-start";
+            textAlignClass = "md:text-right";
+          } else if (position === 1) {
+            // Middle but slightly left
+            justifyClass = "justify-start md:justify-center md:pr-[15%]";
+            textAlignClass = "md:text-right";
+          } else if (position === 2) {
+            // Middle but slightly right
+            justifyClass = "justify-end md:justify-center md:pl-[15%]";
+            textAlignClass = "md:text-left";
+          } else {
+            // Right side (position 3)
+            justifyClass = "justify-end";
+            textAlignClass = "md:text-left";
+          }
+
+          return (
+            <div
+              key={index}
+              data-index={index}
+              ref={(el) => {
+                imageRefs.current[index] = el;
+              }}
+              className={`w-full flex ${justifyClass} ${
+                isLastImage ? "mb-0 md:pb-[0vh]" : "mb-[20vh]"
+              } px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24`}
+              style={{
+                opacity: isVisible ? 1 : 0,
+                transform: isVisible ? "translateY(0)" : "translateY(30px)",
+                transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
+              }}
+            >
+              <div className="flex flex-col items-start w-full md:w-auto max-w-[90vw] md:max-w-[50vw] lg:max-w-[45vw]">
+                <div className="relative inline-block w-full mb-3">
+                  <Link href={image.link} className="block">
+                    <Image
+                      src={image.src}
+                      alt={image.label}
+                      width={3000}
+                      height={2000}
+                      className="object-contain w-full h-auto max-h-[85vh]"
+                      quality={100}
+                      sizes="(max-width: 768px) 90vw, (max-width: 1024px) 50vw, 45vw"
+                      priority={index < 2}
+                    />
+                  </Link>
+                </div>
+                <Link
+                  href={image.link}
+                  className={`text-xs md:text-sm font-semibold opacity-90 hover:opacity-100 hover:underline transition-opacity w-full ${textAlignClass}`}
+                  style={{
+                    color: textColor,
+                    fontFamily:
+                      "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                  }}
+                >
+                  {image.label}
+                </Link>
+              </div>
+            </div>
+          );
+        })}
+      </section>
+
+      {/* Bottom padding for navbar when at bottom */}
+      <footer
+        className="w-full py-12 flex justify-center items-center"
         style={{
-          backgroundColor: palette.background,
-          color: palette.text,
+          backgroundColor: bgColor,
+          color: textColor,
+          fontFamily: "'Juana', var(--font-display), 'Playfair Display', serif",
         }}
       >
-        <GradientBackground palette={palette} />
-        <ThemeToggle />
-        <ScrollIndicator />
-        <SmoothScrollContainer>
-          {/* Home Section */}
-          <Section>
-            <div className="max-w-5xl w-full text-center">
-              <h1
-                className={`text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold mb-4 sm:mb-6 transition-all duration-1000 ease-out px-4 ${
-                  showContent
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-8"
-                }`}
-                style={{
-                  backgroundImage: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  letterSpacing: "-0.02em",
-                  transitionDelay: showIntro ? "0.3s" : "0s",
-                  textShadow: `0 0 40px ${palette.primary}20`,
-                }}
-              >
-                Kevin Chen
-              </h1>
-              <p
-                className={`text-lg sm:text-xl md:text-2xl lg:text-3xl mb-4 sm:mb-6 font-medium transition-all duration-700 ease-out px-4 ${
-                  showContent
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-4"
-                }`}
-                style={{
-                  color: palette.primary,
-                  transitionDelay: showIntro ? "0.5s" : "0s",
-                  letterSpacing: "0.02em",
-                }}
-              >
-                Engineer & <MagicText>Creative Developer</MagicText>
-              </p>
-              <p
-                className={`text-lg sm:text-xl md:text-2xl mb-8 transition-all duration-700 ease-out ${
-                  showContent
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-4"
-                }`}
-                style={{
-                  color: palette.textSecondary,
-                  transitionDelay: showIntro ? "0.7s" : "0s",
-                }}
-              >
-                Welcome to my Website!
-              </p>
-              <p
-                className={`text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-relaxed transition-all duration-700 ease-out ${
-                  showContent
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-4"
-                }`}
-                style={{
-                  color: palette.textSecondary,
-                  transitionDelay: showIntro ? "0.9s" : "0s",
-                  lineHeight: "1.8",
-                }}
-              >
-                Find out more about what im up to and the projects i've worked
-                on.
-              </p>
-            </div>
-          </Section>
-
-          {/* About Me Section */}
-          <Section>
-            <div className="max-w-5xl w-full h-full flex flex-col justify-center py-4 sm:py-8 overflow-y-auto md:overflow-visible">
-              <div className="text-center mb-6 sm:mb-12 flex-shrink-0">
-                <h2
-                  className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 transition-all duration-300 hover:scale-105"
-                  style={{
-                    backgroundImage: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundClip: "text",
-                    letterSpacing: "-0.02em",
-                  }}
-                >
-                  About Me
-                </h2>
-                <div
-                  className="w-24 sm:w-32 h-1 sm:h-1.5 mx-auto rounded-full relative overflow-hidden"
-                  style={{
-                    background: `linear-gradient(90deg, ${palette.primary}, ${palette.secondary}, ${palette.accent})`,
-                    boxShadow: `0 0 20px ${palette.primary}40`,
-                  }}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6 flex-1 min-h-0 overflow-y-auto md:overflow-visible">
-                {/* Left Column - Bio */}
-                <div
-                  className="p-4 sm:p-6 md:p-8 rounded-xl transition-all duration-500 hover:shadow-xl hover:scale-[1.02] flex flex-col group"
-                  style={{
-                    backgroundColor: palette.surface,
-                    border: `1px solid ${palette.border}`,
-                    backdropFilter: "blur(10px)",
-                    WebkitBackdropFilter: "blur(10px)",
-                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
-                  }}
-                >
-                  <div className="flex-1">
-                    <h3
-                      className="text-xl sm:text-2xl font-bold mb-5 flex items-center gap-3"
-                      style={{ color: palette.text }}
-                    >
-                      <span
-                        className="text-3xl"
-                        style={{ color: palette.primary }}
-                      >
-                        👨‍💻
-                      </span>
-                      Who I Am
-                    </h3>
-                    <p
-                      className="text-base sm:text-lg leading-relaxed mb-4 transition-all duration-300 hover:text-opacity-80"
-                      style={{
-                        color: palette.textSecondary,
-                        lineHeight: "1.8",
-                      }}
-                    >
-                      I love to build things and push myself to see what i can
-                      create.
-                    </p>
-                    <p
-                      className="text-base sm:text-lg leading-relaxed  mb-4 transition-all duration-300 hover:text-opacity-80"
-                      style={{
-                        color: palette.textSecondary,
-                        lineHeight: "1.8",
-                      }}
-                    >
-                      Im a learner and always looking for opportunities to
-                      refine my skills and expand my technical capabilities.
-                    </p>
-                    <p
-                      className="text-base sm:text-lg leading-relaxed  mb-4 transition-all duration-300 hover:text-opacity-80"
-                      style={{
-                        color: palette.textSecondary,
-                        lineHeight: "1.8",
-                      }}
-                    >
-                      Im passionate about technology and its intergration in
-                      everyday life. If youd like to know more about me feel
-                      free to reach out and checkout my blog!
-                    </p>
-                  </div>
-                </div>
-
-                {/* Right Column - Skills & Interests */}
-                <div className="flex flex-col gap-4 sm:gap-6">
-                  {/* Skills */}
-                  <div
-                    className="p-4 sm:p-6 md:p-8 rounded-xl transition-all duration-500 hover:shadow-xl hover:scale-[1.02] flex-1 group"
-                    style={{
-                      backgroundColor: palette.surface,
-                      border: `1px solid ${palette.border}`,
-                      backdropFilter: "blur(10px)",
-                      WebkitBackdropFilter: "blur(10px)",
-                      boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
-                    }}
-                  >
-                    <h3
-                      className="text-xl sm:text-2xl font-bold mb-5 flex items-center gap-3"
-                      style={{ color: palette.text }}
-                    >
-                      <span
-                        className="text-3xl"
-                        style={{ color: palette.primary }}
-                      >
-                        🛠️
-                      </span>
-                      Skills & Technologies
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        "Devops (Jenkins)",
-                        "AWS Services/Cloud systems",
-                        "CICD/Testing",
-                        "Mobile dev android/IOS",
-                        "Scrum/ Engineering Practices",
-                        "Embedded/Robotics",
-                        "Web Development",
-                        "Design",
-                        "Professional Googler ",
-                      ].map((skill, index) => (
-                        <AnimatedSkillBadge
-                          key={skill}
-                          skill={skill}
-                          index={index}
-                          palette={palette}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Interests */}
-                  <div
-                    className="p-4 sm:p-6 md:p-8 rounded-xl transition-all duration-500 hover:shadow-xl hover:scale-[1.02] group"
-                    style={{
-                      backgroundColor: palette.surface,
-                      border: `1px solid ${palette.border}`,
-                      backdropFilter: "blur(10px)",
-                      WebkitBackdropFilter: "blur(10px)",
-                      boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
-                    }}
-                  >
-                    <h3
-                      className="text-xl sm:text-2xl font-bold mb-5 flex items-center gap-3"
-                      style={{ color: palette.text }}
-                    >
-                      <span
-                        className="text-3xl"
-                        style={{ color: palette.primary }}
-                      >
-                        🌟
-                      </span>
-                      Beyond Code
-                    </h3>
-                    <p
-                      className="text-base leading-relaxed transition-all duration-300 hover:text-opacity-80"
-                      style={{
-                        color: palette.textSecondary,
-                        lineHeight: "1.8",
-                      }}
-                    >
-                      Outside of engineering, I love to cook, travel, and
-                      explore new places. I also enjoy photography, feel free to
-                      check out my gallery below!
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-4 sm:mt-6 text-center flex-shrink-0">
-                <Link
-                  href="/about"
-                  className="inline-block px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-sm sm:text-base font-semibold transition-all duration-300 hover:scale-110 hover:shadow-xl relative overflow-hidden group touch-manipulation"
-                  style={{
-                    background: `linear-gradient(135deg, ${palette.primary}, ${palette.secondary})`,
-                    color: palette.text,
-                    boxShadow: `0 4px 20px ${palette.primary}40`,
-                    minHeight: "44px",
-                  }}
-                >
-                  <span className="relative z-10">View Full Experience →</span>
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, rgba(255,255,255,0.3), transparent)",
-                    }}
-                  />
-                </Link>
-              </div>
-            </div>
-          </Section>
-
-          {/* Projects Section */}
-          <Section>
-            <div className="max-w-6xl w-full h-full flex flex-col justify-center py-4 sm:py-8 overflow-y-auto md:overflow-visible">
-              <h2
-                className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 sm:mb-12 md:mb-16 text-center"
-                style={{
-                  backgroundImage: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  letterSpacing: "-0.02em",
-                }}
-              >
-                Projects
-              </h2>
-              <div
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 items-stretch"
-                id="project-cards"
-              >
-                {projects.slice(0, 3).map((project, index) => (
-                  <AnimatedProjectCard
-                    key={project.title}
-                    project={project}
-                    index={index}
-                    palette={palette}
-                  />
-                ))}
-              </div>
-              <div className="mt-12 text-center">
-                <Link
-                  href="/projects"
-                  className="inline-block px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-110 hover:shadow-xl relative overflow-hidden group"
-                  style={{
-                    background: `linear-gradient(135deg, ${palette.primary}, ${palette.secondary})`,
-                    color: palette.text,
-                    boxShadow: `0 4px 20px ${palette.primary}40`,
-                  }}
-                >
-                  <span className="relative z-10">Find out more</span>
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, rgba(255,255,255,0.3), transparent)",
-                    }}
-                  />
-                </Link>
-              </div>
-            </div>
-          </Section>
-
-          {/* Blog Section */}
-          <Section>
-            <div className="max-w-4xl w-full h-full flex flex-col justify-center py-8">
-              <h2
-                className="text-4xl sm:text-5xl md:text-6xl font-bold mb-8 text-center flex-shrink-0"
-                style={{
-                  backgroundImage: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  letterSpacing: "-0.02em",
-                }}
-              >
-                Blog
-              </h2>
-              <div className="space-y-4 flex-1 min-h-0 overflow-hidden">
-                {blogPosts.slice(0, 3).map((post, index) => (
-                  <AnimatedBlogPost
-                    key={post.id}
-                    post={post}
-                    palette={palette}
-                    index={index}
-                  />
-                ))}
-              </div>
-              <div className="mt-6 text-center flex-shrink-0">
-                <Link
-                  href="/blog"
-                  className="inline-block px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-110 hover:shadow-xl relative overflow-hidden group"
-                  style={{
-                    background: `linear-gradient(135deg, ${palette.primary}, ${palette.secondary})`,
-                    color: palette.text,
-                    boxShadow: `0 4px 20px ${palette.primary}40`,
-                  }}
-                >
-                  <span className="relative z-10">Find out more</span>
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, rgba(255,255,255,0.3), transparent)",
-                    }}
-                  />
-                </Link>
-              </div>
-            </div>
-          </Section>
-
-          {/* Gallery Section */}
-          <Section>
-            <div className="max-w-4xl w-full text-center">
-              <h2
-                className="text-5xl sm:text-6xl md:text-7xl font-bold mb-12"
-                style={{
-                  backgroundImage: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  letterSpacing: "-0.02em",
-                }}
-              >
-                Gallery
-              </h2>
-              <p
-                className="text-xl mb-12"
-                style={{ color: palette.textSecondary }}
-              >
-                Explore my photography and visual work.
-              </p>
-              <Link
-                href="/gallery"
-                className="inline-block px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-110 hover:shadow-xl relative overflow-hidden group"
-                style={{
-                  background: `linear-gradient(135deg, ${palette.primary}, ${palette.secondary})`,
-                  color: palette.text,
-                  boxShadow: `0 4px 20px ${palette.primary}40`,
-                }}
-              >
-                <span className="relative z-10">Find out more</span>
-                <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, rgba(255,255,255,0.3), transparent)",
-                  }}
-                />
-              </Link>
-            </div>
-          </Section>
-
-          {/* Contact Section */}
-          <Section>
-            <div className="max-w-2xl w-full text-center">
-              <h2
-                className="text-5xl sm:text-6xl md:text-7xl font-bold mb-12"
-                style={{
-                  backgroundImage: `linear-gradient(135deg, ${palette.text}, ${palette.primary})`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  letterSpacing: "-0.02em",
-                }}
-              >
-                Get In Touch
-              </h2>
-              <p
-                className="text-xl mb-12"
-                style={{ color: palette.textSecondary }}
-              >
-                I'm always open to discussing new projects, creative ideas, or
-                opportunities to be part of your vision.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link
-                  href="https://www.linkedin.com/in/kevinsoftwarewiz"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-110 hover:shadow-xl relative overflow-hidden group"
-                  style={{
-                    background: `linear-gradient(135deg, ${palette.primary}, ${palette.secondary})`,
-                    color: palette.text,
-                    boxShadow: `0 4px 20px ${palette.primary}40`,
-                  }}
-                >
-                  <span className="relative z-10">LinkedIn</span>
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, rgba(255,255,255,0.3), transparent)",
-                    }}
-                  />
-                </Link>
-                <Link
-                  href="https://github.com/KevinChen2211"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-110 hover:shadow-xl relative overflow-hidden group"
-                  style={{
-                    background: `linear-gradient(135deg, ${palette.primary}, ${palette.secondary})`,
-                    color: palette.text,
-                    boxShadow: `0 4px 20px ${palette.primary}40`,
-                  }}
-                >
-                  <span className="relative z-10">GitHub</span>
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, rgba(255,255,255,0.3), transparent)",
-                    }}
-                  />
-                </Link>
-              </div>
-            </div>
-          </Section>
-        </SmoothScrollContainer>
-      </div>
-    </>
+        © Kevin Chen
+      </footer>
+    </div>
   );
 }

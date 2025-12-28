@@ -64,7 +64,7 @@ export default function AboutPage() {
           }}
         >
           <p
-            className="text-lg mb-6 leading-relaxed transition-all duration-300 hover:text-opacity-80"
+            className="text-lg mb-6 leading-relaxed transition-all duration-300 hover:text-opacity-80 long-content"
             style={{ color: palette.textSecondary }}
           >
             I currently hold a Bachelor of Engineering (Computer and Network
@@ -74,7 +74,7 @@ export default function AboutPage() {
             new ideas and challenging myself to see what I can create.
           </p>
           <p
-            className="text-lg mb-6 leading-relaxed transition-all duration-300 hover:text-opacity-80"
+            className="text-lg mb-6 leading-relaxed transition-all duration-300 hover:text-opacity-80 long-content"
             style={{ color: palette.textSecondary }}
           >
             My expertise spans full-stack development, computer engineering,
@@ -83,7 +83,7 @@ export default function AboutPage() {
             capabilities.
           </p>
           <p
-            className="text-lg mb-6 leading-relaxed transition-all duration-300 hover:text-opacity-80"
+            className="text-lg mb-6 leading-relaxed transition-all duration-300 hover:text-opacity-80 long-content"
             style={{ color: palette.textSecondary }}
           >
             Outside of engineering, I love to cook, travel, and explore new
@@ -142,7 +142,7 @@ export default function AboutPage() {
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100"
+                    className="transition-all duration-200 hover:text-opacity-100 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Led 80+ students through 4 robot design cycles, engineering,
@@ -160,7 +160,7 @@ export default function AboutPage() {
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100"
+                    className="transition-all duration-200 hover:text-opacity-100 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Participated and won state competitions and received
@@ -178,7 +178,7 @@ export default function AboutPage() {
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100"
+                    className="transition-all duration-200 hover:text-opacity-100 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Organized weekly workshops across mechanical, electrical,
@@ -196,7 +196,7 @@ export default function AboutPage() {
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100"
+                    className="transition-all duration-200 hover:text-opacity-100 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Collaborated with RMIT and I Belong to deliver STEM
@@ -214,7 +214,7 @@ export default function AboutPage() {
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100"
+                    className="transition-all duration-200 hover:text-opacity-100 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Initiated sponsorships and organized club events, growing
@@ -232,7 +232,7 @@ export default function AboutPage() {
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100"
+                    className="transition-all duration-200 hover:text-opacity-100 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Organized networking events with industry professionals.
@@ -275,7 +275,7 @@ export default function AboutPage() {
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100"
+                    className="transition-all duration-200 hover:text-opacity-100 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Boosted software release efficiency by 40% by optimizing
@@ -293,7 +293,7 @@ export default function AboutPage() {
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100"
+                    className="transition-all duration-200 hover:text-opacity-100 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Applied MISRA-C coding guidelines and ISO26262 standards for
@@ -311,7 +311,7 @@ export default function AboutPage() {
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100"
+                    className="transition-all duration-200 hover:text-opacity-100 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Designed unit testing frameworks and scalable architecture
@@ -329,7 +329,7 @@ export default function AboutPage() {
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100"
+                    className="transition-all duration-200 hover:text-opacity-100 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Worked in automotive systems using tools such as DOORs and
@@ -373,7 +373,7 @@ export default function AboutPage() {
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100"
+                    className="transition-all duration-200 hover:text-opacity-100 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Developed C++ firmware for real-time avionics-to-ground
@@ -391,7 +391,7 @@ export default function AboutPage() {
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100"
+                    className="transition-all duration-200 hover:text-opacity-100 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Integrated sensors and telemetry to ensure accurate
@@ -435,7 +435,7 @@ export default function AboutPage() {
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100"
+                    className="transition-all duration-200 hover:text-opacity-100 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Designed and tested black powder charge systems and
@@ -453,7 +453,7 @@ export default function AboutPage() {
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100"
+                    className="transition-all duration-200 hover:text-opacity-100 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Achieved 100% retrieval success across 5 launches
@@ -496,7 +496,7 @@ export default function AboutPage() {
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100"
+                    className="transition-all duration-200 hover:text-opacity-100 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Provided high-quality customer service and maintained

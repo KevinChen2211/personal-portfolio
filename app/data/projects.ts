@@ -3,13 +3,18 @@ export interface Project {
   description: string;
   highlights: string[];
   icon?: string;
+  image?: string;
+  slug: string;
 }
 
 export const projects: Project[] = [
   {
-    title: "RMIT BattleBots",
+    title: "Advanced RMIT Combat-Robotics",
     description:
-      "Leading a competitive robotics club focused on combat robotics design, engineering, and competition. Organized workshops, competitions, and industry partnerships.",
+      "The Advanced RMIT Combat Robotics initiative represents a student-led, competition-driven engineering program focused on the end-to-end design, \
+      construction, and operation of combat robots. Over multiple design cycles, the club guided students through the complete engineering lifecycle, \
+      from concept ideation and CAD modelling to manufacturing, electronics integration, software development, and live competition testing. Emphasis \
+      was placed on iterative design, failure analysis, and rapid prototyping, mirroring professional engineering workflows.",
     highlights: [
       "Led 80+ students through 4 robot design cycles",
       "Won state competitions and secured additional funding",
@@ -17,8 +22,10 @@ export const projects: Project[] = [
       "Delivered STEM workshops to high schools in collaboration with RMIT and I Belong",
       "Initiated sponsorships and organized club events",
       "Organized networking events with industry professionals",
+      "Visit the website: https://rmitbattlebots.com/",
     ],
-    icon: "🤖",
+    image: "/projects-images/combatrobots.jpg",
+    slug: "rmit-battlebots",
   },
   {
     title: "Custom ISA and CPU Datapath Design",
@@ -30,7 +37,8 @@ export const projects: Project[] = [
       "Optimized instruction pipeline for performance and efficiency",
       "Validated design through comprehensive simulation and testing",
     ],
-    icon: "⚙️",
+    image: "/projects-images/custom-cpu.png",
+    slug: "custom-cpu",
   },
   {
     title: "DIY Semiconductors",
@@ -41,7 +49,8 @@ export const projects: Project[] = [
       "Research etching, doping, and deposition processes using consumer-grade tools while prioritizing accuracy",
       "Exploring innovative approaches to reduce cost barriers in semiconductor manufacturing",
     ],
-    icon: "🔬",
+    image: "/projects-images/semiconductor.jpg",
+    slug: "diy-semiconductors",
   },
   {
     title: "AWS Web Application",
@@ -54,7 +63,8 @@ export const projects: Project[] = [
       "Designed scalable architecture to handle growing user base",
       "Optimized costs through efficient use of AWS serverless services",
     ],
-    icon: "☁️",
+    image: "/projects-images/aws.png",
+    slug: "aws-web-application",
   },
   {
     title: "CAN Bus Communication and Control",
@@ -66,7 +76,8 @@ export const projects: Project[] = [
       "Designed robust error handling and message filtering systems",
       "Optimized for low-latency communication in automotive applications",
     ],
-    icon: "🚗",
+    image: "/projects-images/can_bus.png",
+    slug: "can-bus",
   },
   {
     title: "Yoga and Meditation App",
@@ -79,6 +90,7 @@ export const projects: Project[] = [
       "Delivered polished UI/UX with smooth animations and intuitive navigation",
       "Ensured cross-platform compatibility for iOS and Android",
     ],
-    icon: "🧘",
+    image: "/projects-images/yoga.png",
+    slug: "yoga-meditation-app",
   },
 ];
