@@ -1,55 +1,88 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import Navbar from "../../../components/Navbar";
 
 type CollectionViewerProps = {
   images: string[];
   title: string;
 };
 
-export default function CollectionViewer({ images, title }: CollectionViewerProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+export default function CollectionViewer({
+  images,
+  title,
+}: CollectionViewerProps) {
+  const bgColor = "#FAF2E6";
+  const textColor = "#2C2C2C";
+  const [visibleImages, setVisibleImages] = useState<Set<number>>(new Set());
+  const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+  // Intersection Observer for fade-in animations
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (images.length === 0) return;
-      if (e.key === "ArrowLeft") {
-        setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
-      } else if (e.key === "ArrowRight") {
-        setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = parseInt(
+              (entry.target as HTMLElement).dataset.index || "0",
+              10
+            );
+            setVisibleImages((prev) => new Set(prev).add(index));
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
       }
+    );
+
+    const timeoutId = setTimeout(() => {
+      imageRefs.current.forEach((ref) => {
+        if (ref) observer.observe(ref);
+      });
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      imageRefs.current.forEach((ref) => {
+        if (ref) observer.unobserve(ref);
+      });
     };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [images.length]);
-
-  const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
-  };
-
-  const goToNext = () => {
-    setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
-  };
 
   if (images.length === 0) {
     return (
       <div
-        className="min-h-screen flex items-center justify-center"
-        style={{ backgroundColor: "#141414", color: "#f5f5f5" }}
+        className="min-h-screen w-full relative overflow-y-auto pt-6 md:pt-8"
+        style={{ backgroundColor: bgColor, color: textColor }}
       >
-        <div className="text-center">
-          <p className="text-sm text-gray-300 mb-4">
-            No images found for this collection.
-          </p>
-          <Link
-            href="/gallery"
-            className="inline-block text-lg transition-all duration-300 hover:underline hover:translate-x-[-4px]"
-            style={{ color: "#f5f5f5" }}
-          >
-            ← Back to Gallery
-          </Link>
+        <Navbar />
+        <div className="min-h-screen flex items-center justify-center pt-24 md:pt-30">
+          <div className="text-center px-6">
+            <p
+              className="text-sm md:text-base mb-4"
+              style={{
+                fontFamily:
+                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+              }}
+            >
+              No images found for this collection.
+            </p>
+            <Link
+              href="/gallery"
+              className="inline-block text-lg transition-all duration-300 hover:underline hover:translate-x-[-4px]"
+              style={{
+                color: textColor,
+                fontFamily:
+                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+              }}
+            >
+              ← Back to Gallery
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -57,114 +90,115 @@ export default function CollectionViewer({ images, title }: CollectionViewerProp
 
   return (
     <div
-      className="fixed inset-0 overflow-hidden"
-      style={{ backgroundColor: "#141414", color: "#f5f5f5" }}
+      className="min-h-screen w-full relative overflow-y-auto pt-6 md:pt-8"
+      style={{ backgroundColor: bgColor }}
     >
-      {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-6 sm:px-10 py-6">
-        <Link
-          href="/gallery"
-          className="text-lg transition-all duration-300 hover:underline hover:translate-x-[-4px] backdrop-blur-sm px-4 py-2 rounded-lg"
+      <Navbar />
+
+      {/* Header Section */}
+      <header className="w-full px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 pt-24 md:pt-30 pb-8 md:pb-12">
+        <div className="flex items-center justify-between mb-6">
+          <Link
+            href="/gallery"
+            className="text-sm md:text-base transition-all duration-300 hover:underline hover:translate-x-[-4px]"
+            style={{
+              color: textColor,
+              fontFamily:
+                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+            }}
+          >
+            ← Back to Gallery
+          </Link>
+        </div>
+        <h1
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2"
           style={{
-            color: "#f5f5f5",
-            backgroundColor: "rgba(0,0,0,0.5)",
+            color: textColor,
+            fontFamily:
+              "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
           }}
         >
-          ← Back to Gallery
-        </Link>
-        <div className="text-right">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-1">{title}</h1>
-          <p className="text-sm text-gray-400">
-            {currentIndex + 1} / {images.length}
-          </p>
-        </div>
-      </div>
+          {title}
+        </h1>
+        <p
+          className="text-sm md:text-base opacity-70"
+          style={{
+            color: textColor,
+            fontFamily:
+              "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+          }}
+        >
+          {images.length} {images.length === 1 ? "image" : "images"}
+        </p>
+      </header>
 
-      {/* Main Image Container */}
-      <div className="absolute inset-0 flex items-center justify-center pt-24 pb-20">
-        <div className="relative w-full h-full flex items-center justify-center px-4">
-          <img
-            key={images[currentIndex]}
-            src={images[currentIndex]}
-            alt={`${title} - Image ${currentIndex + 1}`}
-            className="max-w-full max-h-full object-contain transition-opacity duration-500"
-            style={{ opacity: 1 }}
-          />
-        </div>
-      </div>
+      {/* Images Grid */}
+      <section className="relative w-full pb-12 md:pb-20">
+        {images.map((imageSrc, index) => {
+          const isVisible = visibleImages.has(index);
+          const isLastImage = index === images.length - 1;
 
-      {/* Navigation Buttons */}
-      {images.length > 1 && (
-        <>
-          <button
-            onClick={goToPrevious}
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 active:scale-95"
-            style={{
-              backgroundColor: "rgba(0,0,0,0.6)",
-              color: "#f5f5f5",
-            }}
-            aria-label="Previous image"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="w-6 h-6 sm:w-8 sm:h-8"
+          // Alternate positioning similar to homepage
+          const positionMap = [0, 1, 3, 2];
+          const position = positionMap[index % 4];
+
+          let justifyClass = "";
+          if (position === 0) {
+            justifyClass = "justify-start";
+          } else if (position === 1) {
+            justifyClass = "justify-start md:justify-center md:pr-[15%]";
+          } else if (position === 2) {
+            justifyClass = "justify-end md:justify-center md:pl-[15%]";
+          } else {
+            justifyClass = "justify-end";
+          }
+
+          return (
+            <div
+              key={index}
+              data-index={index}
+              ref={(el) => {
+                imageRefs.current[index] = el;
+              }}
+              className={`w-full flex ${justifyClass} ${
+                isLastImage ? "mb-0 md:pb-[0vh]" : "mb-[15vh] md:mb-[20vh]"
+              } px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24`}
+              style={{
+                opacity: isVisible ? 1 : 0,
+                transform: isVisible ? "translateY(0)" : "translateY(30px)",
+                transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
+              }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 19.5L8.25 12l7.5-7.5"
-              />
-            </svg>
-          </button>
-          <button
-            onClick={goToNext}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 active:scale-95"
-            style={{
-              backgroundColor: "rgba(0,0,0,0.6)",
-              color: "#f5f5f5",
-            }}
-            aria-label="Next image"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="w-6 h-6 sm:w-8 sm:h-8"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M8.25 4.5l7.5 7.5-7.5 7.5"
-              />
-            </svg>
-          </button>
-        </>
-      )}
+              <div className="flex flex-col items-start w-full md:w-auto max-w-[90vw] md:max-w-[60vw] lg:max-w-[55vw]">
+                <div className="relative inline-block w-full">
+                  <Image
+                    src={imageSrc}
+                    alt={`${title} - Image ${index + 1}`}
+                    width={3000}
+                    height={2000}
+                    className="object-contain w-full h-auto max-h-[85vh]"
+                    quality={100}
+                    sizes="(max-width: 768px) 90vw, (max-width: 1024px) 60vw, 55vw"
+                    priority={index < 2}
+                  />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </section>
 
-      {/* Thumbnail Indicator */}
-      {images.length > 1 && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 flex gap-2">
-          {images.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrentIndex(idx)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                idx === currentIndex
-                  ? "bg-white"
-                  : "bg-gray-500 hover:bg-gray-400"
-              }`}
-              aria-label={`Go to image ${idx + 1}`}
-            />
-          ))}
-        </div>
-      )}
+      {/* Footer */}
+      <footer
+        className="w-full py-12 flex justify-center items-center"
+        style={{
+          backgroundColor: bgColor,
+          color: textColor,
+          fontFamily: "'Juana', var(--font-display), 'Playfair Display', serif",
+        }}
+      >
+        © Kevin Chen
+      </footer>
     </div>
   );
 }
-
