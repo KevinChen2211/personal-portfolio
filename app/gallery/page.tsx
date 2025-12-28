@@ -121,6 +121,7 @@ export default function GalleryPage() {
   const [nextImageSlideIn, setNextImageSlideIn] = useState(false);
   const [disableCommitAnimation, setDisableCommitAnimation] = useState(false);
   const [collectionNameAnimate, setCollectionNameAnimate] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const hasCollectionLink = !!expandedCollection?.slug;
 
   // Calculate collection info
@@ -375,6 +376,7 @@ export default function GalleryPage() {
           };
 
           setIsClosing(true);
+          setShowPreview(false);
           setExpandedObjectPosition(currentObjectPosition);
           setExpandedImageStyle(targetRect);
 
@@ -390,6 +392,7 @@ export default function GalleryPage() {
             setHoveredTitle(false);
             setIsSuperscriptExiting(false);
             setCollectionNameAnimate(false);
+            setShowPreview(false);
           }, 1000);
         });
       });
@@ -530,6 +533,7 @@ export default function GalleryPage() {
               setExpandedImageSrc(src);
               setExpandedCollection(newCollection);
               setShowCollectionTitle(true);
+              setShowPreview(false); // Reset preview visibility
               // Reset and trigger collection name animation on initial open
               setCollectionNameAnimate(false);
               previousCollectionSlugRef.current = newCollection.slug;
@@ -561,6 +565,10 @@ export default function GalleryPage() {
                   setTimeout(() => {
                     setIsOpening(false);
                   }, 10);
+                  // Fade in preview after a short delay
+                  setTimeout(() => {
+                    setShowPreview(true);
+                  }, 300);
                 });
               });
             }}
@@ -712,12 +720,15 @@ export default function GalleryPage() {
             {/* All collections preview in bottom right */}
             {allCollections.length > 0 && (
               <div
-                className="fixed bottom-8 right-8 flex flex-row gap-3 max-w-[60vw] overflow-x-auto transition-opacity duration-500"
+                className="fixed bottom-8 right-8 flex flex-row gap-3 max-w-[60vw] overflow-x-auto transition-opacity duration-700 ease-out"
                 style={{
-                  opacity: showCollectionTitle || isTransitioning ? 1 : 0,
+                  opacity:
+                    (showPreview || isTransitioning) && !isClosing ? 1 : 0,
                   zIndex: 60,
                   pointerEvents:
-                    showCollectionTitle || isTransitioning ? "auto" : "none",
+                    (showPreview || isTransitioning) && !isClosing
+                      ? "auto"
+                      : "none",
                 }}
               >
                 {allCollections.map((collection, idx) => {
