@@ -148,8 +148,14 @@ export default function GalleryPage() {
   const getGalleryPositionInfo = () => {
     if (expandedImageIndex === null) return null;
 
+    // Use next image index during transition to start animation earlier
+    const displayIndex =
+      isTransitioning && nextImageData
+        ? nextImageData.index
+        : expandedImageIndex;
+
     return {
-      currentIndex: expandedImageIndex + 1,
+      currentIndex: displayIndex + 1,
       total: galleryImages.length,
     };
   };
