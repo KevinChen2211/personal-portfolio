@@ -5,6 +5,77 @@ import Link from "next/link";
 import { galleryImages, parseCollection, allImages } from "./data";
 import Navbar from "../components/Navbar";
 
+function ScrollingDigit({ value }: { value: number }) {
+  const [current, setCurrent] = useState(value);
+
+  useEffect(() => {
+    setCurrent(value);
+  }, [value]);
+
+  return (
+    <div
+      style={{
+        height: "1.2em",
+        width: "0.6em",
+        overflow: "hidden",
+        display: "inline-block",
+        verticalAlign: "top",
+      }}
+    >
+      <div
+        style={{
+          transform: `translateY(${-current * 1.2}em)`,
+          transition: "transform 0.4s ease-out",
+        }}
+      >
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
+          <div
+            key={d}
+            style={{
+              height: "1.2em",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {d}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ScrollingNumber({ value = 0 }: { value: number }) {
+  const [prevLength, setPrevLength] = useState(1);
+  const digits = value
+    .toString()
+    .split("")
+    .map((d) => parseInt(d, 10));
+
+  useEffect(() => {
+    setPrevLength(digits.length);
+  }, [digits.length]);
+
+  // Pad with empty slots to maintain positions
+  const maxLength = Math.max(prevLength, digits.length);
+  const paddedDigits = new Array(maxLength - digits.length)
+    .fill(null)
+    .concat(digits);
+
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center" }}>
+      {paddedDigits.map((digit, i) =>
+        digit !== null ? (
+          <ScrollingDigit key={i} value={digit} />
+        ) : (
+          <span key={i} style={{ width: "0.6em", display: "inline-block" }} />
+        )
+      )}
+    </span>
+  );
+}
+
 export default function GalleryPage() {
   const bgColor = "#FAF2E6";
   const textColor = "#FAF2E6";
@@ -620,9 +691,15 @@ export default function GalleryPage() {
                   opacity: isClosing ? 0 : 1,
                   fontVariantNumeric: "tabular-nums",
                   minWidth: "150px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.2em",
                 }}
               >
-                {galleryPositionInfo.currentIndex} — {galleryPositionInfo.total}
+                <ScrollingNumber value={galleryPositionInfo.currentIndex} />
+                <span>—</span>
+                <span>{galleryPositionInfo.total}</span>
               </div>
             )}
 
