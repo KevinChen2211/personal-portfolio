@@ -798,7 +798,13 @@ export default function GalleryPage() {
           <div
             ref={trackRef}
             className="absolute left-1/2 top-3/5 flex gap-[4vmin] select-none"
-            style={{ transform: "translate(-50%, -50%)" }}
+            style={{
+              transform: "translate(-50%, -50%)",
+              opacity: isNavigatingToCollection ? 0 : 1,
+              transition: isNavigatingToCollection
+                ? "opacity 0.15s ease-out"
+                : "none",
+            }}
           >
             {galleryImages.map((src, i) => (
               <img
