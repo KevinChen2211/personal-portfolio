@@ -80,7 +80,7 @@ function ScrollingNumber({ value = 0 }: { value: number }) {
 
 export default function GalleryPage() {
   const bgColor = "#FAF2E6";
-  const textColor = "#FAF2E6"; // Light text for dark expanded view
+  const textColor = "#2C2C2C"; // Dark text for light background (keep consistent)
   const mobileTextColor = "#2C2C2C"; // Dark text for light background
   const router = useRouter();
 
@@ -891,7 +891,7 @@ export default function GalleryPage() {
             <div
               className="fixed inset-0 z-40 transition-opacity duration-500"
               style={{
-                backgroundColor: "#141414",
+                backgroundColor: bgColor,
                 opacity:
                   isClosing || isOpening || isNavigatingToCollection ? 0 : 1,
               }}
