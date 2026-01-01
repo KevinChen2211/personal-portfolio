@@ -42,16 +42,39 @@ export default function Template({ children }: { children: React.ReactNode }) {
     // On navigation, just update visibility without loading screen
     // (since all images are already preloaded)
     if (prevPathnameRef.current !== pathname) {
+      const isCollectionPage = pathname.startsWith("/gallery/collection/");
+      const wasCollectionPage = prevPathnameRef.current?.startsWith(
+        "/gallery/collection/"
+      );
+      const navigatingToCollection =
+        sessionStorage.getItem("navigatingToCollection") === "true";
+
+      // Store previous pathname before updating
+      const previousPath = prevPathnameRef.current;
       prevPathnameRef.current = pathname;
 
-      // Very brief fade, then immediate fade in
-      // Content stays visible during transition to prevent dark flash
-      setIsVisible(false);
+      if (isCollectionPage || wasCollectionPage || navigatingToCollection) {
+        // Fade out completely for collection transitions
+        setIsVisible(false);
 
-      // Fade in immediately - no delay since images are preloaded
-      requestAnimationFrame(() => {
-        setIsVisible(true);
-      });
+        // Clear the flag
+        if (navigatingToCollection) {
+          sessionStorage.removeItem("navigatingToCollection");
+        }
+
+        // Wait longer to allow images to load, then fade in
+        timeoutRef.current = setTimeout(() => {
+          requestAnimationFrame(() => {
+            setIsVisible(true);
+          });
+        }, 700); // Longer delay for collection page image loading
+      } else {
+        // Regular page transition - quick fade
+        setIsVisible(false);
+        requestAnimationFrame(() => {
+          setIsVisible(true);
+        });
+      }
     }
   }, [pathname]);
 

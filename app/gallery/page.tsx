@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { galleryImages, parseCollection, allImages } from "./data";
 import Navbar from "../components/Navbar";
 
@@ -81,6 +82,7 @@ export default function GalleryPage() {
   const bgColor = "#FAF2E6";
   const textColor = "#FAF2E6"; // Light text for dark expanded view
   const mobileTextColor = "#2C2C2C"; // Dark text for light background
+  const router = useRouter();
 
   const trackRef = useRef<HTMLDivElement | null>(null);
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
@@ -125,6 +127,8 @@ export default function GalleryPage() {
   const [collectionNameAnimate, setCollectionNameAnimate] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isNavigatingToCollection, setIsNavigatingToCollection] =
+    useState(false);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(
     null
   );
@@ -134,6 +138,34 @@ export default function GalleryPage() {
     time: number;
   } | null>(null);
   const hasCollectionLink = !!expandedCollection?.slug;
+
+  // Handle collection link click with fade-out
+  const handleCollectionClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    slug: string
+  ) => {
+    e.preventDefault();
+    setIsNavigatingToCollection(true);
+
+    // Signal to template that we're navigating to collection
+    sessionStorage.setItem("navigatingToCollection", "true");
+
+    // Preload collection images
+    const collectionImages = allImages.filter(
+      (src) => parseCollection(src).slug === slug
+    );
+
+    // Preload images
+    collectionImages.forEach((src) => {
+      const img = document.createElement("img");
+      img.src = src;
+    });
+
+    // Fade out, then navigate
+    setTimeout(() => {
+      router.push(`/gallery/collection/${slug}`);
+    }, 400); // Match fade-out duration
+  };
 
   // Calculate collection info
   const getCollectionInfo = () => {
@@ -702,7 +734,12 @@ export default function GalleryPage() {
       className={`min-h-screen w-full relative ${
         isMobile ? "overflow-y-auto" : "overflow-hidden"
       }`}
-      style={{ backgroundColor: bgColor, color: textColor }}
+      style={{
+        backgroundColor: bgColor,
+        color: textColor,
+        opacity: isNavigatingToCollection ? 0 : 1,
+        transition: isNavigatingToCollection ? "opacity 0.4s ease-out" : "none",
+      }}
     >
       <Navbar isExpanded={expandedImageIndex !== null} isClosing={isClosing} />
 
@@ -846,15 +883,19 @@ export default function GalleryPage() {
         expandedCollection && (
           <>
             <div
-              className="fixed inset-0 z-40 transition-opacity duration-1000"
+              className="fixed inset-0 z-40 transition-opacity duration-500"
               style={{
                 backgroundColor: "#141414",
-                opacity: isClosing || isOpening ? 0 : 1,
+                opacity:
+                  isClosing || isOpening || isNavigatingToCollection ? 0 : 1,
               }}
             />
             {hasCollectionLink ? (
               <Link
                 href={`/gallery/collection/${expandedCollection.slug}`}
+                onClick={(e) =>
+                  handleCollectionClick(e, expandedCollection.slug)
+                }
                 className={`fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center tracking-tight transition-opacity duration-500 ${
                   isMobile
                     ? "text-2xl px-4"
@@ -862,8 +903,12 @@ export default function GalleryPage() {
                 }`}
                 style={{
                   color: textColor,
-                  opacity: showCollectionTitle ? 1 : 0,
-                  pointerEvents: showCollectionTitle ? "auto" : "none",
+                  opacity:
+                    showCollectionTitle && !isNavigatingToCollection ? 1 : 0,
+                  pointerEvents:
+                    showCollectionTitle && !isNavigatingToCollection
+                      ? "auto"
+                      : "none",
                 }}
                 onMouseEnter={handleSuperscriptMouseEnter}
                 onMouseLeave={handleSuperscriptMouseLeave}
@@ -913,8 +958,12 @@ export default function GalleryPage() {
                 }`}
                 style={{
                   color: textColor,
-                  opacity: showCollectionTitle ? 1 : 0,
-                  pointerEvents: showCollectionTitle ? "auto" : "none",
+                  opacity:
+                    showCollectionTitle && !isNavigatingToCollection ? 1 : 0,
+                  pointerEvents:
+                    showCollectionTitle && !isNavigatingToCollection
+                      ? "auto"
+                      : "none",
                   fontFamily:
                     "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
                 }}
@@ -969,7 +1018,7 @@ export default function GalleryPage() {
                 }`}
                 style={{
                   color: textColor,
-                  opacity: isClosing ? 0 : 1,
+                  opacity: isClosing || isNavigatingToCollection ? 0 : 1,
                   fontVariantNumeric: "tabular-nums",
                   minWidth: isMobile ? "100px" : "150px",
                   display: "flex",
@@ -994,10 +1043,16 @@ export default function GalleryPage() {
                 }`}
                 style={{
                   opacity:
-                    (showPreview || isTransitioning) && !isClosing ? 1 : 0,
+                    (showPreview || isTransitioning) &&
+                    !isClosing &&
+                    !isNavigatingToCollection
+                      ? 1
+                      : 0,
                   zIndex: 60,
                   pointerEvents:
-                    (showPreview || isTransitioning) && !isClosing
+                    (showPreview || isTransitioning) &&
+                    !isClosing &&
+                    !isNavigatingToCollection
                       ? "auto"
                       : "none",
                   WebkitOverflowScrolling: "touch",
@@ -1098,6 +1153,10 @@ export default function GalleryPage() {
                         } 100vw), -50%)`
                       : "translate(-50%, -50%)",
                   zIndex: isTransitioning ? 50 : 50,
+                  opacity: isNavigatingToCollection ? 0 : 1,
+                  transition: isNavigatingToCollection
+                    ? "opacity 0.4s ease-out"
+                    : undefined,
                 }}
               />
             )}
