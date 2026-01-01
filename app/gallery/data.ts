@@ -2,7 +2,7 @@
 export const galleryImages = [
   "/gallery-images/Hello_Gorgeous1.jpg",
   "/gallery-images/Sean_x_Amasi2.jpg",
-  "/gallery-images/test.jpg",
+  "/gallery-images/AnnMarie_X_Liam1.JPG",
 ];
 
 // Images that only appear in collection pages (not in main gallery)
@@ -19,6 +19,11 @@ export const collectionImages = [
   "/gallery-images/Sean_x_Amasi4.jpg",
   "/gallery-images/Sean_x_Amasi5.jpg",
   "/gallery-images/Sean_x_Amasi6.jpg",
+  "/gallery-images/AnnMarie_X_Liam2.JPG",
+  "/gallery-images/AnnMarie_X_Liam3.JPG",
+  "/gallery-images/AnnMarie_X_Liam4.JPG",
+  "/gallery-images/AnnMarie_X_Liam5.JPG",
+  "/gallery-images/AnnMarie_X_Liam6.JPG",
 ];
 
 // All images combined (for collection pages to search through)
