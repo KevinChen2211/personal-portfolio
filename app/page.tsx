@@ -11,7 +11,31 @@ export default function Home() {
   const [navbarAtBottom, setNavbarAtBottom] = useState(false);
   const [visibleImages, setVisibleImages] = useState<Set<number>>(new Set());
   const [showMobileMessage, setShowMobileMessage] = useState(true);
+  const [heroVisible, setHeroVisible] = useState(false);
+  const [heroImageVisible, setHeroImageVisible] = useState(false);
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Check if this is the first visit after loading screen
+  useEffect(() => {
+    const hasVisitedBefore = sessionStorage.getItem("hasVisitedLanding");
+    
+    if (!hasVisitedBefore) {
+      // First visit - wait for loading screen, then fade in
+      const timer = setTimeout(() => {
+        setHeroVisible(true);
+        setTimeout(() => {
+          setHeroImageVisible(true);
+        }, 200); // Stagger image 200ms after text
+      }, 300); // Small delay after loading screen completes
+      
+      sessionStorage.setItem("hasVisitedLanding", "true");
+      return () => clearTimeout(timer);
+    } else {
+      // Returning visitor - show immediately
+      setHeroVisible(true);
+      setHeroImageVisible(true);
+    }
+  }, []);
 
   // Image data with order, source, link, and label
   const images = [
@@ -266,6 +290,9 @@ export default function Home() {
                 color: textColor,
                 fontStyle: "normal",
                 letterSpacing: "-0.01em",
+                opacity: heroVisible ? 1 : 0,
+                transform: heroVisible ? "translateY(0)" : "translateY(20px)",
+                transition: "opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
               }}
             >
               Kevin Chen <span className="italic">(/keh-vin chen/)</span> is a
@@ -287,7 +314,14 @@ export default function Home() {
           </div>
 
           {/* Kevin Chen Portrait Image */}
-          <div className="relative flex-shrink-0 w-full md:w-[55vw] md:max-w-[600px] md:ml-auto mb-6 md:mb-0">
+          <div 
+            className="relative flex-shrink-0 w-full md:w-[55vw] md:max-w-[600px] md:ml-auto mb-6 md:mb-0"
+            style={{
+              opacity: heroImageVisible ? 1 : 0,
+              transform: heroImageVisible ? "translateY(0)" : "translateY(20px)",
+              transition: "opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
+            }}
+          >
             <div className="relative w-full h-[50vh] max-h-[400px] md:h-[80vh] md:max-h-[900px]">
               <Image
                 src="/images/KevinChen.jpg"

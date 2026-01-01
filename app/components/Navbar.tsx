@@ -19,8 +19,9 @@ export default function Navbar({ isExpanded = false, isClosing = false }: Navbar
   
   // Calculate opacity based on expanded state
   const bgOpacity = isExpanded && !isClosing ? 1 : 0;
-  const currentBgColor = isExpanded && !isClosing ? darkBgColor : bgColor;
-  const currentTextColor = isExpanded && !isClosing ? lightTextColor : textColor;
+  // Keep original colors even when expanded
+  const currentBgColor = bgColor;
+  const currentTextColor = textColor;
 
   return (
     <header

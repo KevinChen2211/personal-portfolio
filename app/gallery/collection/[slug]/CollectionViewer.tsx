@@ -17,7 +17,64 @@ export default function CollectionViewer({
   const bgColor = "#FAF2E6";
   const textColor = "#2C2C2C";
   const [visibleImages, setVisibleImages] = useState<Set<number>>(new Set());
+  const [pageVisible, setPageVisible] = useState(false);
+  const [headerVisible, setHeaderVisible] = useState(false);
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Fade in page on mount
+  useEffect(() => {
+    // Check if navigating from gallery (has sessionStorage flag) - check immediately before template clears it
+    const navigatingFromGallery =
+      sessionStorage.getItem("navigatingToCollection") === "true";
+
+    // Preload first image first (prioritize it)
+    const preloadFirstImage = (): Promise<void> => {
+      if (images.length === 0) return Promise.resolve();
+
+      return new Promise<void>((resolve) => {
+        const img = document.createElement("img");
+        img.onload = () => resolve();
+        img.onerror = () => resolve(); // Resolve even on error
+        img.src = images[0]; // Load first image immediately
+      });
+    };
+
+    // Preload remaining images
+    const preloadRemainingImages = (): Promise<void[]> => {
+      if (images.length <= 1) return Promise.resolve([]);
+
+      const remainingImages = images.slice(1);
+      const preloadPromises = remainingImages.map((src) => {
+        return new Promise<void>((resolve) => {
+          const img = document.createElement("img");
+          img.onload = () => resolve();
+          img.onerror = () => resolve(); // Resolve even on error
+          img.src = src;
+        });
+      });
+
+      return Promise.all(preloadPromises);
+    };
+
+    // Load first image first, then load the rest
+    preloadFirstImage().then(() => {
+      // Start loading remaining images in parallel, but don't wait for them
+      preloadRemainingImages();
+
+      // Wait for template transition if coming from gallery
+      // Template waits 700ms, so we wait a bit longer to ensure smooth fade-in
+      const delay = navigatingFromGallery ? 800 : 100;
+
+      setTimeout(() => {
+        // Fade in header first
+        setHeaderVisible(true);
+        // Then fade in page content
+        setTimeout(() => {
+          setPageVisible(true);
+        }, 200);
+      }, delay);
+    });
+  }, [images]);
 
   // Intersection Observer for fade-in animations
   useEffect(() => {
@@ -96,7 +153,15 @@ export default function CollectionViewer({
       <Navbar />
 
       {/* Header Section */}
-      <header className="w-full px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 pt-24 md:pt-30 pb-8 md:pb-12">
+      <header
+        className="w-full px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 pt-24 md:pt-30 pb-8 md:pb-12"
+        style={{
+          opacity: headerVisible ? 1 : 0,
+          transform: headerVisible ? "translateY(0)" : "translateY(-20px)",
+          transition:
+            "opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
+        }}
+      >
         <div className="flex items-center justify-between mb-6">
           <Link
             href="/gallery"
@@ -133,7 +198,13 @@ export default function CollectionViewer({
       </header>
 
       {/* Images Grid */}
-      <section className="relative w-full pb-12 md:pb-20">
+      <section
+        className="relative w-full pb-12 md:pb-20"
+        style={{
+          opacity: pageVisible ? 1 : 0,
+          transition: "opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
+        }}
+      >
         {images.map((imageSrc, index) => {
           const isVisible = visibleImages.has(index);
           const isLastImage = index === images.length - 1;
@@ -179,8 +250,8 @@ export default function CollectionViewer({
                     className="object-contain w-full h-auto max-h-[85vh]"
                     quality={85}
                     sizes="(max-width: 768px) 90vw, (max-width: 1024px) 60vw, 55vw"
-                    priority={index < 2}
-                    loading={index < 2 ? undefined : "lazy"}
+                    priority={index === 0}
+                    loading={index === 0 ? undefined : "lazy"}
                   />
                 </div>
               </div>
