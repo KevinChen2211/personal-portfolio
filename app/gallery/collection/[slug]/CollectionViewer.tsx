@@ -177,9 +177,10 @@ export default function CollectionViewer({
                     width={3000}
                     height={2000}
                     className="object-contain w-full h-auto max-h-[85vh]"
-                    quality={100}
+                    quality={85}
                     sizes="(max-width: 768px) 90vw, (max-width: 1024px) 60vw, 55vw"
                     priority={index < 2}
+                    loading={index < 2 ? undefined : "lazy"}
                   />
                 </div>
               </div>

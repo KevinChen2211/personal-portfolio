@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { galleryImages, parseCollection, allImages } from "./data";
 import Navbar from "../components/Navbar";
 
@@ -726,12 +727,16 @@ export default function GalleryPage() {
                 className="block"
               >
                 <div className="relative w-full">
-                  <img
+                  <Image
                     src={collection.previewImage}
                     alt={collection.name}
+                    width={800}
+                    height={1120}
                     className="w-full h-auto object-cover"
                     style={{ aspectRatio: "40 / 56" }}
-                    draggable={false}
+                    quality={85}
+                    sizes="(max-width: 768px) 100vw, 90vw"
+                    loading="lazy"
                   />
                   <div className="mt-2">
                     <h2
@@ -767,6 +772,8 @@ export default function GalleryPage() {
                 src={src}
                 className="image cursor-pointer transition-all duration-500 ease-out hover:scale-105"
                 draggable={false}
+                loading={i < 2 ? "eager" : "lazy"}
+                decoding="async"
                 onClick={() => {
                   const img = imageRefs.current[i];
                   if (!img) return;
@@ -1049,6 +1056,7 @@ export default function GalleryPage() {
                         }}
                         draggable={false}
                         loading="lazy"
+                        decoding="async"
                       />
                       <div className="absolute bottom-0 left-0 right-0 z-0 p-1 bg-black bg-opacity-60 rounded-b-sm">
                         <p
