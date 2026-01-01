@@ -27,6 +27,9 @@ const playfairDisplay = Playfair_Display({
 export const metadata: Metadata = {
   title: "Kevin Chen",
   description: "Engineer & Creative Developer. Portfolio for Kevin Chen.",
+  icons: {
+    icon: [],
+  },
 };
 
 export default function RootLayout({
