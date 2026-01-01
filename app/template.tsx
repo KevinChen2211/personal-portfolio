@@ -18,14 +18,20 @@ export default function Template({ children }: { children: React.ReactNode }) {
       clearTimeout(timeoutRef.current);
     }
 
-    // Only show loading screen on initial mount if landing page
+    // Only show loading screen on initial mount if landing page AND first visit
     if (isInitialMount.current) {
       isInitialMount.current = false;
       prevPathnameRef.current = pathname;
 
-      // Only show loading screen if starting on landing page
+      // Only show loading screen if starting on landing page AND haven't visited before
       if (pathname === "/") {
-        setShowLoading(true);
+        const hasVisitedBefore = sessionStorage.getItem("hasVisitedLanding");
+        if (!hasVisitedBefore) {
+          setShowLoading(true);
+        } else {
+          // Returning to landing page - show immediately
+          setIsVisible(true);
+        }
       } else {
         // For other pages, show content immediately
         setIsVisible(true);
@@ -51,6 +57,10 @@ export default function Template({ children }: { children: React.ReactNode }) {
 
   const handleLoadingComplete = () => {
     setShowLoading(false);
+    // Mark that landing page has been visited
+    if (pathname === "/") {
+      sessionStorage.setItem("hasVisitedLanding", "true");
+    }
     // Wait a bit longer for images to be ready, then fade in
     timeoutRef.current = setTimeout(() => {
       requestAnimationFrame(() => {
