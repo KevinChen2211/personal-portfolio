@@ -7,10 +7,10 @@ import LoadingScreen from "./components/LoadingScreen";
 export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
-  const [showLoading, setShowLoading] = useState(true);
-  const prevPathnameRef = useRef<string | null>(null);
+  const [showLoading, setShowLoading] = useState(false);
   const isInitialMount = useRef(true);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const prevPathnameRef = useRef<string | null>(null);
 
   useEffect(() => {
     // Clear any pending timeouts
@@ -18,20 +18,35 @@ export default function Template({ children }: { children: React.ReactNode }) {
       clearTimeout(timeoutRef.current);
     }
 
-    // On initial mount, show loading screen first
+    // Only show loading screen on initial mount if landing page
     if (isInitialMount.current) {
       isInitialMount.current = false;
       prevPathnameRef.current = pathname;
-      // Loading screen will handle showing content when ready
+
+      // Only show loading screen if starting on landing page
+      if (pathname === "/") {
+        setShowLoading(true);
+      } else {
+        // For other pages, show content immediately
+        setIsVisible(true);
+      }
       return;
     }
 
-    // Only transition if pathname changed
+    // On navigation, just update visibility without loading screen
+    // (since all images are already preloaded)
     if (prevPathnameRef.current !== pathname) {
-      // Show loading screen and hide content
-      setShowLoading(true);
       setIsVisible(false);
       prevPathnameRef.current = pathname;
+
+      // Fade in after a short delay
+      timeoutRef.current = setTimeout(() => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            setIsVisible(true);
+          });
+        });
+      }, 150);
     }
   }, [pathname]);
 
@@ -75,4 +90,3 @@ export default function Template({ children }: { children: React.ReactNode }) {
     </>
   );
 }
-

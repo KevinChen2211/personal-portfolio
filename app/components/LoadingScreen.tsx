@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 import { blogPosts } from "../data/blogs";
+import { projects } from "../data/projects";
 
 // Extract images from blog content
 function getFirstImage(content: string): string | null {
@@ -10,44 +10,44 @@ function getFirstImage(content: string): string | null {
   return imageMatch ? imageMatch[1] : null;
 }
 
-// Image lists for each page
-const getPageImages = (pathname: string): string[] => {
-  if (pathname === "/") {
-    return [
-      "/images/KevinChen.jpg",
-      "/images/Gallery.jpg",
-      "/images/Projects.jpg",
-      "/images/Gallery2.jpg",
-      "/images/Journal.jpg",
-      "/images/Gallery3.jpg",
-      "/images/Contact.jpg",
-    ];
-  }
-  if (pathname === "/projects") {
-    return [
-      "/projects-images/combatrobots.jpg",
-      "/projects-images/custom-cpu.png",
-      "/projects-images/semiconductor.jpg",
-      "/projects-images/aws.png",
-      "/projects-images/can_bus.png",
-      "/projects-images/yoga.png",
-    ];
-  }
-  if (pathname === "/gallery") {
-    return [
-      "/gallery-images/Hello_Gorgeous1.jpg",
-      "/gallery-images/Sean_x_Amasi2.jpg",
-      "/gallery-images/AnnMarie_X_Liam1.JPG",
-    ];
-  }
-  if (pathname === "/journal") {
-    // Extract images from blog posts
-    const journalImages = blogPosts
-      .map((post) => getFirstImage(post.content))
-      .filter((img): img is string => img !== null);
-    return journalImages;
-  }
-  return [];
+// Get ALL images for preloading (used on landing page)
+const getAllImages = (): string[] => {
+  // Landing page images
+  const landingImages = [
+    "/images/KevinChen.jpg",
+    "/images/Gallery.jpg",
+    "/images/Projects.jpg",
+    "/images/Gallery2.jpg",
+    "/images/Journal.jpg",
+    "/images/Gallery3.jpg",
+    "/images/Contact.jpg",
+  ];
+
+  // Projects page images
+  const projectImages = projects
+    .map((project) => project.image)
+    .filter((img): img is string => img !== undefined);
+
+  // Gallery page images
+  const galleryImages = [
+    "/gallery-images/Hello_Gorgeous1.jpg",
+    "/gallery-images/Sean_x_Amasi2.jpg",
+    "/gallery-images/AnnMarie_X_Liam1.JPG",
+  ];
+
+  // Journal page images
+  const journalImages = blogPosts
+    .map((post) => getFirstImage(post.content))
+    .filter((img): img is string => img !== null);
+
+  // Combine all images and remove duplicates
+  const allImages = [
+    ...landingImages,
+    ...projectImages,
+    ...galleryImages,
+    ...journalImages,
+  ];
+  return Array.from(new Set(allImages));
 };
 
 // Preload images
@@ -102,23 +102,30 @@ export default function LoadingScreen({
   onComplete,
   minDisplayTime = 800,
 }: LoadingScreenProps) {
-  const pathname = usePathname();
   const [progress, setProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const startTime = Date.now();
-    const images = getPageImages(pathname);
+    // Preload ALL images from all pages (only shown on landing page)
+    const images = getAllImages();
 
     const loadAssets = async () => {
       try {
         // Load fonts first
         await preloadFonts();
-        setProgress(30);
+        setProgress(20);
 
-        // Then load images
+        // Then load all images from all pages
         if (images.length > 0) {
-          await preloadImages(images);
+          // Load images in batches to show progress
+          const batchSize = Math.ceil(images.length / 4);
+          for (let i = 0; i < images.length; i += batchSize) {
+            const batch = images.slice(i, i + batchSize);
+            await preloadImages(batch);
+            // Update progress: 20% (fonts) + 60% (images) = 80%
+            setProgress(20 + Math.floor((i + batch.length) / images.length * 60));
+          }
         }
         setProgress(80);
 
@@ -141,7 +148,7 @@ export default function LoadingScreen({
     };
 
     loadAssets();
-  }, [pathname, minDisplayTime, onComplete]);
+  }, [minDisplayTime, onComplete]);
 
   if (!isLoading && progress === 100) {
     return null;
