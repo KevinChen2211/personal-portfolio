@@ -82,6 +82,7 @@ export default function GalleryPage() {
   const bgColor = "#FAF2E6";
   const textColor = "#2C2C2C"; // Dark text for light background (keep consistent)
   const mobileTextColor = "#2C2C2C"; // Dark text for light background
+  const expandedTextColor = bgColor; // Same as background for enlarged image
   const router = useRouter();
 
   const trackRef = useRef<HTMLDivElement | null>(null);
@@ -908,7 +909,7 @@ export default function GalleryPage() {
                     : "text-4xl sm:text-5xl md:text-5xl hover:opacity-80"
                 }`}
                 style={{
-                  color: textColor,
+                  color: expandedTextColor,
                   opacity:
                     showCollectionTitle && !isNavigatingToCollection ? 1 : 0,
                   pointerEvents:
@@ -1023,7 +1024,7 @@ export default function GalleryPage() {
                     : "bottom-8 text-lg sm:text-xl md:text-2xl"
                 }`}
                 style={{
-                  color: textColor,
+                  color: expandedTextColor,
                   opacity: isClosing || isNavigatingToCollection ? 0 : 1,
                   fontVariantNumeric: "tabular-nums",
                   minWidth: isMobile ? "100px" : "150px",
