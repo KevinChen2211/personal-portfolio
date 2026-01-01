@@ -294,7 +294,7 @@ export default function Home() {
                 alt="Kevin Chen"
                 fill
                 className="object-contain"
-                quality={100}
+                quality={90}
                 priority
                 sizes="(max-width: 768px) 100vw, 55vw"
               />
@@ -359,9 +359,10 @@ export default function Home() {
                       width={3000}
                       height={2000}
                       className="object-contain w-full h-auto max-h-[85vh]"
-                      quality={100}
+                      quality={85}
                       sizes="(max-width: 768px) 90vw, (max-width: 1024px) 50vw, 45vw"
                       priority={index < 2}
+                      loading={index < 2 ? undefined : "lazy"}
                     />
                   </Link>
                 </div>
