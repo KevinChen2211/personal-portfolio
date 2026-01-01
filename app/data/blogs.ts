@@ -11,6 +11,30 @@ export interface BlogPost {
 
 export const blogPosts: BlogPost[] = [
   {
+    id: "3",
+    title: "The Year Ahead",
+    slug: "the-year-ahead",
+    date: "2026-01-01",
+    excerpt: "Looking forward to the new year and what i want to achieve",
+    content: ` ![IMAGE:/blog-images/The-Year-Ahead.jpg]
+    New Year's resolutions have never really been my thing. I'd usually set one vaguely ambitious goal, give the year a dramatic name, and then more or less just vibe my way through it. Now that I've graduated, I don't really have an excuse not to be more deliberate about improving myself. So this year, I've decided to hold myself accountable by setting smaller, more achievable goals. 
+    
+    - The first goal I want to commit to is reading more, especially non-fiction. If I manage to stick to it, I'll be sharing my thoughts and short reviews of what I read here. 
+    
+    - The second goal is to put myself out there more: volunteering, taking part in new activities, and getting involved in projects that broaden my experiences and push me into spaces I wouldn't normally explore. 
+    
+    - The final goal is to make healthier day-to-day decisions, whether that means skipping the upsized meal or being more mindful about how much time I spend doom-scrolling.
+
+    ---
+
+    Either way, I think focusing on smaller, more attainable goals gives me a better chance of actually following through. Progress does not have to be dramatic to be meaningful, and consistency matters far more than grand intentions. If I can show up for these goals regularly, even in small ways, that will be a win in itself.
+    `,
+    author: "Kevin Chen",
+    tags: [
+      "Self-Improvement"
+    ],
+  },
+  {
     id: "2",
     title: "The Art of being Uncomfortable",
     slug: "the-art-of-being-uncomfortable",
