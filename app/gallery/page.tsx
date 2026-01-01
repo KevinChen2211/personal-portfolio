@@ -78,7 +78,8 @@ function ScrollingNumber({ value = 0 }: { value: number }) {
 
 export default function GalleryPage() {
   const bgColor = "#FAF2E6";
-  const textColor = "#FAF2E6";
+  const textColor = "#FAF2E6"; // Light text for dark expanded view
+  const mobileTextColor = "#2C2C2C"; // Dark text for light background
 
   const trackRef = useRef<HTMLDivElement | null>(null);
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
@@ -122,6 +123,15 @@ export default function GalleryPage() {
   const [disableCommitAnimation, setDisableCommitAnimation] = useState(false);
   const [collectionNameAnimate, setCollectionNameAnimate] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(
+    null
+  );
+  const expandedTouchStartRef = useRef<{
+    x: number;
+    y: number;
+    time: number;
+  } | null>(null);
   const hasCollectionLink = !!expandedCollection?.slug;
 
   // Calculate collection info
@@ -222,20 +232,34 @@ export default function GalleryPage() {
   }, [expandedImageIndex]);
 
   /* -------------------------------
-     Disable vertical scrolling
+     Mobile detection
   ------------------------------- */
   useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  /* -------------------------------
+     Disable vertical scrolling (desktop only)
+  ------------------------------- */
+  useEffect(() => {
+    if (isMobile) return; // Allow scrolling on mobile
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev;
     };
-  }, []);
+  }, [isMobile]);
 
   /* -------------------------------
-     Horizontal scroll + parallax
+     Horizontal scroll + parallax (Desktop only)
   ------------------------------- */
   useEffect(() => {
+    if (isMobile) return; // Skip on mobile
     const track = trackRef.current!;
     if (!track) return;
 
@@ -292,6 +316,47 @@ export default function GalleryPage() {
     };
     window.addEventListener("wheel", handleWheel, { passive: false });
 
+    // Touch handlers for mobile horizontal scrolling
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isScrolling = false;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (expandedIndexRef.current !== null) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      isScrolling = false;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (expandedIndexRef.current !== null) return;
+      const touchX = e.touches[0].clientX;
+      const touchY = e.touches[0].clientY;
+      const deltaX = touchX - touchStartX;
+      const deltaY = touchY - touchStartY;
+
+      // Determine if horizontal or vertical scroll
+      if (!isScrolling) {
+        isScrolling = Math.abs(deltaX) > Math.abs(deltaY);
+      }
+
+      if (isScrolling) {
+        e.preventDefault();
+        const delta = deltaX * -0.5; // Adjust sensitivity
+        targetPercentage = clamp(targetPercentage + delta);
+        velocity = delta * 0.05;
+        touchStartX = touchX;
+      }
+    };
+
+    const handleTouchEnd = () => {
+      isScrolling = false;
+    };
+
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+
     const animate = (currentTime: number) => {
       const deltaTime = Math.min((currentTime - lastTime) / 16.67, 2);
       lastTime = currentTime;
@@ -338,10 +403,13 @@ export default function GalleryPage() {
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
       track.style.willChange = "auto";
       for (const img of images) (img as HTMLElement).style.willChange = "auto";
     };
-  }, []);
+  }, [isMobile]);
 
   /* -------------------------------
      SHRINK EXPANDED IMAGE SEAMLESSLY
@@ -425,6 +493,107 @@ export default function GalleryPage() {
   }, [expandedImageIndex, isClosing, isTransitioning]);
 
   /* -------------------------------
+     Swipe gestures for expanded view (desktop only)
+  ------------------------------- */
+  useEffect(() => {
+    if (isMobile || expandedImageIndex === null || isClosing || isTransitioning)
+      return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      expandedTouchStartRef.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+        time: Date.now(),
+      };
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (!expandedTouchStartRef.current) return;
+
+      const touchEnd = {
+        x: e.changedTouches[0].clientX,
+        y: e.changedTouches[0].clientY,
+        time: Date.now(),
+      };
+
+      const deltaX = touchEnd.x - expandedTouchStartRef.current.x;
+      const deltaY = touchEnd.y - expandedTouchStartRef.current.y;
+      const deltaTime = touchEnd.time - expandedTouchStartRef.current.time;
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      const isHorizontalSwipe = Math.abs(deltaX) > Math.abs(deltaY);
+
+      // Swipe down to close (vertical swipe down)
+      if (!isHorizontalSwipe && deltaY > 100 && distance > 50) {
+        shrinkImage();
+        expandedTouchStartRef.current = null;
+        return;
+      }
+
+      // Horizontal swipe to navigate between collections
+      if (isHorizontalSwipe && Math.abs(deltaX) > 50 && deltaTime < 300) {
+        const collections = getAllCollections();
+        if (collections.length === 0) return;
+        const currentCollectionIndex = collections.findIndex(
+          (c) => c.isCurrent
+        );
+
+        if (deltaX > 0 && currentCollectionIndex > 0) {
+          // Swipe right - go to previous collection
+          const prevCollection = collections[currentCollectionIndex - 1];
+          const img = imageRefs.current[prevCollection.galleryImageIndex];
+          if (img) {
+            const currentObjectPosition = getComputedStyle(img).objectPosition;
+            setIsTransitioning(true);
+            setTransitionDirection("left");
+            setCollectionNameAnimate(false);
+            setNextImageData({
+              src: prevCollection.previewImage,
+              index: prevCollection.galleryImageIndex,
+              collection: parseCollection(prevCollection.previewImage),
+              objectPosition: currentObjectPosition,
+            });
+          }
+        } else if (
+          deltaX < 0 &&
+          currentCollectionIndex < collections.length - 1
+        ) {
+          // Swipe left - go to next collection
+          const nextCollection = collections[currentCollectionIndex + 1];
+          const img = imageRefs.current[nextCollection.galleryImageIndex];
+          if (img) {
+            const currentObjectPosition = getComputedStyle(img).objectPosition;
+            setIsTransitioning(true);
+            setTransitionDirection("right");
+            setCollectionNameAnimate(false);
+            setNextImageData({
+              src: nextCollection.previewImage,
+              index: nextCollection.galleryImageIndex,
+              collection: parseCollection(nextCollection.previewImage),
+              objectPosition: currentObjectPosition,
+            });
+          }
+        }
+      }
+
+      expandedTouchStartRef.current = null;
+    };
+
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [
+    isMobile,
+    expandedImageIndex,
+    isClosing,
+    isTransitioning,
+    expandedCollection,
+  ]);
+
+  /* -------------------------------
      Handle collection transition animation
   ------------------------------- */
   useEffect(() => {
@@ -500,92 +669,171 @@ export default function GalleryPage() {
     return () => clearTimeout(timeoutId);
   }, [isTransitioning, nextImageData, transitionDirection]);
 
+  // Get unique collections for mobile simple view
+  const getUniqueCollections = () => {
+    const collectionsMap = new Map<
+      string,
+      {
+        name: string;
+        slug: string;
+        previewImage: string;
+      }
+    >();
+
+    galleryImages.forEach((src) => {
+      const { slug, name } = parseCollection(src);
+      if (!collectionsMap.has(slug)) {
+        collectionsMap.set(slug, {
+          name,
+          slug,
+          previewImage: src,
+        });
+      }
+    });
+
+    return Array.from(collectionsMap.values());
+  };
+
+  const uniqueCollections = getUniqueCollections();
+
   return (
     <div
-      className="min-h-screen w-full relative overflow-hidden"
+      className={`min-h-screen w-full relative ${
+        isMobile ? "overflow-y-auto" : "overflow-hidden"
+      }`}
       style={{ backgroundColor: bgColor, color: textColor }}
     >
       <Navbar isExpanded={expandedImageIndex !== null} isClosing={isClosing} />
 
-      {/* IMAGE TRACK */}
-      <div
-        ref={trackRef}
-        className="absolute top-3/5 left-1/2 flex gap-[4vmin] select-none"
-        style={{ transform: "translate(-50%, -50%)" }}
-      >
-        {galleryImages.map((src, i) => (
-          <img
-            key={i}
-            ref={(el) => {
-              imageRefs.current[i] = el;
-            }}
-            src={src}
-            className="image cursor-pointer transition-all duration-500 ease-out hover:scale-105"
-            draggable={false}
-            onClick={() => {
-              const img = imageRefs.current[i];
-              if (!img) return;
-              const rect = img.getBoundingClientRect();
-              setIsOpening(true);
-              setIsClosing(false);
-              const newCollection = parseCollection(src);
-              setExpandedImageIndex(i);
-              setExpandedImageSrc(src);
-              setExpandedCollection(newCollection);
-              setShowCollectionTitle(true);
-              setShowPreview(false); // Reset preview visibility
-              // Reset and trigger collection name animation on initial open
-              setCollectionNameAnimate(false);
-              previousCollectionSlugRef.current = newCollection.slug;
-              requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                  setCollectionNameAnimate(true);
-                });
-              });
-              const currentObjectPosition =
-                getComputedStyle(img).objectPosition;
-
-              setExpandedImageStyle({
-                top: rect.top + rect.height / 2,
-                left: rect.left + rect.width / 2,
-                width: rect.width,
-                height: rect.height,
-              });
-              setExpandedObjectPosition(currentObjectPosition);
-              // Start fade in after a brief delay to ensure opacity starts at 0
-              requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                  setExpandedImageStyle({
-                    top: window.innerHeight / 2,
-                    left: window.innerWidth / 2,
-                    width: window.innerWidth,
-                    height: window.innerHeight,
-                  });
-                  // Fade in the background
-                  setTimeout(() => {
-                    setIsOpening(false);
-                  }, 10);
-                  // Fade in preview after a short delay
-                  setTimeout(() => {
-                    setShowPreview(true);
-                  }, 300);
-                });
-              });
-            }}
+      {/* MOBILE SIMPLE VIEW */}
+      {isMobile ? (
+        <div className="pt-24 pb-12 px-4 sm:px-6">
+          <h1
+            className="text-3xl font-bold mb-8"
             style={{
-              width: "40vmin",
-              height: "56vmin",
-              aspectRatio: "40 / 56",
-              objectFit: "cover",
-              objectPosition: "100% center",
-              flexShrink: 0,
+              color: mobileTextColor,
+              fontFamily:
+                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
             }}
-          />
-        ))}
-      </div>
+          >
+            Gallery
+          </h1>
+          <div className="grid grid-cols-1 gap-6">
+            {uniqueCollections.map((collection) => (
+              <Link
+                key={collection.slug}
+                href={`/gallery/collection/${collection.slug}`}
+                className="block"
+              >
+                <div className="relative w-full">
+                  <img
+                    src={collection.previewImage}
+                    alt={collection.name}
+                    className="w-full h-auto object-cover"
+                    style={{ aspectRatio: "40 / 56" }}
+                    draggable={false}
+                  />
+                  <div className="mt-2">
+                    <h2
+                      className="text-lg font-semibold"
+                      style={{
+                        color: mobileTextColor,
+                        fontFamily:
+                          "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                      }}
+                    >
+                      {collection.name}
+                    </h2>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* DESKTOP IMAGE TRACK */}
+          <div
+            ref={trackRef}
+            className="absolute left-1/2 top-3/5 flex gap-[4vmin] select-none"
+            style={{ transform: "translate(-50%, -50%)" }}
+          >
+            {galleryImages.map((src, i) => (
+              <img
+                key={i}
+                ref={(el) => {
+                  imageRefs.current[i] = el;
+                }}
+                src={src}
+                className="image cursor-pointer transition-all duration-500 ease-out hover:scale-105"
+                draggable={false}
+                onClick={() => {
+                  const img = imageRefs.current[i];
+                  if (!img) return;
+                  const rect = img.getBoundingClientRect();
+                  setIsOpening(true);
+                  setIsClosing(false);
+                  const newCollection = parseCollection(src);
+                  setExpandedImageIndex(i);
+                  setExpandedImageSrc(src);
+                  setExpandedCollection(newCollection);
+                  setShowCollectionTitle(true);
+                  setShowPreview(false); // Reset preview visibility
+                  // Reset and trigger collection name animation on initial open
+                  setCollectionNameAnimate(false);
+                  previousCollectionSlugRef.current = newCollection.slug;
+                  requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                      setCollectionNameAnimate(true);
+                    });
+                  });
+                  const currentObjectPosition =
+                    getComputedStyle(img).objectPosition;
 
-      {/* EXPANDED IMAGE */}
-      {expandedImageIndex !== null &&
+                  setExpandedImageStyle({
+                    top: rect.top + rect.height / 2,
+                    left: rect.left + rect.width / 2,
+                    width: rect.width,
+                    height: rect.height,
+                  });
+                  setExpandedObjectPosition(currentObjectPosition);
+                  // Start fade in after a brief delay to ensure opacity starts at 0
+                  requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                      setExpandedImageStyle({
+                        top: window.innerHeight / 2,
+                        left: window.innerWidth / 2,
+                        width: window.innerWidth,
+                        height: window.innerHeight,
+                      });
+                      // Fade in the background
+                      setTimeout(() => {
+                        setIsOpening(false);
+                      }, 10);
+                      // Fade in preview after a short delay
+                      setTimeout(() => {
+                        setShowPreview(true);
+                      }, 300);
+                    });
+                  });
+                }}
+                style={{
+                  width: "40vmin",
+                  height: "56vmin",
+                  aspectRatio: "40 / 56",
+                  objectFit: "cover",
+                  objectPosition: "100% center",
+                  flexShrink: 0,
+                }}
+              />
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* EXPANDED IMAGE - Desktop only */}
+      {!isMobile &&
+        expandedImageIndex !== null &&
         expandedImageStyle &&
         expandedImageSrc &&
         expandedCollection && (
@@ -600,7 +848,11 @@ export default function GalleryPage() {
             {hasCollectionLink ? (
               <Link
                 href={`/gallery/collection/${expandedCollection.slug}`}
-                className="fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center text-4xl sm:text-5xl md:text-5xl tracking-tight transition-opacity duration-500 hover:opacity-80"
+                className={`fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center tracking-tight transition-opacity duration-500 ${
+                  isMobile
+                    ? "text-2xl px-4"
+                    : "text-4xl sm:text-5xl md:text-5xl hover:opacity-80"
+                }`}
                 style={{
                   color: textColor,
                   opacity: showCollectionTitle ? 1 : 0,
@@ -647,7 +899,11 @@ export default function GalleryPage() {
               </Link>
             ) : (
               <div
-                className="fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight transition-opacity duration-500"
+                className={`fixed top-1/2 left-1/2 z-60 -translate-x-1/2 -translate-y-1/2 text-center font-bold tracking-tight transition-opacity duration-500 ${
+                  isMobile
+                    ? "text-2xl px-4"
+                    : "text-4xl sm:text-5xl md:text-6xl"
+                }`}
                 style={{
                   color: textColor,
                   opacity: showCollectionTitle ? 1 : 0,
@@ -699,12 +955,16 @@ export default function GalleryPage() {
             {/* Gallery position number at bottom middle */}
             {galleryPositionInfo && (
               <div
-                className="fixed bottom-8 left-1/2 z-60 -translate-x-1/2 text-center text-lg sm:text-xl md:text-2xl transition-opacity duration-500"
+                className={`fixed left-1/2 z-60 -translate-x-1/2 text-center transition-opacity duration-500 ${
+                  isMobile
+                    ? "bottom-20 text-base"
+                    : "bottom-8 text-lg sm:text-xl md:text-2xl"
+                }`}
                 style={{
                   color: textColor,
                   opacity: isClosing ? 0 : 1,
                   fontVariantNumeric: "tabular-nums",
-                  minWidth: "150px",
+                  minWidth: isMobile ? "100px" : "150px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -720,7 +980,11 @@ export default function GalleryPage() {
             {/* All collections preview in bottom right */}
             {allCollections.length > 0 && (
               <div
-                className="fixed bottom-8 right-8 flex flex-row gap-3 max-w-[60vw] overflow-x-auto transition-opacity duration-700 ease-out"
+                className={`fixed flex flex-row gap-2 sm:gap-3 transition-opacity duration-700 ease-out ${
+                  isMobile
+                    ? "bottom-4 left-4 right-4 max-w-full overflow-x-auto pb-2"
+                    : "bottom-8 right-8 max-w-[60vw] overflow-x-auto"
+                }`}
                 style={{
                   opacity:
                     (showPreview || isTransitioning) && !isClosing ? 1 : 0,
@@ -729,6 +993,7 @@ export default function GalleryPage() {
                     (showPreview || isTransitioning) && !isClosing
                       ? "auto"
                       : "none",
+                  WebkitOverflowScrolling: "touch",
                 }}
               >
                 {allCollections.map((collection, idx) => {
@@ -774,7 +1039,9 @@ export default function GalleryPage() {
                       <img
                         src={collection.previewImage}
                         alt={collection.name}
-                        className="relative z-10 w-20 h-28 sm:w-24 sm:h-32 object-cover rounded-sm"
+                        className={`relative z-10 object-cover rounded-sm ${
+                          isMobile ? "w-16 h-22" : "w-20 h-28 sm:w-24 sm:h-32"
+                        }`}
                         style={{
                           border: collection.isCurrent
                             ? "2px solid rgba(250, 242, 230, 0.8)"
@@ -784,7 +1051,11 @@ export default function GalleryPage() {
                         loading="lazy"
                       />
                       <div className="absolute bottom-0 left-0 right-0 z-0 p-1 bg-black bg-opacity-60 rounded-b-sm">
-                        <p className="text-xs text-white truncate">
+                        <p
+                          className={`text-white truncate ${
+                            isMobile ? "text-[10px]" : "text-xs"
+                          }`}
+                        >
                           {collection.name}
                         </p>
                       </div>
