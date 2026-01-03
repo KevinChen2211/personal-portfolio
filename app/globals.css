@@ -250,3 +250,37 @@ html {
   white-space: nowrap;
   filter: brightness(1.2) saturate(1.4);
 }
+
+:root {
+  --x: 50vw;
+  --y: 50vh;
+}
+
+.reveal-mask {
+  /* Dark overlay that gets "cut out" by the mask */
+  background: black;
+
+  /* Create a circular reveal area that follows the glow position (which lags behind cursor) */
+  /* The mask creates a transparent circle where the glow is, revealing content underneath */
+  mask-image: radial-gradient(
+    circle 300px at var(--glow-x, var(--x, 50vw)) var(--glow-y, var(--y, 50vh)),
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 30%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.8) 70%,
+    rgba(255, 255, 255, 1) 85%,
+    rgba(255, 255, 255, 1) 100%
+  );
+
+  -webkit-mask-image: radial-gradient(
+    circle 300px at var(--glow-x, var(--x, 50vw)) var(--glow-y, var(--y, 50vh)),
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 30%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.8) 70%,
+    rgba(255, 255, 255, 1) 85%,
+    rgba(255, 255, 255, 1) 100%
+  );
+
+  /* Note: mask-image transitions aren't well supported, but the CSS variables update smoothly */
+}

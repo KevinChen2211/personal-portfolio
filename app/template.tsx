@@ -49,8 +49,6 @@ export default function Template({ children }: { children: React.ReactNode }) {
       const navigatingToCollection =
         sessionStorage.getItem("navigatingToCollection") === "true";
 
-      // Store previous pathname before updating
-      const previousPath = prevPathnameRef.current;
       prevPathnameRef.current = pathname;
 
       if (isCollectionPage || wasCollectionPage || navigatingToCollection) {

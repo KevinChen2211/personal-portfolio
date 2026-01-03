@@ -3,22 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-type NavbarProps = {
-  isExpanded?: boolean;
-  isClosing?: boolean;
-};
-
-export default function Navbar({ isExpanded = false, isClosing = false }: NavbarProps) {
+export default function Navbar() {
   const pathname = usePathname();
   const bgColor = "#FAF2E6";
-  const darkBgColor = "#141414";
   const textColor = "#2C2C2C";
-  const lightTextColor = "#FAF2E6";
 
   const isActive = (path: string) => pathname === path;
-  
-  // Calculate opacity based on expanded state
-  const bgOpacity = isExpanded && !isClosing ? 1 : 0;
+
   // Keep original colors even when expanded
   const currentBgColor = bgColor;
   const currentTextColor = textColor;
@@ -26,9 +17,9 @@ export default function Navbar({ isExpanded = false, isClosing = false }: Navbar
   return (
     <header
       className="w-full px-6 md:px-12 lg:px-16 py-5 md:py-6 flex items-center justify-between fixed z-50 top-0 transition-colors duration-1000"
-      style={{ 
+      style={{
         backgroundColor: currentBgColor,
-        color: currentTextColor
+        color: currentTextColor,
       }}
     >
       {/* Name - Left */}
@@ -152,4 +143,3 @@ export default function Navbar({ isExpanded = false, isClosing = false }: Navbar
     </header>
   );
 }
-
