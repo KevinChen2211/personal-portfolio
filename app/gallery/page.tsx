@@ -742,7 +742,7 @@ export default function GalleryPage() {
         transition: isNavigatingToCollection ? "opacity 0.4s ease-out" : "none",
       }}
     >
-      <Navbar isExpanded={expandedImageIndex !== null} isClosing={isClosing} />
+      <Navbar />
 
       {/* MOBILE SIMPLE VIEW */}
       {isMobile ? (
