@@ -34,7 +34,7 @@ export default function NotFound() {
             fontFamily: "system-ui, -apple-system, sans-serif",
           }}
         >
-          <div className="text-[clamp(200px,40vw,600px)] font-black leading-none text-white/20 tracking-tighter">
+          <div className="text-[clamp(200px,40vw,600px)] font-black leading-none text-white/20 tracking-tighter tracking-wide">
             404
           </div>
         </div>
@@ -98,13 +98,7 @@ export default function NotFound() {
           There is no light here
         </h1>
 
-        <p
-          className="text-sm md:text-base text-white/50 mb-8"
-          style={{
-            fontFamily:
-              "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-          }}
-        >
+        <p className="text-sm md:text-base text-white/50 mb-8">
           Sorry, the page you are looking for doesn't exist.
         </p>
 
@@ -112,8 +106,6 @@ export default function NotFound() {
           href="/"
           className="mt-4 rounded-sm bg-white px-8 py-3 text-sm text-black transition-all duration-300 hover:bg-opacity-90 hover:scale-105"
           style={{
-            fontFamily:
-              "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
             fontWeight: 500,
             letterSpacing: "0.05em",
           }}
