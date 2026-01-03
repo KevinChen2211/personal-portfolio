@@ -1,51 +1,76 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 
 export default function NotFound() {
   const [glowPosition, setGlowPosition] = useState({ x: 0, y: 0 });
+  const targetPositionRef = useRef({ x: 0, y: 0 });
+  const currentGlowRef = useRef({ x: 0, y: 0 });
+  const animationFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
     // Prevent scrolling
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
 
+    // Initialize positions to center
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    targetPositionRef.current = { x: centerX, y: centerY };
+    currentGlowRef.current = { x: centerX, y: centerY };
+    setGlowPosition({ x: centerX, y: centerY });
+    document.documentElement.style.setProperty("--glow-x", `${centerX}px`);
+    document.documentElement.style.setProperty("--glow-y", `${centerY}px`);
+
     const move = (e: MouseEvent) => {
       // Update cursor position immediately
       document.documentElement.style.setProperty("--x", `${e.clientX}px`);
       document.documentElement.style.setProperty("--y", `${e.clientY}px`);
 
-      // Update glow position with lag using requestAnimationFrame for smooth animation
-      requestAnimationFrame(() => {
-        setGlowPosition((prev) => {
-          // Smooth interpolation - glow follows cursor with lag
-          const lagFactor = 0.15; // Lower = more lag
-          const newX = prev.x + (e.clientX - prev.x) * lagFactor;
-          const newY = prev.y + (e.clientY - prev.y) * lagFactor;
-
-          // Update CSS variables for mask to use glow position
-          document.documentElement.style.setProperty("--glow-x", `${newX}px`);
-          document.documentElement.style.setProperty("--glow-y", `${newY}px`);
-
-          return { x: newX, y: newY };
-        });
-      });
+      // Update target position (where glow should eventually reach)
+      targetPositionRef.current = { x: e.clientX, y: e.clientY };
     };
+
+    // Continuous animation loop - updates glow position every frame
+    const animate = () => {
+      const lagFactor = 0.15; // Lower = more lag
+      const target = targetPositionRef.current;
+      const current = currentGlowRef.current;
+
+      // Calculate new position with lag
+      currentGlowRef.current = {
+        x: current.x + (target.x - current.x) * lagFactor,
+        y: current.y + (target.y - current.y) * lagFactor,
+      };
+
+      // Update state and CSS variables
+      setGlowPosition(currentGlowRef.current);
+      document.documentElement.style.setProperty(
+        "--glow-x",
+        `${currentGlowRef.current.x}px`
+      );
+      document.documentElement.style.setProperty(
+        "--glow-y",
+        `${currentGlowRef.current.y}px`
+      );
+
+      // Continue animation loop
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    // Start animation loop
+    animationFrameRef.current = requestAnimationFrame(animate);
 
     window.addEventListener("mousemove", move);
     // Hide default cursor
     document.body.style.cursor = "none";
 
-    // Initialize glow position to center
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
-    setGlowPosition({ x: centerX, y: centerY });
-    document.documentElement.style.setProperty("--glow-x", `${centerX}px`);
-    document.documentElement.style.setProperty("--glow-y", `${centerY}px`);
-
     return () => {
       window.removeEventListener("mousemove", move);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
       document.body.style.cursor = "";
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
@@ -87,7 +112,7 @@ export default function NotFound() {
           background:
             "radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%)",
           borderRadius: "50%",
-          transition: "left 0.3s ease-out, top 0.3s ease-out",
+          transition: "none",
         }}
       />
 
