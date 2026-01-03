@@ -257,21 +257,30 @@ html {
 }
 
 .reveal-mask {
+  /* Dark overlay that gets "cut out" by the mask */
   background: black;
 
+  /* Create a circular reveal area that follows the mouse */
+  /* The mask creates a transparent circle where the mouse is, revealing content underneath */
   mask-image: radial-gradient(
-    circle 180px at var(--x) var(--y),
-    rgba(255, 255, 255, 1) 0%,
-    rgba(255, 255, 255, 0.8) 40%,
-    rgba(255, 255, 255, 0.3) 60%,
-    transparent 75%
+    circle 300px at var(--x, 50vw) var(--y, 50vh),
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 30%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.8) 70%,
+    rgba(255, 255, 255, 1) 85%,
+    rgba(255, 255, 255, 1) 100%
   );
 
   -webkit-mask-image: radial-gradient(
-    circle 180px at var(--x) var(--y),
-    rgba(255, 255, 255, 1) 0%,
-    rgba(255, 255, 255, 0.8) 40%,
-    rgba(255, 255, 255, 0.3) 60%,
-    transparent 75%
+    circle 300px at var(--x, 50vw) var(--y, 50vh),
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 30%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.8) 70%,
+    rgba(255, 255, 255, 1) 85%,
+    rgba(255, 255, 255, 1) 100%
   );
+
+  /* Note: mask-image transitions aren't well supported, but the CSS variables update smoothly */
 }
