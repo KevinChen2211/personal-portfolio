@@ -1,29 +1,61 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 export default function NotFound() {
+  const [glowPosition, setGlowPosition] = useState({ x: 0, y: 0 });
+
   useEffect(() => {
+    // Prevent scrolling
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
     const move = (e: MouseEvent) => {
+      // Update cursor position immediately
       document.documentElement.style.setProperty("--x", `${e.clientX}px`);
       document.documentElement.style.setProperty("--y", `${e.clientY}px`);
+
+      // Update glow position with lag using requestAnimationFrame for smooth animation
+      requestAnimationFrame(() => {
+        setGlowPosition((prev) => {
+          // Smooth interpolation - glow follows cursor with lag
+          const lagFactor = 0.15; // Lower = more lag
+          const newX = prev.x + (e.clientX - prev.x) * lagFactor;
+          const newY = prev.y + (e.clientY - prev.y) * lagFactor;
+
+          // Update CSS variables for mask to use glow position
+          document.documentElement.style.setProperty("--glow-x", `${newX}px`);
+          document.documentElement.style.setProperty("--glow-y", `${newY}px`);
+
+          return { x: newX, y: newY };
+        });
+      });
     };
 
     window.addEventListener("mousemove", move);
     // Hide default cursor
     document.body.style.cursor = "none";
 
+    // Initialize glow position to center
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    setGlowPosition({ x: centerX, y: centerY });
+    document.documentElement.style.setProperty("--glow-x", `${centerX}px`);
+    document.documentElement.style.setProperty("--glow-y", `${centerY}px`);
+
     return () => {
       window.removeEventListener("mousemove", move);
       document.body.style.cursor = "";
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     };
   }, []);
 
   return (
     <main
-      className="relative h-screen w-screen overflow-hidden bg-black text-white"
-      style={{ cursor: "none" }}
+      className="fixed inset-0 bg-black text-white"
+      style={{ cursor: "none", overflow: "hidden" }}
     >
       {/* Background layer with 404 numbers */}
       <div className="absolute inset-0">
@@ -43,19 +75,19 @@ export default function NotFound() {
       {/* Dark overlay that gets revealed by mouse glow */}
       <div className="absolute inset-0 reveal-mask bg-black" />
 
-      {/* Mouse glow effect */}
+      {/* Mouse glow effect - lags behind cursor */}
       <div
         className="fixed pointer-events-none z-10"
         style={{
-          left: "var(--x)",
-          top: "var(--y)",
+          left: `${glowPosition.x}px`,
+          top: `${glowPosition.y}px`,
           width: "400px",
           height: "400px",
           transform: "translate(-50%, -50%)",
           background:
             "radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%)",
           borderRadius: "50%",
-          transition: "opacity 0.1s ease-out",
+          transition: "left 0.3s ease-out, top 0.3s ease-out",
         }}
       />
 
