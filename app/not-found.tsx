@@ -34,7 +34,7 @@ export default function NotFound() {
 
     // Continuous animation loop - updates glow position every frame
     const animate = () => {
-      const lagFactor = 0.15; // Lower = more lag
+      const lagFactor = 0.01; // Lower = more lag (reduced from 0.15 for more lag)
       const target = targetPositionRef.current;
       const current = currentGlowRef.current;
 
@@ -85,12 +85,7 @@ export default function NotFound() {
       {/* Background layer with 404 numbers */}
       <div className="absolute inset-0">
         {/* Giant background number - revealed by mask */}
-        <div
-          className="pointer-events-none absolute inset-0 flex items-center justify-center"
-          style={{
-            fontFamily: "system-ui, -apple-system, sans-serif",
-          }}
-        >
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <div className="text-[clamp(200px,40vw,600px)] font-black leading-none text-white/20 tracking-tighter tracking-wide">
             404
           </div>
