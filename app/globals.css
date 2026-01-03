@@ -250,3 +250,28 @@ html {
   white-space: nowrap;
   filter: brightness(1.2) saturate(1.4);
 }
+
+:root {
+  --x: 50vw;
+  --y: 50vh;
+}
+
+.reveal-mask {
+  background: black;
+
+  mask-image: radial-gradient(
+    circle 180px at var(--x) var(--y),
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.8) 40%,
+    rgba(255, 255, 255, 0.3) 60%,
+    transparent 75%
+  );
+
+  -webkit-mask-image: radial-gradient(
+    circle 180px at var(--x) var(--y),
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.8) 40%,
+    rgba(255, 255, 255, 0.3) 60%,
+    transparent 75%
+  );
+}
