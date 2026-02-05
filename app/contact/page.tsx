@@ -112,31 +112,6 @@ export default function ContactPage() {
                 </a>
               </div>
             </div>
-
-            <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
-              <a
-                href="https://www.instagram.com/kewinchen_/"
-                target="_blank"
-                rel="noreferrer"
-                className="px-4 py-2 md:px-5 md:py-2.5 text-xs md:text-sm font-semibold text-center hover:opacity-70 transition-opacity border border-current"
-                style={{
-                  color: textColor,
-                }}
-              >
-                Follow on Instagram
-              </a>
-              <a
-                href="https://www.linkedin.com/in/kevinchenengineer/"
-                target="_blank"
-                rel="noreferrer"
-                className="px-4 py-2 md:px-5 md:py-2.5 text-xs md:text-sm font-semibold text-center hover:opacity-70 transition-opacity border border-current"
-                style={{
-                  color: textColor,
-                }}
-              >
-                Connect on LinkedIn
-              </a>
-            </div>
           </div>
         </div>
       </main>
