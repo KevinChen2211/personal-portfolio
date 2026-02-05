@@ -934,7 +934,7 @@ export default function GalleryPage() {
                   </span>
                   {collectionInfo && (
                     <sup
-                      className="absolute left-full text-xl sm:text-1xl md:text-1xl ml-2 whitespace-nowrap overflow-hidden"
+                      className="absolute left-full text-xl sm:text-1xl md:text-1xl ml-2 pr-2 whitespace-nowrap overflow-hidden"
                       style={{
                         pointerEvents: "none",
                       }}
@@ -991,7 +991,7 @@ export default function GalleryPage() {
                   </span>
                   {collectionInfo && (
                     <sup
-                      className="absolute left-full text-xl sm:text-1xl md:text-1xl ml-2 whitespace-nowrap overflow-hidden"
+                      className="absolute left-full text-xl sm:text-1xl md:text-1xl ml-2 pr-2 whitespace-nowrap overflow-hidden"
                       style={{
                         pointerEvents: "none",
                       }}
