@@ -40,11 +40,12 @@ const JournalCard = ({
     >
       <Link href={`/journal/${post.slug}`} className="group">
         {/* Image */}
-        <div className="relative w-full mb-3 overflow-hidden">
+        <div className="relative w-full mb-2 overflow-hidden">
           <div
             className="relative w-full"
             style={{
               aspectRatio: "0.75 / 1",
+              maxHeight: "calc(100vh - 320px)",
             }}
           >
             {imageUrl ? (
@@ -130,13 +131,13 @@ export default function JournalPage() {
 
   return (
     <div
-      className="min-h-screen w-full relative"
+      className="min-h-screen w-full relative overflow-x-hidden"
       style={{ backgroundColor: bgColor }}
     >
       <Navbar />
-      <main className="px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-24 md:py-32">
-        <div className="max-w-[98vw] xl:max-w-[1800px] mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-8 md:gap-12 lg:gap-16 xl:gap-20">
+      <main className="px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 pt-20 pb-24 md:pt-24 md:pb-32">
+        <div className="w-full mx-auto max-w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-6 md:gap-8 lg:gap-10 xl:gap-12">
             {blogPosts.map((post, index) => (
               <JournalCard key={post.id} post={post} index={index} />
             ))}
