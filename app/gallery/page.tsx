@@ -344,9 +344,9 @@ export default function GalleryPage() {
     const handleWheel = (e: WheelEvent) => {
       if (expandedIndexRef.current !== null) return;
       e.preventDefault();
-      const delta = e.deltaY * -0.02;
+      const delta = e.deltaY * -0.035;
       targetPercentage = clamp(targetPercentage + delta);
-      velocity = delta * 0.1;
+      velocity = delta * 0.15;
     };
     window.addEventListener("wheel", handleWheel, { passive: false });
 
@@ -406,7 +406,7 @@ export default function GalleryPage() {
       }
 
       const distance = targetPercentage - percentage;
-      const lerpFactor = Math.abs(distance) > 1 ? 0.015 : 0.01;
+      const lerpFactor = Math.abs(distance) > 1 ? 0.025 : 0.018;
       percentage += distance * lerpFactor;
 
       if (Math.abs(distance) < 0.01 && Math.abs(velocity) < 0.01)
