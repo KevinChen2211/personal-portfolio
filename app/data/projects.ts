@@ -58,13 +58,15 @@ export const projects: Project[] = [
   {
     title: "AWS Web Application",
     description:
-      "Built a scalable, serverless web application leveraging AWS services to enable user registration, subscription management, and content delivery for artists.",
+      "Developed a comprehensive web application utilizing AWS services, including EC2, S3, API Gateway, Lambda, and DynamoDB. The application allows users to register, log in, and manage their music subscriptions with functionalities such as querying music information, subscribing to songs, and viewing artist images.\n\n**AWS EC2**: Deployed the application on an Ubuntu Server, ensuring full functionality in a web server environment.\n\n**AWS DynamoDB**: Created and managed tables for user login and music data, implementing both through code and console.\n\n**AWS S3**: Programmatically downloaded and uploaded artist images, integrating them into the application.\n\n**Login and Registration System**: Developed a secure login and registration system validating user credentials and storing user data in DynamoDB.\n\n**API Gateway and Lambda Functions**: Implemented RESTful APIs for data operations, handling user interactions and data modifications through Lambda functions.\n\n**User Interface**: Designed intuitive web pages for user login, registration, and music subscription management, ensuring a seamless user experience.",
     highlights: [
-      "Full stack serverless app using EC2, S3, Lambda, DynamoDB, and API Gateway",
-      "Enables users to register, manage subscriptions, and access artist content",
-      "Implemented secure authentication and authorization",
-      "Designed scalable architecture to handle growing user base",
-      "Optimized costs through efficient use of AWS serverless services",
+      "Deployed application on AWS EC2 Ubuntu Server with full web server functionality",
+      "Created and managed DynamoDB tables for user login and music data (code and console)",
+      "Programmatically managed artist images in S3 with download and upload capabilities",
+      "Developed secure login and registration system with DynamoDB user data storage",
+      "Implemented RESTful APIs using API Gateway and Lambda for data operations",
+      "Designed intuitive user interface for login, registration, and music subscription management",
+      "Demo: https://www.youtube.com/watch?v=oIH_J6MM7_o",
     ],
     image: "/projects-images/aws.png",
     slug: "aws-web-application",
@@ -72,7 +74,7 @@ export const projects: Project[] = [
   {
     title: "CAN Bus Communication and Control",
     description:
-      "Developed embedded firmware for automotive communication protocols, implementing CAN bus messaging and I/O sampling on STM32 microcontrollers.",
+      "This project implements an embedded CAN communication system on an STM32F10x microcontroller. The system integrates button inputs, LED control, ADC sensing, and CAN bus messaging to demonstrate bidirectional communication between nodes on a CAN network.\n\nThe program initializes the system clock, GPIO interfaces, ADC module, timer, and CAN controller with configured message filters. Two push buttons are used to control system states: a wake-up button and a user button, each updating corresponding LEDs and broadcasting their status over the CAN bus using predefined message identifiers.\n\nOnce the system is initialized, a timer periodically triggers the transmission of ADC sensor readings over CAN. The ADC value is read from an analog input channel, packaged into a CAN message, and transmitted to other nodes on the network.\n\nThe system also supports receiving CAN messages, which are parsed and used to control external LEDs (LED8 and LED9). Incoming messages are filtered by identifier and processed to determine whether the LEDs should be turned on or off based on the received data payload.",
     highlights: [
       "Developed firmware for STM32F107 microcontroller to handle CAN bus messaging and I/O sampling",
       "Implemented real-time data processing and communication protocols",
