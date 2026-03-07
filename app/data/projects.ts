@@ -30,12 +30,15 @@ export const projects: Project[] = [
   {
     title: "Custom ISA and CPU Datapath Design",
     description:
-      "Designed and implemented a complete custom Instruction Set Architecture and CPU datapath from the ground up, demonstrating deep understanding of computer architecture fundamentals.",
+      "Designed and implemented an 8-bit CPU datapath capable of executing a binary search algorithm written in assembly language. Based on a custom RISC-5 inspired instruction set architecture, this CPU incorporates fundamental computer architecture components including an instruction set, datapath, control unit, and memory hierarchy to ensure full support for the target algorithm's execution.\n\nThe CPU design adopts the Harvard architecture, which separates instruction memory from data memory. This design choice allows simultaneous access to program instructions and data, improving processing efficiency and supporting fast instruction throughput during execution. The entire system was implemented and verified using Intel Quartus Prime.\n\nThe instruction set architecture is based on RISC-5 principles and includes approximately 16 different opcodes specifically designed to support binary search operations. The binary search algorithm works by maintaining left and right boundaries, calculating a middle index, and comparing the middle value with the target to determine whether to search the upper or lower half of the sorted array.\n\nThe datapath includes several key components: a program counter that acts as the heart of the system, coordinating component operations; RAM configured as 8-bit width with 10 addressable locations; a register file with 16 addresses, each 8 bits wide, for temporary memory storage; an ALU providing arithmetic and logic operations including addition, subtraction, and bit shifting (left and right), with overflow flags for comparison operations; and a control unit that interprets opcodes and generates control signals to direct the CPU's operation.\n\nThe project demonstrates the complete design cycle from ISA definition through datapath implementation to algorithm execution. The binary search algorithm was successfully simulated and verified, showing the CPU correctly locating target values within sorted arrays by iteratively narrowing the search space based on comparisons.\n\nhttps://www.youtube.com/watch?v=VAfr-Zdzpp8",
     highlights: [
-      "Designed a custom Instruction Set Architecture (ISA) from custom logic gates for a computational application",
-      "Architected and implemented a CPU Datapath in Intel Quartus Prime (Fetch, Decode, Execute, Memory, Write-back)",
-      "Optimized instruction pipeline for performance and efficiency",
-      "Validated design through comprehensive simulation and testing",
+      "Designed and implemented an 8-bit CPU datapath with custom RISC-5 inspired ISA",
+      "Implemented Harvard architecture with separate instruction and data memory for improved efficiency",
+      "Developed complete datapath components: program counter, RAM, register file (16x8), ALU, and control unit",
+      "Created ALU with arithmetic operations (add, subtract) and bit shifting with overflow detection",
+      "Implemented binary search algorithm in assembly language and verified execution through simulation",
+      "Designed control unit to interpret opcodes and generate control signals for CPU operation",
+      "Validated entire system using Intel Quartus Prime simulation and waveform analysis",
     ],
     image: "/projects-images/custom-cpu.png",
     slug: "custom-cpu",
