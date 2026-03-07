@@ -58,7 +58,7 @@ export const projects: Project[] = [
   {
     title: "AWS Web Application",
     description:
-      "Developed a comprehensive web application utilizing AWS services, including EC2, S3, API Gateway, Lambda, and DynamoDB. The application allows users to register, log in, and manage their music subscriptions with functionalities such as querying music information, subscribing to songs, and viewing artist images.\n\n**AWS EC2**: Deployed the application on an Ubuntu Server, ensuring full functionality in a web server environment.\n\n**AWS DynamoDB**: Created and managed tables for user login and music data, implementing both through code and console.\n\n**AWS S3**: Programmatically downloaded and uploaded artist images, integrating them into the application.\n\n**Login and Registration System**: Developed a secure login and registration system validating user credentials and storing user data in DynamoDB.\n\n**API Gateway and Lambda Functions**: Implemented RESTful APIs for data operations, handling user interactions and data modifications through Lambda functions.\n\n**User Interface**: Designed intuitive web pages for user login, registration, and music subscription management, ensuring a seamless user experience.",
+      "Developed a comprehensive web application utilizing AWS services, including EC2, S3, API Gateway, Lambda, and DynamoDB. The application allows users to register, log in, and manage their music subscriptions with functionalities such as querying music information, subscribing to songs, and viewing artist images.\n\n**AWS EC2**: Deployed the application on an Ubuntu Server, ensuring full functionality in a web server environment.\n\n**AWS DynamoDB**: Created and managed tables for user login and music data, implementing both through code and console.\n\n**AWS S3**: Programmatically downloaded and uploaded artist images, integrating them into the application.\n\n**Login and Registration System**: Developed a secure login and registration system validating user credentials and storing user data in DynamoDB.\n\n**API Gateway and Lambda Functions**: Implemented RESTful APIs for data operations, handling user interactions and data modifications through Lambda functions.\n\n**User Interface**: Designed intuitive web pages for user login, registration, and music subscription management, ensuring a seamless user experience.\n\nhttps://www.youtube.com/watch?v=oIH_J6MM7_o",
     highlights: [
       "Deployed application on AWS EC2 Ubuntu Server with full web server functionality",
       "Created and managed DynamoDB tables for user login and music data (code and console)",
@@ -66,7 +66,6 @@ export const projects: Project[] = [
       "Developed secure login and registration system with DynamoDB user data storage",
       "Implemented RESTful APIs using API Gateway and Lambda for data operations",
       "Designed intuitive user interface for login, registration, and music subscription management",
-      "Demo: https://www.youtube.com/watch?v=oIH_J6MM7_o",
     ],
     image: "/projects-images/aws.png",
     slug: "aws-web-application",

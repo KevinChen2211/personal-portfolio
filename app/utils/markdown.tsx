@@ -118,6 +118,39 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
   lines.forEach((line, index) => {
     const trimmed = line.trim();
 
+    // Handle YouTube embeds - format: [YOUTUBE:url] or just a YouTube URL
+    const youtubeMatch = trimmed.match(/(?:\[YOUTUBE:\s*)?(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})(?:\])?/);
+    if (youtubeMatch) {
+      flushList();
+      const videoId = youtubeMatch[1];
+      elements.push(
+        <div
+          key={`youtube-${index}`}
+          className="my-8 flex flex-col items-center"
+        >
+          <div
+            className="relative w-full"
+            style={{
+              maxWidth: "800px",
+              aspectRatio: "16 / 9",
+            }}
+          >
+            <iframe
+              src={`https://www.youtube.com/embed/${videoId}`}
+              title="YouTube video player"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              className="w-full h-full rounded-lg"
+              style={{
+                border: "none",
+              }}
+            />
+          </div>
+        </div>
+      );
+      return;
+    }
+
     // Handle images - format: ![IMAGE:path/to/image.png]
     if (trimmed.startsWith("![IMAGE:")) {
       flushList();
