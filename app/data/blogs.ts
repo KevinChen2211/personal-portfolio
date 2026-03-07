@@ -25,14 +25,14 @@ export const blogPosts: BlogPost[] = [
     
     - The final goal is to make healthier day-to-day decisions, whether that means skipping the upsized meal or being more mindful about how much time I spend doom-scrolling.
 
+    ![IMAGE:/blog-images/new-years-resolution.jpg]
     ---
+
 
     Either way, I think focusing on smaller, more attainable goals gives me a better chance of actually following through. Progress does not have to be dramatic to be meaningful, and consistency matters far more than grand intentions. If I can show up for these goals regularly, even in small ways, that will be a win in itself.
     `,
     author: "Kevin Chen",
-    tags: [
-      "Self-Improvement"
-    ],
+    tags: ["Self-Improvement"],
   },
   {
     id: "2",
@@ -62,10 +62,7 @@ The more I push myself into situations that stretch my abilities, the larger my 
 It's taken the better part of 20 years for me to figure this out. Better late than never.
 `,
     author: "Kevin Chen",
-    tags: [
-      "Personal Thoughts",
-      "Self-Improvement",
-    ],
+    tags: ["Personal Thoughts", "Self-Improvement"],
   },
   {
     id: "1",
@@ -120,9 +117,6 @@ My development workflow typically looks like this:
 7. **Review** - Check the live site and preview deployments  
 `,
     author: "Kevin Chen",
-    tags: [
-      "Engineering",
-      "Web Development",
-    ],
+    tags: ["Engineering", "Web Development"],
   },
 ];
