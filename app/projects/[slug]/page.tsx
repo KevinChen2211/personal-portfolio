@@ -5,9 +5,124 @@ import Link from "next/link";
 import Image from "next/image";
 import { projects } from "../../data/projects";
 import Navbar from "../../components/Navbar";
+import { parseMarkdown } from "../../utils/markdown";
+import React from "react";
 
 interface ProjectPageProps {
   params: Promise<{ slug: string }>;
+}
+
+// Parse project description with support for image placeholders and markdown
+function parseProjectDescription(description: string, textColor: string) {
+  const lines = description.split("\n");
+  const elements: React.ReactNode[] = [];
+  let currentParagraph: string[] = [];
+  let elementKey = 0;
+
+  const flushParagraph = () => {
+    if (currentParagraph.length > 0) {
+      const paragraphText = currentParagraph.join(" ");
+      if (paragraphText.trim()) {
+        // Parse the paragraph with markdown for inline formatting
+        const parsed = parseMarkdown(paragraphText, {
+          palette: {
+            text: textColor,
+            textSecondary: textColor,
+            border: textColor,
+            primary: textColor,
+          },
+        });
+        elements.push(...parsed);
+      }
+      currentParagraph = [];
+    }
+  };
+
+  lines.forEach((line) => {
+    const trimmed = line.trim();
+
+    // Handle image placeholders: [IMAGE PLACEHOLDER: ...]
+    if (trimmed.startsWith("[IMAGE PLACEHOLDER:")) {
+      flushParagraph();
+      const placeholderMatch = trimmed.match(/\[IMAGE PLACEHOLDER:(.+?)\]/);
+      if (placeholderMatch) {
+        const placeholderText = placeholderMatch[1].trim();
+        elements.push(
+          <div
+            key={`placeholder-${elementKey++}`}
+            className="my-8 flex flex-col items-center"
+          >
+            <div
+              className="relative w-full max-w-4xl border-2 border-dashed rounded-lg p-8"
+              style={{
+                borderColor: `${textColor}40`,
+                backgroundColor: `${textColor}08`,
+                minHeight: "200px",
+              }}
+            >
+              <div className="flex flex-col items-center justify-center h-full text-center">
+                <div
+                  className="text-4xl mb-4 opacity-50"
+                  style={{ color: textColor }}
+                >
+                  🖼️
+                </div>
+                <p
+                  className="text-sm md:text-base italic max-w-2xl px-4"
+                  style={{
+                    color: textColor,
+                    opacity: 0.7,
+                  }}
+                >
+                  {placeholderText}
+                </p>
+                <p
+                  className="text-xs mt-2"
+                  style={{
+                    color: textColor,
+                    opacity: 0.5,
+                  }}
+                >
+                  Image placeholder
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      }
+      return;
+    }
+
+    // Handle regular markdown images: ![IMAGE:path]
+    if (trimmed.startsWith("![IMAGE:")) {
+      flushParagraph();
+      // Let markdown parser handle it
+      const parsed = parseMarkdown(trimmed, {
+        palette: {
+          text: textColor,
+          textSecondary: textColor,
+          border: textColor,
+          primary: textColor,
+        },
+      });
+      elements.push(...parsed);
+      return;
+    }
+
+    // Handle empty lines
+    if (trimmed === "") {
+      flushParagraph();
+      return;
+    }
+
+    // Accumulate text for paragraph
+    currentParagraph.push(trimmed);
+  });
+
+  // Flush any remaining paragraph
+  flushParagraph();
+
+  return elements.length > 0 ? elements : [<p key="empty">No description available.</p>];
 }
 
 export default function ProjectPage({ params }: ProjectPageProps) {
@@ -75,24 +190,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
             ← Back to Projects
           </Link>
 
-          {/* Project Image */}
-          {project.image && (
-            <div className="relative w-full mb-8 flex justify-center">
-              <div className="relative w-full max-w-4xl">
-                <Image
-                  src={project.image}
-                  alt={project.title}
-                  width={1200}
-                  height={1600}
-                  className="object-contain w-full h-auto"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 90vw, 1200px"
-                  quality={90}
-                  priority
-                />
-              </div>
-            </div>
-          )}
-
           {/* Project Title */}
           <div className="flex items-center gap-4 mb-6">
             {project.icon && (
@@ -110,16 +207,17 @@ export default function ProjectPage({ params }: ProjectPageProps) {
             </h1>
           </div>
 
-          {/* Project Description */}
-          <p
-            className="text-base md:text-lg mb-8 leading-relaxed long-content"
+          {/* Project Description with Markdown Support */}
+          <div
+            className="prose prose-lg max-w-none mb-8"
             style={{
               color: textColor,
               opacity: 0.85,
+              lineHeight: "1.8",
             }}
           >
-            {project.description}
-          </p>
+            {parseProjectDescription(project.description, textColor)}
+          </div>
 
           {/* Key Achievements */}
           <div className="mt-8">
