@@ -11,17 +11,15 @@ export const projects: Project[] = [
   {
     title: "Advanced RMIT Combat-Robotics",
     description:
-      "The Advanced RMIT Combat Robotics initiative represents a student-led, competition-driven engineering program focused on the end-to-end design, \
-      construction, and operation of combat robots. Over multiple design cycles, the club guided students through the complete engineering lifecycle, \
-      from concept ideation and CAD modelling to manufacturing, electronics integration, software development, and live competition testing. Emphasis \
-      was placed on iterative design, failure analysis, and rapid prototyping, mirroring professional engineering workflows.",
+      "As the founder of Advanced RMIT Combat-Robotics, I established and led an 80+ member multidisciplinary engineering team through multiple requirements-led robot design-build-test cycles. What started as a vision to create a competitive robotics program quickly grew into a comprehensive engineering initiative that operated under strict budget constraints while delivering championship-winning results.\n\n![IMAGE:/projects-images/Robotics-social_event.png]\n\nThe journey began with establishing the foundational structure of the organization. I led the team through complete design cycles, starting with CAD-based mechanical design where we produced manufacturable assemblies and technical drawings. Each robot design required careful consideration of weight limits, material selection, and manufacturability—balancing performance with the reality of our budget constraints.\n\n![IMAGE:/projects-images/Bot-CAD.png]\n\nOne of the most critical aspects of my leadership was ensuring system integration across mechanical, electrical, and software disciplines. I created comprehensive requirements documents to ensure compliance with competition specifications, establishing clear interfaces between subsystems. This systematic approach prevented integration issues that could derail entire projects.\n\nThe electronics design presented unique challenges. I designed robot electronics including power distribution systems and motor control circuits, supporting PCB development from initial schematics through layout and fabrication. These custom electronics boards were essential for reliable operation under the extreme conditions of combat robotics competitions.\n\nTesting became a continuous cycle of iteration and refinement. I conducted iterative bench testing to validate individual components, followed by live testing in controlled environments. Each test revealed new insights that drove design improvements, gradually building system reliability through methodical failure analysis and rapid prototyping.\n\n![IMAGE:/projects-images/bot-testing.png]\n\nThe results spoke for themselves. We won competitions, secured sponsorships from industry partners, and delivered workshops to both industry professionals and high school students through STEM outreach programs. The success of the program attracted collaboration opportunities with teams from prestigious institutions including MIT, Purdue, Duke, Carnegie Mellon, and Caltech.\n\n![IMAGE:/projects-images/competition-bot.png]\n\n![IMAGE:/projects-images/networking-bots.png]\n\nThis project wasn't just about building robots—it was about building engineers. Through multiple design cycles, I guided students through the complete engineering lifecycle, from concept ideation to live competition testing. The emphasis on iterative design, failure analysis, and rapid prototyping mirrored professional engineering workflows, preparing team members for careers in industry.",
     highlights: [
-      "Led 80+ students through 4 robot design cycles",
-      "Won state competitions and secured additional funding",
-      "Organized weekly workshops across mechanical, electrical, and software disciplines",
-      "Delivered STEM workshops to high schools in collaboration with RMIT and I Belong",
-      "Initiated sponsorships and organized club events",
-      "Organized networking events with industry professionals",
+      "Founded and led an 80+ member multidisciplinary engineering team through multiple design-build-test cycles",
+      "Led CAD-based mechanical design, producing manufacturable assemblies and technical drawings",
+      "Aimed system integration across mechanical, electrical, and software by creating requirements for competition compliance",
+      "Designed robot electronics including power distribution and motor control, supporting PCB development",
+      "Conducted iterative bench and live testing to validate performance and refine system reliability",
+      "Won competitions, secured sponsorships, and delivered industry workshops and STEM outreach",
+      "Collaborated with teams from MIT, Purdue, Duke, Carnegie Mellon, and Caltech",
       "Visit the website: https://rmitbattlebots.com/",
     ],
     image: "/projects-images/combatrobots.jpg",
