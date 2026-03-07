@@ -32,7 +32,19 @@ function parseProjectDescription(description: string, textColor: string) {
             primary: textColor,
           },
         });
-        elements.push(...parsed);
+        // Add unique keys to prevent duplicates
+        parsed.forEach((el, idx) => {
+          if (React.isValidElement(el)) {
+            elements.push(
+              React.cloneElement(el, {
+                key: `para-${elementKey}-${idx}`,
+              } as any),
+            );
+          } else {
+            elements.push(el);
+          }
+        });
+        elementKey++;
       }
       currentParagraph = [];
     }
@@ -87,7 +99,7 @@ function parseProjectDescription(description: string, textColor: string) {
                 </p>
               </div>
             </div>
-          </div>
+          </div>,
         );
       }
       return;
@@ -105,7 +117,17 @@ function parseProjectDescription(description: string, textColor: string) {
           primary: textColor,
         },
       });
-      elements.push(...parsed);
+      // Add unique keys to prevent duplicates
+      parsed.forEach((el, idx) => {
+        if (React.isValidElement(el)) {
+          elements.push(
+            React.cloneElement(el, { key: `img-${elementKey}-${idx}` } as any),
+          );
+        } else {
+          elements.push(el);
+        }
+      });
+      elementKey++;
       return;
     }
 
@@ -122,7 +144,9 @@ function parseProjectDescription(description: string, textColor: string) {
   // Flush any remaining paragraph
   flushParagraph();
 
-  return elements.length > 0 ? elements : [<p key="empty">No description available.</p>];
+  return elements.length > 0
+    ? elements
+    : [<p key="empty">No description available.</p>];
 }
 
 export default function ProjectPage({ params }: ProjectPageProps) {

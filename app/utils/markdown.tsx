@@ -154,6 +154,7 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
               {isSvg ? (
                 // Use regular img tag for SVGs for better compatibility
                 <img
+                  key={imagePath}
                   src={imagePath}
                   alt=""
                   className="object-contain w-full h-auto"
@@ -174,6 +175,7 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
                 />
               ) : (
                 <Image
+                  key={imagePath}
                   src={imagePath}
                   alt=""
                   width={800}
@@ -184,7 +186,7 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
                     height: "auto",
                     display: "block",
                   }}
-                  unoptimized={false}
+                  unoptimized={true}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
                   onError={(e) => {
                     console.error(
