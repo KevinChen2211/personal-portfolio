@@ -1,15 +1,17 @@
-# Kevin Chen · Under Construction
+# Kevin Chen · Portfolio
 
-A dramatic, single-page “build log” that lets visitors know the full portfolio relaunch is in progress. The page combines motion-friendly gradients, caution-strip accents, and progress snapshots so people can follow along or reach out for work while the real site ships.
-
-![Under construction preview](public/window.svg)
+Personal site for Kevin Chen — engineer and creative developer. A single-page home anchors the experience, with dedicated sections for projects, photography, writing, and contact.
 
 ## Features
 
-- Rich hero with progress meter, live milestone chips, and CTA buttons
-- Build log cards that highlight what is done, shipping, or queued
-- Contact + availability card so inquiries never miss a beat
-- Tailwind-powered layout with soft glassmorphism and caution-pattern touches
+- Landing page with scroll-aware navigation, hero animations, and a visual grid linking to each section
+- **Projects** — case studies with detail pages (`/projects/[slug]`)
+- **Gallery** — photo collections with full-screen viewers (`/gallery/collection/[slug]`)
+- **Journal** — blog posts rendered from markdown (`/journal/[slug]`)
+- **About** — bio, experience, and skills with scroll-triggered reveals
+- **Contact** — inquiry and availability
+- Light/dark theme toggle with shared color palettes
+- First-visit loading screen and session-aware hero fade-in
 - Metadata tuned for sharing (`app/layout.tsx`)
 
 ## Tech Stack
@@ -33,7 +35,7 @@ A dramatic, single-page “build log” that lets visitors know the full portfol
    npm run dev
    ```
 
-   Visit `http://localhost:3000` to see the under-construction page.
+   Visit `http://localhost:3000` to view the site locally.
 
 3. **Lint / type-check**
 
@@ -49,32 +51,14 @@ A dramatic, single-page “build log” that lets visitors know the full portfol
 
 ## Project Structure
 
-- `app/page.tsx` — the entire under-construction experience
-- `app/layout.tsx` — global font loading + metadata
-- `app/globals.css` — Tailwind import plus theme tokens
-- `public/` — decorative assets (logos, window illustration, etc.)
-
-## Customization Tips
-
-- Update hero copy, progress %, or milestone chips inside `app/page.tsx`.
-- Reorder the `highlights` and `updates` arrays to refresh the cards without changing layout code.
-- Swap the CTA destinations (`mailto:` or social links) to match your communication preferences.
-- Add analytics or waitlist forms by extending the `Build log updates` card grid.
-
-## Deployment
-
-Deploy anywhere that supports Node.js hosting (Vercel, Netlify, Render, etc.). On Vercel, the defaults work out of the box:
-
-```bash
-npm run build
-```
-
-Set the project to “Next.js” and point it at the main branch—no extra config required.
-
-## Contact
-
-- Email: `hello@kevinchen.design`
-- Time zone: GMT-8 (Pacific)
-- Availability: 2 collaboration slots while the site ships
-
-If you ship improvements, feel free to open a PR or reach out first. Thanks for watching the build unfold!
+- `app/page.tsx` — home page and section grid
+- `app/projects/` — project listing and detail pages
+- `app/gallery/` — gallery and collection viewers
+- `app/journal/` — journal listing and post pages
+- `app/about/page.tsx` — about page
+- `app/contact/page.tsx` — contact page
+- `app/components/` — shared UI (navbar, theme, loading screen, scroll hooks)
+- `app/data/` — projects and blog content
+- `app/layout.tsx` — global fonts, theme provider, and metadata
+- `app/globals.css` — Tailwind import and theme tokens
+- `public/` — images and static assets

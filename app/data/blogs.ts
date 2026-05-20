@@ -57,7 +57,7 @@ I've also seen how avoiding discomfort limits me. Some of the best moments in my
 
 ---
 
-The more I push myself into situations that stretch my abilities, the larger my world becomes. New ideas, new people, new possibilities — all of it starts with a willingness to be uncomfortable.
+The more I push myself into situations that stretch my abilities, the larger my world becomes. New ideas, new people, new possibilities all of it starts with a willingness to be uncomfortable.
 
 It's taken the better part of 20 years for me to figure this out. Better late than never.
 `,
