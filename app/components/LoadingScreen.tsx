@@ -1,53 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { blogPosts } from "../data/blogs";
-import { projects } from "../data/projects";
 
-// Extract images from blog content
-function getFirstImage(content: string): string | null {
-  const imageMatch = content.match(/!\[IMAGE:(.+?)\]/);
-  return imageMatch ? imageMatch[1] : null;
-}
-
-// Get ALL images for preloading (used on landing page)
-const getAllImages = (): string[] => {
-  // Landing page images
-  const landingImages = [
+// Keep preload scope small to improve first load responsiveness.
+const getCriticalLandingImages = (): string[] => {
+  return [
+    // Hero and first viewport images
     "/images/KevinChen.jpg",
     "/images/Gallery.jpg",
     "/images/Projects.jpg",
+    // Likely next in scroll flow
     "/images/Gallery2.jpg",
     "/images/Journal.jpg",
-    "/images/Gallery3.jpg",
-    "/images/Contact.jpg",
   ];
-
-  // Projects page images
-  const projectImages = projects
-    .map((project) => project.image)
-    .filter((img): img is string => img !== undefined);
-
-  // Gallery page images
-  const galleryImages = [
-    "/gallery-images/Hello_Gorgeous1.jpg",
-    "/gallery-images/Sean_x_Amasi2.jpg",
-    "/gallery-images/AnnMarie_X_Liam1.JPG",
-  ];
-
-  // Journal page images
-  const journalImages = blogPosts
-    .map((post) => getFirstImage(post.content))
-    .filter((img): img is string => img !== null);
-
-  // Combine all images and remove duplicates
-  const allImages = [
-    ...landingImages,
-    ...projectImages,
-    ...galleryImages,
-    ...journalImages,
-  ];
-  return Array.from(new Set(allImages));
 };
 
 // Preload images
@@ -107,8 +72,7 @@ export default function LoadingScreen({
 
   useEffect(() => {
     const startTime = Date.now();
-    // Preload ALL images from all pages (only shown on landing page)
-    const images = getAllImages();
+    const images = getCriticalLandingImages();
 
     const loadAssets = async () => {
       try {
@@ -116,7 +80,7 @@ export default function LoadingScreen({
         await preloadFonts();
         setProgress(20);
 
-        // Then load all images from all pages
+        // Then load critical landing images only
         if (images.length > 0) {
           // Load images in batches to show progress
           const batchSize = Math.ceil(images.length / 4);

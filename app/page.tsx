@@ -328,7 +328,7 @@ export default function Home() {
                 alt="Kevin Chen"
                 fill
                 className="object-contain"
-                quality={90}
+                quality={85}
                 priority
                 sizes="(max-width: 768px) 100vw, 55vw"
               />
@@ -393,10 +393,10 @@ export default function Home() {
                       width={3000}
                       height={2000}
                       className="object-contain w-full h-auto max-h-[85vh]"
-                      quality={85}
+                      quality={80}
                       sizes="(max-width: 768px) 90vw, (max-width: 1024px) 50vw, 45vw"
-                      priority={index < 2}
-                      loading={index < 2 ? undefined : "lazy"}
+                      priority={index === 0}
+                      loading={index === 0 ? "eager" : "lazy"}
                     />
                   </Link>
                 </div>

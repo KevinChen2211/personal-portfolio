@@ -1,8 +1,4 @@
-"use client";
-
-import { use } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { projects } from "../../data/projects";
 import Navbar from "../../components/Navbar";
 import { parseMarkdown } from "../../utils/markdown";
@@ -10,6 +6,10 @@ import React from "react";
 
 interface ProjectPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export function generateStaticParams() {
+  return projects.map((project) => ({ slug: project.slug }));
 }
 
 // Parse project description with support for image placeholders and markdown
@@ -149,8 +149,8 @@ function parseProjectDescription(description: string, textColor: string) {
     : [<p key="empty">No description available.</p>];
 }
 
-export default function ProjectPage({ params }: ProjectPageProps) {
-  const { slug } = use(params);
+export default async function ProjectPage({ params }: ProjectPageProps) {
+  const { slug } = await params;
   const bgColor = "#FAF2E6";
   const textColor = "#2C2C2C";
 
