@@ -151,13 +151,12 @@ export default function GalleryPage() {
     // Signal to template that we're navigating to collection
     sessionStorage.setItem("navigatingToCollection", "true");
 
-    // Preload collection images
+    // Preload only first couple collection images to avoid request bursts.
     const collectionImages = allImages.filter(
       (src) => parseCollection(src).slug === slug
     );
 
-    // Preload images
-    collectionImages.forEach((src) => {
+    collectionImages.slice(0, 2).forEach((src) => {
       const img = document.createElement("img");
       img.src = src;
     });
@@ -301,29 +300,38 @@ export default function GalleryPage() {
     let targetPercentage = percentage;
     let velocity = 60;
     let lastTime = performance.now();
+    let animationFrameId: number | null = null;
+    let isPageVisible = document.visibilityState === "visible";
+    let lastRenderedPercentage = Number.NaN;
+    let lastParallaxPercentage = Number.NaN;
+    let frameCounter = 0;
 
-    const images = track.getElementsByClassName("image");
+    const images = Array.from(
+      track.getElementsByClassName("image")
+    ) as HTMLElement[];
+    if (images.length === 0) return;
 
     const calculateMaxScroll = () => {
       const trackRect = track.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
       const trackWidth = trackRect.width;
-      const lastImage = images[images.length - 1] as HTMLElement;
+      const lastImage = images[images.length - 1];
       const imageWidth = lastImage.getBoundingClientRect().width;
       const distanceToMove = trackWidth - imageWidth / 2 - viewportWidth / 2;
       return -50 - (distanceToMove / trackWidth) * 100;
     };
 
     let maxScroll = calculateMaxScroll();
-    window.addEventListener("resize", () => {
+    const handleResize = () => {
       maxScroll = calculateMaxScroll();
-    });
+    };
+    window.addEventListener("resize", handleResize);
 
     const clamp = (value: number) => Math.max(Math.min(value, 0), maxScroll);
 
     const scrollToImage = (imageIndex: number) => {
       if (imageIndex < 0 || imageIndex >= images.length) return;
-      const targetImg = images[imageIndex] as HTMLElement;
+      const targetImg = images[imageIndex];
       const rect = targetImg.getBoundingClientRect();
       const offsetX = window.innerWidth / 2 - (rect.left + rect.width / 2);
       const trackRect = track.getBoundingClientRect();
@@ -332,14 +340,16 @@ export default function GalleryPage() {
       percentage = newPercentage;
       targetPercentage = newPercentage;
       velocity = 0;
-      track.style.transform = `translate(${percentage}%, -50%)`;
+      track.style.transform = `translate3d(${percentage}%, -50%, 0)`;
+      lastRenderedPercentage = percentage;
     };
 
     scrollToImageRef.current = scrollToImage;
 
     track.style.willChange = "transform";
-    for (const img of images)
-      (img as HTMLElement).style.willChange = "object-position";
+    for (const img of images) {
+      img.style.willChange = "object-position";
+    }
 
     const handleWheel = (e: WheelEvent) => {
       if (expandedIndexRef.current !== null) return;
@@ -349,6 +359,13 @@ export default function GalleryPage() {
       velocity = delta * 0.15;
     };
     window.addEventListener("wheel", handleWheel, { passive: false });
+    const handleVisibilityChange = () => {
+      isPageVisible = document.visibilityState === "visible";
+      if (isPageVisible) {
+        lastTime = performance.now();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     // Touch handlers for mobile horizontal scrolling
     let touchStartX = 0;
@@ -392,6 +409,11 @@ export default function GalleryPage() {
     window.addEventListener("touchend", handleTouchEnd, { passive: true });
 
     const animate = (currentTime: number) => {
+      if (!isPageVisible) {
+        animationFrameId = requestAnimationFrame(animate);
+        return;
+      }
+
       const deltaTime = Math.min((currentTime - lastTime) / 16.67, 2);
       lastTime = currentTime;
 
@@ -412,36 +434,60 @@ export default function GalleryPage() {
       if (Math.abs(distance) < 0.01 && Math.abs(velocity) < 0.01)
         percentage = targetPercentage;
 
-      // Update ref for external access
-      currentScrollPercentageRef.current = percentage;
+      const shouldUpdateTrack =
+        !Number.isFinite(lastRenderedPercentage) ||
+        Math.abs(percentage - lastRenderedPercentage) >= 0.05 ||
+        Math.abs(distance) > 0.2 ||
+        Math.abs(velocity) > 0.2;
 
-      track.style.transform = `translate(${percentage}%, -50%)`;
+      if (shouldUpdateTrack) {
+        currentScrollPercentageRef.current = percentage;
+        track.style.transform = `translate3d(${percentage}%, -50%, 0)`;
+        lastRenderedPercentage = percentage;
+      }
 
       // Parallax
       if (!isExpanded) {
-        const totalImages = images.length;
-        for (let i = 0; i < totalImages; i++) {
-          const img = images[i] as HTMLElement;
-          const relIndex = i / (totalImages - 1) - 0.5;
-          const parallaxOffset = relIndex * 30;
-          img.style.objectPosition = `${
-            100 + percentage + parallaxOffset
-          }% center`;
+        frameCounter = (frameCounter + 1) % 2;
+        const shouldUpdateParallax =
+          frameCounter === 0 &&
+          (!Number.isFinite(lastParallaxPercentage) ||
+            Math.abs(percentage - lastParallaxPercentage) >= 0.35);
+
+        if (shouldUpdateParallax) {
+          const totalImages = images.length;
+          const denominator = Math.max(totalImages - 1, 1);
+          for (let i = 0; i < totalImages; i++) {
+            const img = images[i];
+            const relIndex = i / denominator - 0.5;
+            const parallaxOffset = relIndex * 30;
+            img.style.objectPosition = `${
+              100 + percentage + parallaxOffset
+            }% center`;
+          }
+          lastParallaxPercentage = percentage;
         }
       }
 
-      requestAnimationFrame(animate);
+      animationFrameId = requestAnimationFrame(animate);
     };
 
-    animate(performance.now());
+    animationFrameId = requestAnimationFrame(animate);
 
     return () => {
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+      }
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("resize", handleResize);
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
       track.style.willChange = "auto";
-      for (const img of images) (img as HTMLElement).style.willChange = "auto";
+      for (const img of images) {
+        img.style.willChange = "auto";
+      }
     };
   }, [isMobile]);
 
@@ -762,6 +808,7 @@ export default function GalleryPage() {
               <Link
                 key={collection.slug}
                 href={`/gallery/collection/${collection.slug}`}
+                prefetch={false}
                 className="block"
               >
                 <div className="relative w-full">
@@ -900,6 +947,7 @@ export default function GalleryPage() {
             {hasCollectionLink ? (
               <Link
                 href={`/gallery/collection/${expandedCollection.slug}`}
+                prefetch={false}
                 onClick={(e) =>
                   handleCollectionClick(e, expandedCollection.slug)
                 }

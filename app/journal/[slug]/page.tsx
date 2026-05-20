@@ -1,9 +1,5 @@
-"use client";
-
-import { use, useRef } from "react";
 import Link from "next/link";
 import { blogPosts } from "../../data/blogs";
-import { useScrollAnimation } from "../../components/useScrollAnimation";
 import { formatDate } from "../../utils/date";
 import { parseMarkdown } from "../../utils/markdown";
 import Navbar from "../../components/Navbar";
@@ -12,12 +8,14 @@ interface JournalPostPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export default function JournalPostPage({ params }: JournalPostPageProps) {
-  const { slug } = use(params);
+export function generateStaticParams() {
+  return blogPosts.map((post) => ({ slug: post.slug }));
+}
+
+export default async function JournalPostPage({ params }: JournalPostPageProps) {
+  const { slug } = await params;
   const bgColor = "#FAF2E6";
   const textColor = "#2C2C2C";
-  const articleRef = useRef<HTMLElement>(null);
-  const { isVisible } = useScrollAnimation(articleRef, { threshold: 0.1 });
 
   const post = blogPosts.find((p) => p.slug === slug);
 
@@ -80,14 +78,7 @@ export default function JournalPostPage({ params }: JournalPostPageProps) {
           </Link>
 
           {/* Article */}
-          <article
-            ref={articleRef}
-            className="transition-all duration-500"
-            style={{
-              opacity: isVisible ? 1 : 0,
-              transform: `translateY(${isVisible ? 0 : 30}px)`,
-            }}
-          >
+          <article>
             {/* Date and Author */}
             <div
               className="text-sm mb-4 font-medium"

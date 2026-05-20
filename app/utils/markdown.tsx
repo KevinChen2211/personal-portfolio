@@ -1,5 +1,3 @@
-"use client";
-
 import { ReactNode } from "react";
 import Image from "next/image";
 
@@ -197,14 +195,6 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
                     height: "auto",
                     display: "block",
                   }}
-                  onError={(e) => {
-                    console.error(
-                      "Image failed to load:",
-                      imagePath
-                    );
-                    (e.target as HTMLImageElement).style.display =
-                      "none";
-                  }}
                 />
               ) : (
                 <Image
@@ -219,14 +209,7 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
                     height: "auto",
                     display: "block",
                   }}
-                  unoptimized={true}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
-                  onError={(e) => {
-                    console.error(
-                      "Image failed to load:",
-                      imagePath
-                    );
-                  }}
                 />
               )}
             </div>
