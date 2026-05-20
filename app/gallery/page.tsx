@@ -151,13 +151,12 @@ export default function GalleryPage() {
     // Signal to template that we're navigating to collection
     sessionStorage.setItem("navigatingToCollection", "true");
 
-    // Preload collection images
+    // Preload only first couple collection images to avoid request bursts.
     const collectionImages = allImages.filter(
       (src) => parseCollection(src).slug === slug
     );
 
-    // Preload images
-    collectionImages.forEach((src) => {
+    collectionImages.slice(0, 2).forEach((src) => {
       const img = document.createElement("img");
       img.src = src;
     });
@@ -809,6 +808,7 @@ export default function GalleryPage() {
               <Link
                 key={collection.slug}
                 href={`/gallery/collection/${collection.slug}`}
+                prefetch={false}
                 className="block"
               >
                 <div className="relative w-full">
@@ -947,6 +947,7 @@ export default function GalleryPage() {
             {hasCollectionLink ? (
               <Link
                 href={`/gallery/collection/${expandedCollection.slug}`}
+                prefetch={false}
                 onClick={(e) =>
                   handleCollectionClick(e, expandedCollection.slug)
                 }
