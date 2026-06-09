@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Navbar from "../../../components/Navbar";
@@ -10,72 +10,86 @@ type CollectionViewerProps = {
   title: string;
 };
 
+const SERIF =
+  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif";
+
 export default function CollectionViewer({
   images,
   title,
 }: CollectionViewerProps) {
   const bgColor = "#FAF2E6";
   const textColor = "#2C2C2C";
-  const [visibleImages, setVisibleImages] = useState<Set<number>>(new Set());
-  const [pageVisible, setPageVisible] = useState(false);
-  const [headerVisible, setHeaderVisible] = useState(false);
-  const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Fade in page on mount. We rely on Next.js <Image> for lazy/priority
-  // loading instead of manually preloading every full-resolution JPG, which
-  // could pull tens of MB before anything renders.
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [chromeVisible, setChromeVisible] = useState(false);
+  const [imageVisible, setImageVisible] = useState(false);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const goTo = useCallback(
+    (idx: number) => {
+      if (images.length === 0) return;
+      const clamped = Math.max(0, Math.min(idx, images.length - 1));
+      setCurrentIndex(clamped);
+    },
+    [images.length]
+  );
+  const goNext = useCallback(
+    () => goTo(currentIndex + 1),
+    [currentIndex, goTo]
+  );
+  const goPrev = useCallback(
+    () => goTo(currentIndex - 1),
+    [currentIndex, goTo]
+  );
+
+  // Soft fade-ins on mount.
   useEffect(() => {
-    const navigatingFromGallery =
-      sessionStorage.getItem("navigatingToCollection") === "true";
-
-    const delay = navigatingFromGallery ? 200 : 50;
-
-    const headerTimer = setTimeout(() => {
-      setHeaderVisible(true);
-    }, delay);
-    const pageTimer = setTimeout(() => {
-      setPageVisible(true);
-    }, delay + 150);
-
+    const t1 = setTimeout(() => setChromeVisible(true), 80);
+    const t2 = setTimeout(() => setImageVisible(true), 180);
     return () => {
-      clearTimeout(headerTimer);
-      clearTimeout(pageTimer);
+      clearTimeout(t1);
+      clearTimeout(t2);
     };
-  }, [images]);
+  }, []);
 
-  // Intersection Observer for fade-in animations
+  // Keyboard navigation. Esc returns to the gallery so users always have a
+  // way out without scrolling for the back link.
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const index = parseInt(
-              (entry.target as HTMLElement).dataset.index || "0",
-              10
-            );
-            setVisibleImages((prev) => new Set(prev).add(index));
-          }
-        });
-      },
-      {
-        threshold: 0.1,
-        rootMargin: "0px 0px -50px 0px",
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        goNext();
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        goPrev();
+      } else if (e.key === "Escape") {
+        if (typeof window !== "undefined") {
+          window.location.href = "/gallery";
+        }
       }
-    );
-
-    const timeoutId = setTimeout(() => {
-      imageRefs.current.forEach((ref) => {
-        if (ref) observer.observe(ref);
-      });
-    }, 100);
-
-    return () => {
-      clearTimeout(timeoutId);
-      imageRefs.current.forEach((ref) => {
-        if (ref) observer.unobserve(ref);
-      });
     };
-  }, [images.length]);
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [goNext, goPrev]);
+
+  // Touch swipe — only horizontal swipes navigate; vertical motion is
+  // ignored so users can still naturally scroll if needed.
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartRef.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    };
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const start = touchStartRef.current;
+    touchStartRef.current = null;
+    if (!start) return;
+    const dx = e.changedTouches[0].clientX - start.x;
+    const dy = e.changedTouches[0].clientY - start.y;
+    if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy)) return;
+    if (dx > 0) goPrev();
+    else goNext();
+  };
 
   if (images.length === 0) {
     return (
@@ -88,21 +102,14 @@ export default function CollectionViewer({
           <div className="text-center px-6">
             <p
               className="text-sm md:text-base mb-4"
-              style={{
-                fontFamily:
-                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-              }}
+              style={{ fontFamily: SERIF }}
             >
               No images found for this collection.
             </p>
             <Link
               href="/gallery"
               className="inline-block text-lg transition-all duration-300 hover:underline hover:translate-x-[-4px]"
-              style={{
-                color: textColor,
-                fontFamily:
-                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-              }}
+              style={{ color: textColor, fontFamily: SERIF }}
             >
               ← Back to Gallery
             </Link>
@@ -112,132 +119,212 @@ export default function CollectionViewer({
     );
   }
 
+  // Mount only the current image and its immediate neighbours so navigation
+  // feels instant without loading the entire collection up front.
+  const visibleIndices = [
+    currentIndex - 1,
+    currentIndex,
+    currentIndex + 1,
+  ].filter((i) => i >= 0 && i < images.length);
+
+  const hasPrev = currentIndex > 0;
+  const hasNext = currentIndex < images.length - 1;
+
   return (
     <div
-      className="min-h-screen w-full relative overflow-y-auto pt-6 md:pt-8"
+      className="h-screen w-full relative overflow-hidden flex flex-col"
       style={{ backgroundColor: bgColor }}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
     >
       <Navbar />
 
-      {/* Header Section */}
+      {/* Top bar: back link (left) + collection name (right) */}
       <header
-        className="w-full px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 pt-24 md:pt-30 pb-8 md:pb-12"
+        className="w-full px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 pt-24 md:pt-28 pb-3 md:pb-4 flex items-end justify-between"
         style={{
-          opacity: headerVisible ? 1 : 0,
-          transform: headerVisible ? "translateY(0)" : "translateY(-20px)",
+          opacity: chromeVisible ? 1 : 0,
+          transform: chromeVisible ? "translateY(0)" : "translateY(-8px)",
           transition:
-            "opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
+            "opacity 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1)",
         }}
       >
-        <div className="flex items-center justify-between mb-6">
-          <Link
-            href="/gallery"
-            className="text-sm md:text-base transition-all duration-300 hover:underline hover:translate-x-[-4px]"
-            style={{
-              color: textColor,
-              fontFamily:
-                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-            }}
-          >
-            ← Back to Gallery
-          </Link>
-        </div>
+        <Link
+          href="/gallery"
+          className="text-xs md:text-sm transition-all duration-300 hover:underline hover:translate-x-[-3px]"
+          style={{ color: textColor, fontFamily: SERIF, opacity: 0.85 }}
+        >
+          ← Back to Gallery
+        </Link>
         <h1
-          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2"
-          style={{
-            color: textColor,
-            fontFamily:
-              "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-          }}
+          className="text-base md:text-lg tracking-wide italic text-right"
+          style={{ color: textColor, fontFamily: SERIF }}
         >
           {title}
         </h1>
-        <p
-          className="text-sm md:text-base opacity-70"
-          style={{
-            color: textColor,
-            fontFamily:
-              "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-          }}
-        >
-          {images.length} {images.length === 1 ? "image" : "images"}
-        </p>
       </header>
 
-      {/* Images Grid */}
-      <section
-        className="relative w-full pb-12 md:pb-20"
-        style={{
-          opacity: pageVisible ? 1 : 0,
-          transition: "opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
-        }}
+      {/* Stage — a single image fills this region; previous/next are mounted
+          but transparent so they're warm in the cache for instant navigation. */}
+      <main
+        className="relative flex-1 flex items-center justify-center px-12 sm:px-16 md:px-24 lg:px-32 pb-32 md:pb-36"
+        style={{ minHeight: 0 }}
       >
-        {images.map((imageSrc, index) => {
-          const isVisible = visibleImages.has(index);
-          const isLastImage = index === images.length - 1;
-
-          // Alternate positioning similar to homepage
-          const positionMap = [0, 1, 3, 2];
-          const position = positionMap[index % 4];
-
-          let justifyClass = "";
-          if (position === 0) {
-            justifyClass = "justify-start";
-          } else if (position === 1) {
-            justifyClass = "justify-start md:justify-center md:pr-[15%]";
-          } else if (position === 2) {
-            justifyClass = "justify-end md:justify-center md:pl-[15%]";
-          } else {
-            justifyClass = "justify-end";
-          }
-
-          return (
-            <div
-              key={index}
-              data-index={index}
-              ref={(el) => {
-                imageRefs.current[index] = el;
-              }}
-              className={`w-full flex ${justifyClass} ${
-                isLastImage ? "mb-0 md:pb-[0vh]" : "mb-[15vh] md:mb-[20vh]"
-              } px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24`}
-              style={{
-                opacity: isVisible ? 1 : 0,
-                transform: isVisible ? "translateY(0)" : "translateY(30px)",
-                transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
-              }}
-            >
-              <div className="flex flex-col items-start w-full md:w-auto max-w-[90vw] md:max-w-[60vw] lg:max-w-[55vw]">
-                <div className="relative inline-block w-full">
-                  <Image
-                    src={imageSrc}
-                    alt={`${title} - Image ${index + 1}`}
-                    width={1600}
-                    height={1067}
-                    className="object-contain w-full h-auto max-h-[85vh]"
-                    quality={82}
-                    sizes="(max-width: 768px) 90vw, (max-width: 1024px) 60vw, 55vw"
-                    priority={index === 0}
-                    loading={index === 0 ? undefined : "lazy"}
-                  />
-                </div>
-              </div>
+        {visibleIndices.map((idx) => (
+          <div
+            key={idx}
+            aria-hidden={idx !== currentIndex}
+            className="absolute inset-0 flex items-center justify-center"
+            style={{
+              padding: "0.5rem",
+              opacity: idx === currentIndex && imageVisible ? 1 : 0,
+              transition:
+                "opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1)",
+              pointerEvents: idx === currentIndex ? "auto" : "none",
+            }}
+          >
+            <div className="relative w-full h-full">
+              <Image
+                src={images[idx]}
+                alt={`${title} — image ${idx + 1} of ${images.length}`}
+                fill
+                sizes="(max-width: 768px) 90vw, 80vw"
+                quality={85}
+                priority={idx === currentIndex}
+                className="object-contain select-none"
+                draggable={false}
+              />
             </div>
-          );
-        })}
-      </section>
+          </div>
+        ))}
 
-      {/* Footer */}
-      <footer
-        className="w-full py-12 flex justify-center items-center"
+        {/* Prev arrow */}
+        <button
+          type="button"
+          onClick={goPrev}
+          disabled={!hasPrev}
+          aria-label="Previous image"
+          className="absolute left-2 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 z-10 rounded-full p-2 sm:p-3 transition-all duration-300 focus:outline-none"
+          style={{
+            color: textColor,
+            opacity: chromeVisible ? (hasPrev ? 0.55 : 0.15) : 0,
+            cursor: hasPrev ? "pointer" : "default",
+            backgroundColor: "transparent",
+          }}
+          onMouseEnter={(e) => {
+            if (hasPrev) e.currentTarget.style.opacity = "1";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = hasPrev ? "0.55" : "0.15";
+          }}
+        >
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.25"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+
+        {/* Next arrow */}
+        <button
+          type="button"
+          onClick={goNext}
+          disabled={!hasNext}
+          aria-label="Next image"
+          className="absolute right-2 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 z-10 rounded-full p-2 sm:p-3 transition-all duration-300 focus:outline-none"
+          style={{
+            color: textColor,
+            opacity: chromeVisible ? (hasNext ? 0.55 : 0.15) : 0,
+            cursor: hasNext ? "pointer" : "default",
+            backgroundColor: "transparent",
+          }}
+          onMouseEnter={(e) => {
+            if (hasNext) e.currentTarget.style.opacity = "1";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = hasNext ? "0.55" : "0.15";
+          }}
+        >
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.25"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      </main>
+
+      {/* Bottom: counter + progress dashes */}
+      <div
+        className="absolute bottom-0 left-0 right-0 pb-6 md:pb-9 flex flex-col items-center gap-3"
         style={{
-          backgroundColor: bgColor,
-          color: textColor,
-          fontFamily: "'Juana', var(--font-display), 'Playfair Display', serif",
+          opacity: chromeVisible ? 1 : 0,
+          transition: "opacity 0.6s ease-out",
+          pointerEvents: "none",
         }}
       >
-        © Kevin Chen
-      </footer>
+        <div
+          className="text-xs md:text-sm italic"
+          style={{
+            color: textColor,
+            fontFamily: SERIF,
+            fontVariantNumeric: "tabular-nums",
+            opacity: 0.7,
+          }}
+        >
+          {String(currentIndex + 1).padStart(2, "0")} —{" "}
+          {String(images.length).padStart(2, "0")}
+        </div>
+        <div
+          className="flex items-center gap-1.5 px-4"
+          style={{ pointerEvents: "auto" }}
+        >
+          {images.map((_, idx) => {
+            const active = idx === currentIndex;
+            return (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => goTo(idx)}
+                aria-label={`Go to image ${idx + 1}`}
+                aria-current={active ? "true" : undefined}
+                className="transition-all duration-300 focus:outline-none"
+                style={{
+                  width: active ? "26px" : "10px",
+                  height: "2px",
+                  backgroundColor: textColor,
+                  opacity: active ? 0.85 : 0.25,
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                  borderRadius: "1px",
+                }}
+                onMouseEnter={(e) => {
+                  if (!active) e.currentTarget.style.opacity = "0.55";
+                }}
+                onMouseLeave={(e) => {
+                  if (!active) e.currentTarget.style.opacity = "0.25";
+                }}
+              />
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

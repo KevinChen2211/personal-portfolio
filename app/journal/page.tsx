@@ -7,6 +7,7 @@ import { useRef } from "react";
 import { useScrollAnimation } from "../components/useScrollAnimation";
 import Navbar from "../components/Navbar";
 import { formatDate } from "../utils/date";
+import { readingTime } from "../utils/reading-time";
 
 // Extract first image from blog content
 function getFirstImage(content: string): string | null {
@@ -109,7 +110,7 @@ const JournalCard = ({
           {post.title}
         </h3>
 
-        {/* Date */}
+        {/* Date · reading time */}
         <div
           className="text-xs md:text-sm text-center"
           style={{
@@ -117,9 +118,10 @@ const JournalCard = ({
             fontFamily:
               "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
             opacity: 0.7,
+            fontVariantNumeric: "tabular-nums",
           }}
         >
-          {formatDate(post.date)}
+          {formatDate(post.date)} · {readingTime(post.content)} min read
         </div>
       </Link>
     </div>
