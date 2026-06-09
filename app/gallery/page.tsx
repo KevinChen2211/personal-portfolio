@@ -151,20 +151,11 @@ export default function GalleryPage() {
     // Signal to template that we're navigating to collection
     sessionStorage.setItem("navigatingToCollection", "true");
 
-    // Preload only first couple collection images to avoid request bursts.
-    const collectionImages = allImages.filter(
-      (src) => parseCollection(src).slug === slug
-    );
-
-    collectionImages.slice(0, 2).forEach((src) => {
-      const img = document.createElement("img");
-      img.src = src;
-    });
-
-    // Fade out, then navigate
+    // Fade out, then navigate. Next.js <Image priority> on the destination
+    // page will trigger the optimized first-image fetch automatically.
     setTimeout(() => {
       router.push(`/gallery/collection/${slug}`);
-    }, 400); // Match fade-out duration
+    }, 400);
   };
 
   // Calculate collection info
@@ -819,7 +810,7 @@ export default function GalleryPage() {
                     height={1120}
                     className="w-full h-auto object-cover"
                     style={{ aspectRatio: "40 / 56" }}
-                    quality={85}
+                    quality={80}
                     sizes="(max-width: 768px) 100vw, 90vw"
                     loading="lazy"
                   />
@@ -855,16 +846,31 @@ export default function GalleryPage() {
             }}
           >
             {galleryImages.map((src, i) => (
-              <img
+              <div
                 key={i}
-                ref={(el) => {
+                style={{
+                  position: "relative",
+                  width: "40vmin",
+                  height: "56vmin",
+                  flexShrink: 0,
+                }}
+              >
+              <Image
+                ref={(el: HTMLImageElement | null) => {
                   imageRefs.current[i] = el;
                 }}
                 src={src}
+                alt=""
+                fill
+                // `vmin` isn't reliably honoured by browsers in srcset
+                // selection, so use vw-based hints that err on the side of
+                // a higher-resolution variant for crispness on retina.
+                sizes="(max-width: 768px) 80vw, (max-width: 1280px) 45vw, 35vw"
+                quality={82}
+                priority={i === 0}
+                loading={i === 0 ? "eager" : "lazy"}
                 className="image cursor-pointer transition-all duration-500 ease-out hover:scale-105"
                 draggable={false}
-                loading={i < 2 ? "eager" : "lazy"}
-                decoding="async"
                 onClick={() => {
                   const img = imageRefs.current[i];
                   if (!img) return;
@@ -916,14 +922,11 @@ export default function GalleryPage() {
                   });
                 }}
                 style={{
-                  width: "40vmin",
-                  height: "56vmin",
-                  aspectRatio: "40 / 56",
                   objectFit: "cover",
                   objectPosition: "100% center",
-                  flexShrink: 0,
                 }}
               />
+              </div>
             ))}
           </div>
         </>
@@ -1153,10 +1156,8 @@ export default function GalleryPage() {
                         });
                       }}
                     >
-                      <img
-                        src={collection.previewImage}
-                        alt={collection.name}
-                        className={`relative z-10 object-cover rounded-sm ${
+                      <div
+                        className={`relative z-10 rounded-sm overflow-hidden ${
                           isMobile ? "w-16 h-22" : "w-20 h-28 sm:w-24 sm:h-32"
                         }`}
                         style={{
@@ -1164,10 +1165,18 @@ export default function GalleryPage() {
                             ? "2px solid rgba(250, 242, 230, 0.8)"
                             : "2px solid transparent",
                         }}
-                        draggable={false}
-                        loading="lazy"
-                        decoding="async"
-                      />
+                      >
+                        <Image
+                          src={collection.previewImage}
+                          alt={collection.name}
+                          fill
+                          sizes="128px"
+                          quality={60}
+                          loading="lazy"
+                          className="object-cover"
+                          draggable={false}
+                        />
+                      </div>
                       <div className="absolute bottom-0 left-0 right-0 z-0 p-1 bg-black bg-opacity-60 rounded-b-sm">
                         <p
                           className={`text-white truncate ${
@@ -1182,11 +1191,11 @@ export default function GalleryPage() {
                 })}
               </div>
             )}
-            {/* Current expanded image */}
+            {/* Current expanded image — wrapper handles the fixed-position
+                size/transform animation, <Image fill> handles the optimized
+                image itself. */}
             {expandedImageSrc && (
-              <img
-                src={expandedImageSrc}
-                draggable={false}
+              <div
                 className={
                   disableCommitAnimation
                     ? "transition-none"
@@ -1195,9 +1204,6 @@ export default function GalleryPage() {
                 style={{
                   width: `${expandedImageStyle.width}px`,
                   height: `${expandedImageStyle.height}px`,
-                  aspectRatio: "40 / 56",
-                  objectFit: "cover",
-                  objectPosition: expandedObjectPosition,
                   position: "fixed",
                   top: `${expandedImageStyle.top}px`,
                   left: `${expandedImageStyle.left}px`,
@@ -1207,13 +1213,28 @@ export default function GalleryPage() {
                           transitionDirection === "left" ? "+" : "-"
                         } 100vw), -50%)`
                       : "translate(-50%, -50%)",
-                  zIndex: isTransitioning ? 50 : 50,
+                  zIndex: 50,
                   opacity: isNavigatingToCollection ? 0 : 1,
                   transition: isNavigatingToCollection
                     ? "opacity 0.4s ease-out"
                     : undefined,
+                  overflow: "hidden",
                 }}
-              />
+              >
+                <Image
+                  src={expandedImageSrc}
+                  alt=""
+                  fill
+                  sizes="100vw"
+                  quality={85}
+                  priority
+                  draggable={false}
+                  style={{
+                    objectFit: "cover",
+                    objectPosition: expandedObjectPosition,
+                  }}
+                />
+              </div>
             )}
 
             {/* Next image sliding in */}
@@ -1221,16 +1242,11 @@ export default function GalleryPage() {
               nextImageData &&
               transitionDirection &&
               expandedImageStyle && (
-                <img
-                  src={nextImageData.src}
-                  draggable={false}
+                <div
                   className="transition-all duration-1000 ease-out"
                   style={{
                     width: `${expandedImageStyle.width}px`,
                     height: `${expandedImageStyle.height}px`,
-                    aspectRatio: "40 / 56",
-                    objectFit: "cover",
-                    objectPosition: nextImageData.objectPosition,
                     position: "fixed",
                     top: `${expandedImageStyle.top}px`,
                     left: `${expandedImageStyle.left}px`,
@@ -1240,8 +1256,23 @@ export default function GalleryPage() {
                       ? "translate(calc(-50% - 100vw), -50%)"
                       : "translate(calc(-50% + 100vw), -50%)",
                     zIndex: 51,
+                    overflow: "hidden",
                   }}
-                />
+                >
+                  <Image
+                    src={nextImageData.src}
+                    alt=""
+                    fill
+                    sizes="100vw"
+                    quality={85}
+                    priority
+                    draggable={false}
+                    style={{
+                      objectFit: "cover",
+                      objectPosition: nextImageData.objectPosition,
+                    }}
+                  />
+                </div>
               )}
           </>
         )}

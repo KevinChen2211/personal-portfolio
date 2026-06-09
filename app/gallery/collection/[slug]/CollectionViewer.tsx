@@ -21,59 +21,26 @@ export default function CollectionViewer({
   const [headerVisible, setHeaderVisible] = useState(false);
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Fade in page on mount
+  // Fade in page on mount. We rely on Next.js <Image> for lazy/priority
+  // loading instead of manually preloading every full-resolution JPG, which
+  // could pull tens of MB before anything renders.
   useEffect(() => {
-    // Check if navigating from gallery (has sessionStorage flag) - check immediately before template clears it
     const navigatingFromGallery =
       sessionStorage.getItem("navigatingToCollection") === "true";
 
-    // Preload first image first (prioritize it)
-    const preloadFirstImage = (): Promise<void> => {
-      if (images.length === 0) return Promise.resolve();
+    const delay = navigatingFromGallery ? 200 : 50;
 
-      return new Promise<void>((resolve) => {
-        const img = document.createElement("img");
-        img.onload = () => resolve();
-        img.onerror = () => resolve(); // Resolve even on error
-        img.src = images[0]; // Load first image immediately
-      });
+    const headerTimer = setTimeout(() => {
+      setHeaderVisible(true);
+    }, delay);
+    const pageTimer = setTimeout(() => {
+      setPageVisible(true);
+    }, delay + 150);
+
+    return () => {
+      clearTimeout(headerTimer);
+      clearTimeout(pageTimer);
     };
-
-    // Preload remaining images
-    const preloadRemainingImages = (): Promise<void[]> => {
-      if (images.length <= 1) return Promise.resolve([]);
-
-      const remainingImages = images.slice(1);
-      const preloadPromises = remainingImages.map((src) => {
-        return new Promise<void>((resolve) => {
-          const img = document.createElement("img");
-          img.onload = () => resolve();
-          img.onerror = () => resolve(); // Resolve even on error
-          img.src = src;
-        });
-      });
-
-      return Promise.all(preloadPromises);
-    };
-
-    // Load first image first, then load the rest
-    preloadFirstImage().then(() => {
-      // Start loading remaining images in parallel, but don't wait for them
-      preloadRemainingImages();
-
-      // Wait for template transition if coming from gallery
-      // Template waits 700ms, so we wait a bit longer to ensure smooth fade-in
-      const delay = navigatingFromGallery ? 800 : 100;
-
-      setTimeout(() => {
-        // Fade in header first
-        setHeaderVisible(true);
-        // Then fade in page content
-        setTimeout(() => {
-          setPageVisible(true);
-        }, 200);
-      }, delay);
-    });
   }, [images]);
 
   // Intersection Observer for fade-in animations
@@ -245,10 +212,10 @@ export default function CollectionViewer({
                   <Image
                     src={imageSrc}
                     alt={`${title} - Image ${index + 1}`}
-                    width={3000}
-                    height={2000}
+                    width={1600}
+                    height={1067}
                     className="object-contain w-full h-auto max-h-[85vh]"
-                    quality={85}
+                    quality={82}
                     sizes="(max-width: 768px) 90vw, (max-width: 1024px) 60vw, 55vw"
                     priority={index === 0}
                     loading={index === 0 ? undefined : "lazy"}

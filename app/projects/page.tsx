@@ -46,8 +46,9 @@ const ProjectCard = ({
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 33vw, 800px"
-                quality={85}
+                quality={70}
                 priority={index === 0}
+                loading={index < 3 ? "eager" : "lazy"}
               />
             ) : (
               <div

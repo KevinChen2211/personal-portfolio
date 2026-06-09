@@ -328,7 +328,7 @@ export default function Home() {
                 alt="Kevin Chen"
                 fill
                 className="object-contain"
-                quality={85}
+                quality={80}
                 priority
                 sizes="(max-width: 768px) 100vw, 55vw"
               />
@@ -390,10 +390,10 @@ export default function Home() {
                     <Image
                       src={image.src}
                       alt={image.label}
-                      width={3000}
-                      height={2000}
+                      width={1600}
+                      height={1067}
                       className="object-contain w-full h-auto max-h-[85vh]"
-                      quality={80}
+                      quality={70}
                       sizes="(max-width: 768px) 90vw, (max-width: 1024px) 50vw, 45vw"
                       priority={index === 0}
                       loading={index === 0 ? "eager" : "lazy"}

@@ -52,20 +52,19 @@ export default function Template({ children }: { children: React.ReactNode }) {
       prevPathnameRef.current = pathname;
 
       if (isCollectionPage || wasCollectionPage || navigatingToCollection) {
-        // Fade out completely for collection transitions
+        // Briefly fade out for collection transitions; rely on Next.js Image
+        // priority/lazy loading instead of a long blocking timeout.
         setIsVisible(false);
 
-        // Clear the flag
         if (navigatingToCollection) {
           sessionStorage.removeItem("navigatingToCollection");
         }
 
-        // Wait longer to allow images to load, then fade in
         timeoutRef.current = setTimeout(() => {
           requestAnimationFrame(() => {
             setIsVisible(true);
           });
-        }, 700); // Longer delay for collection page image loading
+        }, 150);
       } else {
         // Regular page transition - quick fade
         setIsVisible(false);
@@ -82,14 +81,11 @@ export default function Template({ children }: { children: React.ReactNode }) {
     if (pathname === "/") {
       sessionStorage.setItem("hasVisitedLanding", "true");
     }
-    // Wait a bit longer for images to be ready, then fade in
     timeoutRef.current = setTimeout(() => {
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setIsVisible(true);
-        });
+        setIsVisible(true);
       });
-    }, 200); // Increased delay to allow images to load
+    }, 50);
   };
 
   useEffect(() => {

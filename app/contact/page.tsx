@@ -29,7 +29,7 @@ export default function ContactPage() {
                 alt="Contact"
                 fill
                 className="object-contain"
-                quality={85}
+                quality={75}
                 priority
                 sizes="(max-width: 768px) 100vw, 50vw"
               />
