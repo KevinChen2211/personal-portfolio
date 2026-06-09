@@ -210,6 +210,8 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
                     display: "block",
                   }}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
+                  quality={70}
+                  loading="lazy"
                 />
               )}
             </div>

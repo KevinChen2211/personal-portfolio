@@ -1,16 +1,24 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  reactStrictMode: true, // Recommended for catching issues early
+  reactStrictMode: true,
+  // Aggressive image optimization. AVIF gives ~50% smaller files than JPEG
+  // for the photography-heavy gallery; WebP is kept as a fallback for the
+  // small slice of clients that still don't support AVIF.
   images: {
     remotePatterns: [],
-    formats: ['image/avif', 'image/webp'],
-    minimumCacheTTL: 31536000, // 1 year cache
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    // Enable image optimization
-    dangerouslyAllowSVG: true,
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 31536000, // 1 year
+    deviceSizes: [640, 828, 1080, 1280, 1920, 2560],
+    imageSizes: [64, 96, 128, 256, 384],
+  },
+  // Strip console.* in production builds (except errors/warnings) to keep
+  // the client bundle small.
+  compiler: {
+    removeConsole:
+      process.env.NODE_ENV === "production"
+        ? { exclude: ["error", "warn"] }
+        : false,
   },
 };
 

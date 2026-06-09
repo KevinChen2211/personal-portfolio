@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 /prototype
+
+# image optimizer backups (created by `npm run optimize-images`)
+/public/.originals

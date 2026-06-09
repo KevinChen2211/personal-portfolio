@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { blogPosts } from "../../data/blogs";
 import { formatDate } from "../../utils/date";
+import { readingTime } from "../../utils/reading-time";
 import { parseMarkdown } from "../../utils/markdown";
 import Navbar from "../../components/Navbar";
 
@@ -79,7 +80,7 @@ export default async function JournalPostPage({ params }: JournalPostPageProps) 
 
           {/* Article */}
           <article>
-            {/* Date and Author */}
+            {/* Date · reading time · author */}
             <div
               className="text-sm mb-4 font-medium"
               style={{
@@ -87,9 +88,10 @@ export default async function JournalPostPage({ params }: JournalPostPageProps) 
                 fontFamily:
                   "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
                 opacity: 0.7,
+                fontVariantNumeric: "tabular-nums",
               }}
             >
-              {formatDate(post.date)}
+              {formatDate(post.date)} · {readingTime(post.content)} min read
               {post.author && ` • ${post.author}`}
             </div>
 
