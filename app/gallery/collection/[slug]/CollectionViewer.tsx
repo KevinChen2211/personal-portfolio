@@ -169,7 +169,7 @@ export default function CollectionViewer({
           centre (50vh) regardless of header/footer height. The chrome above
           and below floats over it. */}
       <main
-        className="absolute inset-0 flex items-center justify-center px-12 sm:px-16 md:px-24 lg:px-32 py-24 md:py-28"
+        className="absolute inset-0 flex items-center justify-center px-16 sm:px-20 md:px-28 lg:px-36 py-24 md:py-28"
       >
         {visibleIndices.map((idx) => (
           <div
@@ -198,33 +198,45 @@ export default function CollectionViewer({
           </div>
         ))}
 
-        {/* Prev arrow */}
+        {/* Prev arrow — frosted-glass pill so it stays readable over both
+            light and dark photos. */}
         <button
           type="button"
           onClick={goPrev}
           disabled={!hasPrev}
           aria-label="Previous image"
-          className="absolute left-2 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 z-10 rounded-full p-2 sm:p-3 transition-all duration-300 focus:outline-none"
+          className="absolute left-3 sm:left-5 md:left-7 top-1/2 -translate-y-1/2 z-10 rounded-full transition-all duration-300 focus:outline-none flex items-center justify-center"
           style={{
-            color: textColor,
-            opacity: chromeVisible ? (hasPrev ? 0.55 : 0.15) : 0,
+            color: "#1a1a1a",
+            opacity: chromeVisible ? (hasPrev ? 1 : 0.3) : 0,
             cursor: hasPrev ? "pointer" : "default",
-            backgroundColor: "transparent",
+            width: 48,
+            height: 48,
+            backgroundColor: "rgba(250, 242, 230, 0.85)",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
+            border: "1px solid rgba(26, 26, 26, 0.12)",
+            boxShadow: "0 4px 14px rgba(0, 0, 0, 0.08)",
           }}
           onMouseEnter={(e) => {
-            if (hasPrev) e.currentTarget.style.opacity = "1";
+            if (hasPrev) {
+              e.currentTarget.style.backgroundColor = "rgba(250, 242, 230, 0.98)";
+              e.currentTarget.style.transform =
+                "translateY(-50%) scale(1.06)";
+            }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.opacity = hasPrev ? "0.55" : "0.15";
+            e.currentTarget.style.backgroundColor = "rgba(250, 242, 230, 0.85)";
+            e.currentTarget.style.transform = "translateY(-50%)";
           }}
         >
           <svg
-            width="28"
-            height="28"
+            width="22"
+            height="22"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="1.25"
+            strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden="true"
@@ -239,27 +251,38 @@ export default function CollectionViewer({
           onClick={goNext}
           disabled={!hasNext}
           aria-label="Next image"
-          className="absolute right-2 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 z-10 rounded-full p-2 sm:p-3 transition-all duration-300 focus:outline-none"
+          className="absolute right-3 sm:right-5 md:right-7 top-1/2 -translate-y-1/2 z-10 rounded-full transition-all duration-300 focus:outline-none flex items-center justify-center"
           style={{
-            color: textColor,
-            opacity: chromeVisible ? (hasNext ? 0.55 : 0.15) : 0,
+            color: "#1a1a1a",
+            opacity: chromeVisible ? (hasNext ? 1 : 0.3) : 0,
             cursor: hasNext ? "pointer" : "default",
-            backgroundColor: "transparent",
+            width: 48,
+            height: 48,
+            backgroundColor: "rgba(250, 242, 230, 0.85)",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
+            border: "1px solid rgba(26, 26, 26, 0.12)",
+            boxShadow: "0 4px 14px rgba(0, 0, 0, 0.08)",
           }}
           onMouseEnter={(e) => {
-            if (hasNext) e.currentTarget.style.opacity = "1";
+            if (hasNext) {
+              e.currentTarget.style.backgroundColor = "rgba(250, 242, 230, 0.98)";
+              e.currentTarget.style.transform =
+                "translateY(-50%) scale(1.06)";
+            }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.opacity = hasNext ? "0.55" : "0.15";
+            e.currentTarget.style.backgroundColor = "rgba(250, 242, 230, 0.85)";
+            e.currentTarget.style.transform = "translateY(-50%)";
           }}
         >
           <svg
-            width="28"
-            height="28"
+            width="22"
+            height="22"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="1.25"
+            strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden="true"
@@ -269,9 +292,10 @@ export default function CollectionViewer({
         </button>
       </main>
 
-      {/* Bottom: counter + progress dashes */}
+      {/* Bottom: counter + progress dashes inside a frosted-glass pill so
+          they remain readable regardless of the photo behind them. */}
       <div
-        className="absolute bottom-0 left-0 right-0 z-20 pb-6 md:pb-9 flex flex-col items-center gap-3"
+        className="absolute bottom-0 left-0 right-0 z-20 pb-5 md:pb-8 flex justify-center"
         style={{
           opacity: chromeVisible ? 1 : 0,
           transition: "opacity 0.6s ease-out",
@@ -279,52 +303,59 @@ export default function CollectionViewer({
         }}
       >
         <div
-          className="text-xs md:text-sm italic"
+          className="flex flex-col items-center gap-2 px-5 md:px-6 py-2.5 md:py-3 rounded-full"
           style={{
-            color: "#1a1a1a",
-            fontFamily: SERIF,
-            fontVariantNumeric: "tabular-nums",
-            opacity: 0.85,
+            backgroundColor: "rgba(250, 242, 230, 0.85)",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
+            border: "1px solid rgba(26, 26, 26, 0.12)",
+            boxShadow: "0 4px 14px rgba(0, 0, 0, 0.08)",
+            pointerEvents: "auto",
           }}
         >
-          {String(currentIndex + 1).padStart(2, "0")} —{" "}
-          {String(images.length).padStart(2, "0")}
-        </div>
-        <div
-          className="flex items-center gap-2 px-4"
-          style={{ pointerEvents: "auto" }}
-        >
-          {images.map((_, idx) => {
-            const active = idx === currentIndex;
-            // Dashes use a deeper espresso ink (#1a1a1a) at high opacity so
-            // they read clearly against the cream background.
-            return (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => goTo(idx)}
-                aria-label={`Go to image ${idx + 1}`}
-                aria-current={active ? "true" : undefined}
-                className="transition-all duration-300 focus:outline-none"
-                style={{
-                  width: active ? "32px" : "14px",
-                  height: "4px",
-                  backgroundColor: "#1a1a1a",
-                  opacity: active ? 1 : 0.45,
-                  border: "none",
-                  padding: 0,
-                  cursor: "pointer",
-                  borderRadius: "2px",
-                }}
-                onMouseEnter={(e) => {
-                  if (!active) e.currentTarget.style.opacity = "0.75";
-                }}
-                onMouseLeave={(e) => {
-                  if (!active) e.currentTarget.style.opacity = "0.45";
-                }}
-              />
-            );
-          })}
+          <div
+            className="text-xs md:text-sm italic leading-none"
+            style={{
+              color: "#1a1a1a",
+              fontFamily: SERIF,
+              fontVariantNumeric: "tabular-nums",
+              opacity: 0.9,
+            }}
+          >
+            {String(currentIndex + 1).padStart(2, "0")} —{" "}
+            {String(images.length).padStart(2, "0")}
+          </div>
+          <div className="flex items-center gap-2">
+            {images.map((_, idx) => {
+              const active = idx === currentIndex;
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => goTo(idx)}
+                  aria-label={`Go to image ${idx + 1}`}
+                  aria-current={active ? "true" : undefined}
+                  className="transition-all duration-300 focus:outline-none"
+                  style={{
+                    width: active ? "32px" : "14px",
+                    height: "4px",
+                    backgroundColor: "#1a1a1a",
+                    opacity: active ? 1 : 0.45,
+                    border: "none",
+                    padding: 0,
+                    cursor: "pointer",
+                    borderRadius: "2px",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!active) e.currentTarget.style.opacity = "0.75";
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!active) e.currentTarget.style.opacity = "0.45";
+                  }}
+                />
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
