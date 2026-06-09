@@ -132,16 +132,17 @@ export default function CollectionViewer({
 
   return (
     <div
-      className="h-screen w-full relative overflow-hidden flex flex-col"
+      className="h-screen w-full relative overflow-hidden"
       style={{ backgroundColor: bgColor }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
       <Navbar />
 
-      {/* Top bar: back link (left) + collection name (right) */}
+      {/* Top chrome — back link + collection title. Floats above the stage so
+          the image stays vertically centred in the viewport. */}
       <header
-        className="w-full px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 pt-24 md:pt-28 pb-3 md:pb-4 flex items-end justify-between"
+        className="absolute top-0 left-0 right-0 z-20 px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 pt-24 md:pt-28 pb-3 md:pb-4 flex items-end justify-between pointer-events-none"
         style={{
           opacity: chromeVisible ? 1 : 0,
           transform: chromeVisible ? "translateY(0)" : "translateY(-8px)",
@@ -151,24 +152,24 @@ export default function CollectionViewer({
       >
         <Link
           href="/gallery"
-          className="text-xs md:text-sm transition-all duration-300 hover:underline hover:translate-x-[-3px]"
+          className="text-xs md:text-sm transition-all duration-300 hover:underline hover:translate-x-[-3px] pointer-events-auto"
           style={{ color: textColor, fontFamily: SERIF, opacity: 0.85 }}
         >
           ← Back to Gallery
         </Link>
         <h1
-          className="text-base md:text-lg tracking-wide italic text-right"
+          className="text-base md:text-lg tracking-wide italic text-right pointer-events-auto"
           style={{ color: textColor, fontFamily: SERIF }}
         >
           {title}
         </h1>
       </header>
 
-      {/* Stage — a single image fills this region; previous/next are mounted
-          but transparent so they're warm in the cache for instant navigation. */}
+      {/* Stage — pinned to the viewport so the photo sits at the true vertical
+          centre (50vh) regardless of header/footer height. The chrome above
+          and below floats over it. */}
       <main
-        className="relative flex-1 flex items-center justify-center px-12 sm:px-16 md:px-24 lg:px-32 pb-32 md:pb-36"
-        style={{ minHeight: 0 }}
+        className="absolute inset-0 flex items-center justify-center px-12 sm:px-16 md:px-24 lg:px-32 py-24 md:py-28"
       >
         {visibleIndices.map((idx) => (
           <div
@@ -178,8 +179,7 @@ export default function CollectionViewer({
             style={{
               padding: "0.5rem",
               opacity: idx === currentIndex && imageVisible ? 1 : 0,
-              transition:
-                "opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1)",
+              transition: "opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1)",
               pointerEvents: idx === currentIndex ? "auto" : "none",
             }}
           >
@@ -271,7 +271,7 @@ export default function CollectionViewer({
 
       {/* Bottom: counter + progress dashes */}
       <div
-        className="absolute bottom-0 left-0 right-0 pb-6 md:pb-9 flex flex-col items-center gap-3"
+        className="absolute bottom-0 left-0 right-0 z-20 pb-6 md:pb-9 flex flex-col items-center gap-3"
         style={{
           opacity: chromeVisible ? 1 : 0,
           transition: "opacity 0.6s ease-out",
@@ -281,21 +281,23 @@ export default function CollectionViewer({
         <div
           className="text-xs md:text-sm italic"
           style={{
-            color: textColor,
+            color: "#1a1a1a",
             fontFamily: SERIF,
             fontVariantNumeric: "tabular-nums",
-            opacity: 0.7,
+            opacity: 0.85,
           }}
         >
           {String(currentIndex + 1).padStart(2, "0")} —{" "}
           {String(images.length).padStart(2, "0")}
         </div>
         <div
-          className="flex items-center gap-1.5 px-4"
+          className="flex items-center gap-2 px-4"
           style={{ pointerEvents: "auto" }}
         >
           {images.map((_, idx) => {
             const active = idx === currentIndex;
+            // Dashes use a deeper espresso ink (#1a1a1a) at high opacity so
+            // they read clearly against the cream background.
             return (
               <button
                 key={idx}
@@ -305,20 +307,20 @@ export default function CollectionViewer({
                 aria-current={active ? "true" : undefined}
                 className="transition-all duration-300 focus:outline-none"
                 style={{
-                  width: active ? "26px" : "10px",
-                  height: "2px",
-                  backgroundColor: textColor,
-                  opacity: active ? 0.85 : 0.25,
+                  width: active ? "32px" : "14px",
+                  height: "4px",
+                  backgroundColor: "#1a1a1a",
+                  opacity: active ? 1 : 0.45,
                   border: "none",
                   padding: 0,
                   cursor: "pointer",
-                  borderRadius: "1px",
+                  borderRadius: "2px",
                 }}
                 onMouseEnter={(e) => {
-                  if (!active) e.currentTarget.style.opacity = "0.55";
+                  if (!active) e.currentTarget.style.opacity = "0.75";
                 }}
                 onMouseLeave={(e) => {
-                  if (!active) e.currentTarget.style.opacity = "0.25";
+                  if (!active) e.currentTarget.style.opacity = "0.45";
                 }}
               />
             );
