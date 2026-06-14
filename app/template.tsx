@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
 import LoadingScreen from "./components/LoadingScreen";
+import { usePrefersReducedMotion } from "./utils/motion";
 
 export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -11,6 +12,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
   const isInitialMount = useRef(true);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const prevPathnameRef = useRef<string | null>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     // Clear any pending timeouts
@@ -26,9 +28,12 @@ export default function Template({ children }: { children: React.ReactNode }) {
       // Only show loading screen if starting on landing page AND haven't visited before
       if (pathname === "/") {
         const hasVisitedBefore = sessionStorage.getItem("hasVisitedLanding");
-        if (!hasVisitedBefore) {
+        if (!hasVisitedBefore && !prefersReducedMotion) {
           setShowLoading(true);
         } else {
+          if (!hasVisitedBefore) {
+            sessionStorage.setItem("hasVisitedLanding", "true");
+          }
           // Returning to landing page - show immediately
           setIsVisible(true);
         }
@@ -44,7 +49,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
     if (prevPathnameRef.current !== pathname) {
       const isCollectionPage = pathname.startsWith("/gallery/collection/");
       const wasCollectionPage = prevPathnameRef.current?.startsWith(
-        "/gallery/collection/"
+        "/gallery/collection/",
       );
       const navigatingToCollection =
         sessionStorage.getItem("navigatingToCollection") === "true";
@@ -52,8 +57,15 @@ export default function Template({ children }: { children: React.ReactNode }) {
       prevPathnameRef.current = pathname;
 
       if (isCollectionPage || wasCollectionPage || navigatingToCollection) {
-        // Briefly fade out for collection transitions; rely on Next.js Image
-        // priority/lazy loading instead of a long blocking timeout.
+        if (prefersReducedMotion) {
+          setIsVisible(true);
+          if (navigatingToCollection) {
+            sessionStorage.removeItem("navigatingToCollection");
+          }
+          return;
+        }
+
+        // Briefly fade out for collection transitions
         setIsVisible(false);
 
         if (navigatingToCollection) {
@@ -64,16 +76,18 @@ export default function Template({ children }: { children: React.ReactNode }) {
           requestAnimationFrame(() => {
             setIsVisible(true);
           });
-        }, 150);
-      } else {
+        }, 280);
+      } else if (!prefersReducedMotion) {
         // Regular page transition - quick fade
         setIsVisible(false);
         requestAnimationFrame(() => {
           setIsVisible(true);
         });
+      } else {
+        setIsVisible(true);
       }
     }
-  }, [pathname]);
+  }, [pathname, prefersReducedMotion]);
 
   const handleLoadingComplete = () => {
     setShowLoading(false);
@@ -109,6 +123,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
   return (
     <>
       {showLoading && <LoadingScreen onComplete={handleLoadingComplete} />}
+      <div className="film-grain" aria-hidden="true" />
       {/* Background layer to prevent dark flash */}
       <div
         style={{
@@ -126,10 +141,16 @@ export default function Template({ children }: { children: React.ReactNode }) {
         className="page-transition-wrapper"
         style={{
           opacity: isVisible ? 1 : 0.95, // Keep high opacity to prevent dark flash
-          transform: isVisible ? "translateY(0)" : "translateY(2px)",
-          transition: isVisible
-            ? "opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-            : "opacity 0.05s cubic-bezier(0.4, 0, 0.2, 1), transform 0.05s cubic-bezier(0.4, 0, 0.2, 1)",
+          transition: prefersReducedMotion
+            ? "none"
+            : isVisible
+              ? "opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out)"
+              : "opacity 0.12s var(--ease-out), transform 0.12s var(--ease-out)",
+          transform: prefersReducedMotion
+            ? "none"
+            : isVisible
+              ? "translateY(0)"
+              : "translateY(2px)",
           minHeight: "100vh",
           width: "100%",
           backgroundColor: "#FAF2E6", // Prevent black flash

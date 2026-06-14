@@ -72,7 +72,7 @@ function ScrollingNumber({ value = 0 }: { value: number }) {
           <ScrollingDigit key={i} value={digit} />
         ) : (
           <span key={i} style={{ width: "0.6em", display: "inline-block" }} />
-        )
+        ),
       )}
     </span>
   );
@@ -93,7 +93,7 @@ export default function GalleryPage() {
   const previousCollectionSlugRef = useRef<string | null>(null);
 
   const [expandedImageIndex, setExpandedImageIndex] = useState<number | null>(
-    null
+    null,
   );
   const [expandedImageSrc, setExpandedImageSrc] = useState<string | null>(null);
   const [expandedCollection, setExpandedCollection] = useState<{
@@ -132,7 +132,7 @@ export default function GalleryPage() {
   const [isNavigatingToCollection, setIsNavigatingToCollection] =
     useState(false);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(
-    null
+    null,
   );
   const expandedTouchStartRef = useRef<{
     x: number;
@@ -140,11 +140,12 @@ export default function GalleryPage() {
     time: number;
   } | null>(null);
   const hasCollectionLink = !!expandedCollection?.slug;
+  const zoomTransitionMs = 1300;
 
   // Handle collection link click with fade-out
   const handleCollectionClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
-    slug: string
+    slug: string,
   ) => {
     e.preventDefault();
     setIsNavigatingToCollection(true);
@@ -164,11 +165,11 @@ export default function GalleryPage() {
     if (!expandedImageSrc || !expandedCollection) return null;
 
     const collectionImages = allImages.filter(
-      (src) => parseCollection(src).slug === expandedCollection.slug
+      (src) => parseCollection(src).slug === expandedCollection.slug,
     );
 
     const currentIndex = collectionImages.findIndex(
-      (src) => src === expandedImageSrc
+      (src) => src === expandedImageSrc,
     );
 
     return {
@@ -329,7 +330,7 @@ export default function GalleryPage() {
     let frameCounter = 0;
 
     const images = Array.from(
-      track.getElementsByClassName("image")
+      track.getElementsByClassName("image"),
     ) as HTMLElement[];
     if (images.length === 0) return;
 
@@ -563,7 +564,7 @@ export default function GalleryPage() {
             setIsSuperscriptExiting(false);
             setCollectionNameAnimate(false);
             setShowPreview(false);
-          }, 1000);
+          }, zoomTransitionMs);
         });
       });
     }, 120);
@@ -636,7 +637,7 @@ export default function GalleryPage() {
         const collections = getAllCollections();
         if (collections.length === 0) return;
         const currentCollectionIndex = collections.findIndex(
-          (c) => c.isCurrent
+          (c) => c.isCurrent,
         );
 
         if (deltaX > 0 && currentCollectionIndex > 0) {
@@ -886,72 +887,72 @@ export default function GalleryPage() {
                   flexShrink: 0,
                 }}
               >
-              <Image
-                ref={(el: HTMLImageElement | null) => {
-                  imageRefs.current[i] = el;
-                }}
-                src={src}
-                alt=""
-                fill
-                // `vmin` isn't reliably honoured by browsers in srcset
-                // selection, so use vw-based hints that err on the side of
-                // a higher-resolution variant for crispness on retina.
-                sizes="(max-width: 768px) 80vw, (max-width: 1280px) 45vw, 35vw"
-                quality={82}
-                priority={i === 0}
-                loading={i === 0 ? "eager" : "lazy"}
-                className="image cursor-pointer transition-all duration-500 ease-out hover:scale-105"
-                draggable={false}
-                onClick={() => {
-                  // Ignore clicks while a previous open/close/transition is
-                  // still settling, otherwise the expand can be committed in
-                  // the same paint as the start frame and skip the zoom.
-                  if (
-                    isClosing ||
-                    isTransitioning ||
-                    expandedImageIndex !== null ||
-                    pendingExpand
-                  )
-                    return;
-                  const img = imageRefs.current[i];
-                  if (!img) return;
-                  const rect = img.getBoundingClientRect();
-                  setIsOpening(true);
-                  setIsClosing(false);
-                  const newCollection = parseCollection(src);
-                  setExpandedImageIndex(i);
-                  setExpandedImageSrc(src);
-                  setExpandedCollection(newCollection);
-                  setShowCollectionTitle(true);
-                  setShowPreview(false); // Reset preview visibility
-                  // Reset and trigger collection name animation on initial open
-                  setCollectionNameAnimate(false);
-                  previousCollectionSlugRef.current = newCollection.slug;
-                  requestAnimationFrame(() => {
+                <Image
+                  ref={(el: HTMLImageElement | null) => {
+                    imageRefs.current[i] = el;
+                  }}
+                  src={src}
+                  alt=""
+                  fill
+                  // `vmin` isn't reliably honoured by browsers in srcset
+                  // selection, so use vw-based hints that err on the side of
+                  // a higher-resolution variant for crispness on retina.
+                  sizes="(max-width: 768px) 80vw, (max-width: 1280px) 45vw, 35vw"
+                  quality={82}
+                  priority={i === 0}
+                  loading={i === 0 ? "eager" : "lazy"}
+                  className="image cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] hover:opacity-95"
+                  draggable={false}
+                  onClick={() => {
+                    // Ignore clicks while a previous open/close/transition is
+                    // still settling, otherwise the expand can be committed in
+                    // the same paint as the start frame and skip the zoom.
+                    if (
+                      isClosing ||
+                      isTransitioning ||
+                      expandedImageIndex !== null ||
+                      pendingExpand
+                    )
+                      return;
+                    const img = imageRefs.current[i];
+                    if (!img) return;
+                    const rect = img.getBoundingClientRect();
+                    setIsOpening(true);
+                    setIsClosing(false);
+                    const newCollection = parseCollection(src);
+                    setExpandedImageIndex(i);
+                    setExpandedImageSrc(src);
+                    setExpandedCollection(newCollection);
+                    setShowCollectionTitle(true);
+                    setShowPreview(false); // Reset preview visibility
+                    // Reset and trigger collection name animation on initial open
+                    setCollectionNameAnimate(false);
+                    previousCollectionSlugRef.current = newCollection.slug;
                     requestAnimationFrame(() => {
-                      setCollectionNameAnimate(true);
+                      requestAnimationFrame(() => {
+                        setCollectionNameAnimate(true);
+                      });
                     });
-                  });
-                  const currentObjectPosition =
-                    getComputedStyle(img).objectPosition;
+                    const currentObjectPosition =
+                      getComputedStyle(img).objectPosition;
 
-                  // Start at the thumbnail's exact position/size. The expand to
-                  // fullscreen is triggered from an effect once this starting
-                  // frame is committed, guaranteeing the transition plays.
-                  setExpandedImageStyle({
-                    top: rect.top + rect.height / 2,
-                    left: rect.left + rect.width / 2,
-                    width: rect.width,
-                    height: rect.height,
-                  });
-                  setExpandedObjectPosition(currentObjectPosition);
-                  setPendingExpand(true);
-                }}
-                style={{
-                  objectFit: "cover",
-                  objectPosition: "100% center",
-                }}
-              />
+                    // Start at the thumbnail's exact position/size. The expand to
+                    // fullscreen is triggered from an effect once this starting
+                    // frame is committed, guaranteeing the transition plays.
+                    setExpandedImageStyle({
+                      top: rect.top + rect.height / 2,
+                      left: rect.left + rect.width / 2,
+                      width: rect.width,
+                      height: rect.height,
+                    });
+                    setExpandedObjectPosition(currentObjectPosition);
+                    setPendingExpand(true);
+                  }}
+                  style={{
+                    objectFit: "cover",
+                    objectPosition: "100% center",
+                  }}
+                />
               </div>
             ))}
           </div>
@@ -966,12 +967,22 @@ export default function GalleryPage() {
         expandedCollection && (
           <>
             <div
-              className="fixed inset-0 z-40 transition-opacity duration-500"
+              className="fixed inset-0 z-40 transition-opacity duration-[900ms]"
               style={{
                 backgroundColor: bgColor,
                 opacity:
                   isClosing || isOpening || isNavigatingToCollection ? 0 : 1,
               }}
+            />
+            <div
+              className="fixed inset-0 z-[45] pointer-events-none transition-opacity duration-[900ms]"
+              style={{
+                background:
+                  "radial-gradient(ellipse at center, transparent 42%, rgba(44, 44, 44, 0.12) 100%)",
+                opacity:
+                  isClosing || isOpening || isNavigatingToCollection ? 0 : 1,
+              }}
+              aria-hidden="true"
             />
             {hasCollectionLink ? (
               <Link
@@ -1144,7 +1155,7 @@ export default function GalleryPage() {
               >
                 {allCollections.map((collection, idx) => {
                   const currentCollectionIndex = allCollections.findIndex(
-                    (c) => c.isCurrent
+                    (c) => c.isCurrent,
                   );
                   const direction =
                     idx < currentCollectionIndex ? "left" : "right";
@@ -1225,7 +1236,7 @@ export default function GalleryPage() {
                 className={
                   disableCommitAnimation
                     ? "transition-none"
-                    : "transition-all duration-1000 ease-out"
+                    : "transition-all duration-[1300ms] ease-out"
                 }
                 style={{
                   width: `${expandedImageStyle.width}px`,
@@ -1284,8 +1295,8 @@ export default function GalleryPage() {
                     transform: nextImageSlideIn
                       ? "translate(-50%, -50%)"
                       : transitionDirection === "left"
-                      ? "translate(calc(-50% - 100vw), -50%)"
-                      : "translate(calc(-50% + 100vw), -50%)",
+                        ? "translate(calc(-50% - 100vw), -50%)"
+                        : "translate(calc(-50% + 100vw), -50%)",
                     zIndex: 51,
                     overflow: "hidden",
                   }}

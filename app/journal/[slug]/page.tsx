@@ -13,7 +13,9 @@ export function generateStaticParams() {
   return blogPosts.map((post) => ({ slug: post.slug }));
 }
 
-export default async function JournalPostPage({ params }: JournalPostPageProps) {
+export default async function JournalPostPage({
+  params,
+}: JournalPostPageProps) {
   const { slug } = await params;
   const bgColor = "#FAF2E6";
   const textColor = "#2C2C2C";
@@ -41,7 +43,7 @@ export default async function JournalPostPage({ params }: JournalPostPageProps) 
             </h1>
             <Link
               href="/journal"
-              className="text-base md:text-lg hover:underline"
+              className="text-base md:text-lg transition-opacity duration-500 hover:underline hover:opacity-70"
               style={{
                 color: textColor,
                 fontFamily:
@@ -67,7 +69,7 @@ export default async function JournalPostPage({ params }: JournalPostPageProps) 
           {/* Back Link */}
           <Link
             href="/journal"
-            className="inline-block mb-8 text-sm md:text-base hover:underline"
+            className="inline-block mb-8 text-sm md:text-base transition-opacity duration-500 hover:underline hover:opacity-70"
             style={{
               color: textColor,
               fontFamily:

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRef } from "react";
 import { useScrollAnimation } from "../components/useScrollAnimation";
+import { usePrefersReducedMotion } from "../utils/motion";
 import { projects, type Project } from "../data/projects";
 import Navbar from "../components/Navbar";
 
@@ -17,17 +18,23 @@ const ProjectCard = ({
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const { isVisible } = useScrollAnimation(cardRef, { threshold: 0.1 });
+  const prefersReducedMotion = usePrefersReducedMotion();
   const bgColor = "#FAF2E6";
   const textColor = "#2C2C2C";
 
   return (
     <div
       ref={cardRef}
-      className="flex flex-col transition-all duration-500 touch-manipulation"
+      className="flex flex-col touch-manipulation"
       style={{
         opacity: isVisible ? 1 : 0,
-        transform: `translateY(${isVisible ? 0 : 30}px)`,
-        transitionDelay: `${index * 100}ms`,
+        transform: prefersReducedMotion
+          ? "none"
+          : `translateY(${isVisible ? 0 : 30}px)`,
+        transitionDelay: prefersReducedMotion ? "0ms" : `${index * 180}ms`,
+        transitionProperty: prefersReducedMotion ? "opacity" : "opacity, transform",
+        transitionDuration: "var(--duration-slow)",
+        transitionTimingFunction: "var(--ease-out)",
       }}
     >
       <Link href={`/projects/${project.slug}`} className="group">
@@ -44,7 +51,7 @@ const ProjectCard = ({
                 src={project.image}
                 alt={project.title}
                 fill
-                className="object-cover"
+                className="object-cover transition-opacity duration-700 group-hover:opacity-88"
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 33vw, 800px"
                 quality={70}
                 priority={index === 0}
@@ -63,7 +70,7 @@ const ProjectCard = ({
           </div>
         </div>
         <h3
-          className="text-3xl md:text-3xl lg:text-4xl xl:text-4xl text-center group-hover:underline transition-all"
+          className="text-3xl md:text-3xl lg:text-4xl xl:text-4xl text-center transition-opacity duration-500 group-hover:opacity-75"
           style={{
             color: textColor,
             fontFamily:

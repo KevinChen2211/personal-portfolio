@@ -1,11 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePrefersReducedMotion } from "../utils/motion";
 
-// Preload fonts only — Next.js <Image priority> already injects the right
-// preload tags for above-the-fold images, so we don't need to fetch the
-// raw multi-MB JPGs here (which used to block first paint by 5–10s on
-// slow connections).
 const preloadFonts = (): Promise<void> => {
   return new Promise((resolve) => {
     if (document.fonts && document.fonts.ready) {
@@ -21,7 +18,7 @@ const preloadFonts = (): Promise<void> => {
           .catch(() => resolve());
       });
     } else {
-      setTimeout(() => resolve(), 300);
+      setTimeout(() => resolve(), 500);
     }
   });
 };
@@ -33,81 +30,80 @@ type LoadingScreenProps = {
 
 export default function LoadingScreen({
   onComplete,
-  minDisplayTime = 400,
+  minDisplayTime = 1400,
 }: LoadingScreenProps) {
-  const [progress, setProgress] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [nameVisible, setNameVisible] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
-    const startTime = Date.now();
     let cancelled = false;
+    const startTime = Date.now();
+    const effectiveMin = prefersReducedMotion ? 200 : minDisplayTime;
+    const exitMs = prefersReducedMotion ? 120 : 900;
 
-    // Animate the progress bar smoothly while the small amount of
-    // critical work (fonts) finishes.
-    const interval = setInterval(() => {
-      setProgress((p) => (p < 80 ? p + 4 : p));
-    }, 30);
+    const run = async () => {
+      if (prefersReducedMotion) {
+        setNameVisible(true);
+      } else {
+        requestAnimationFrame(() => {
+          if (!cancelled) setNameVisible(true);
+        });
+      }
 
-    const finish = async () => {
       try {
         await preloadFonts();
       } catch {}
+
       if (cancelled) return;
 
       const elapsed = Date.now() - startTime;
-      const remaining = Math.max(0, minDisplayTime - elapsed);
+      const remaining = Math.max(0, effectiveMin - elapsed);
       await new Promise((resolve) => setTimeout(resolve, remaining));
       if (cancelled) return;
 
-      clearInterval(interval);
-      setProgress(100);
-      setTimeout(() => {
-        if (cancelled) return;
-        setIsLoading(false);
-        setTimeout(() => {
-          if (!cancelled) onComplete();
-        }, 200);
-      }, 80);
+      setIsExiting(true);
+      await new Promise((resolve) => setTimeout(resolve, exitMs));
+      if (!cancelled) onComplete();
     };
 
-    finish();
+    run();
 
     return () => {
       cancelled = true;
-      clearInterval(interval);
     };
-  }, [minDisplayTime, onComplete]);
-
-  if (!isLoading && progress === 100) {
-    return null;
-  }
+  }, [minDisplayTime, onComplete, prefersReducedMotion]);
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center transition-opacity duration-300"
+      className="fixed inset-0 z-[9999] flex items-center justify-center"
       style={{
         backgroundColor: "#FAF2E6",
-        opacity: isLoading ? 1 : 0,
-        pointerEvents: isLoading ? "auto" : "none",
+        opacity: isExiting ? 0 : 1,
+        transition: prefersReducedMotion
+          ? "opacity 0.15s ease-out"
+          : "opacity 0.9s var(--ease-out)",
+        pointerEvents: isExiting ? "none" : "auto",
       }}
     >
-      <div className="text-center">
-        <div
-          className="text-4xl md:text-5xl font-bold mb-8"
-          style={{
-            color: "#2C2C2C",
-            fontFamily:
-              "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-          }}
-        >
-          KEVIN CHEN
-        </div>
-        <div className="w-64 h-1 bg-gray-200 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-[#2C2C2C] transition-all duration-300 ease-out rounded-full"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
+      <div
+        className="text-4xl md:text-5xl font-bold tracking-wide"
+        style={{
+          color: "#2C2C2C",
+          fontFamily:
+            "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+          opacity: nameVisible ? 1 : 0,
+          transform: prefersReducedMotion
+            ? "none"
+            : nameVisible
+              ? "translateY(0)"
+              : "translateY(12px)",
+          transition: prefersReducedMotion
+            ? "opacity 0.2s ease-out"
+            : "opacity 1.2s var(--ease-out), transform 1.2s var(--ease-out)",
+        }}
+      >
+        KEVIN CHEN
       </div>
     </div>
   );

@@ -16,7 +16,7 @@ export default function Navbar() {
 
   return (
     <header
-      className="w-full px-6 md:px-12 lg:px-16 py-5 md:py-6 flex items-center justify-between fixed z-50 top-0 transition-colors duration-1000"
+      className="w-full px-6 md:px-12 lg:px-16 py-5 md:py-6 flex items-center justify-between fixed z-50 top-0 transition-colors duration-[1800ms]"
       style={{
         backgroundColor: currentBgColor,
         color: currentTextColor,

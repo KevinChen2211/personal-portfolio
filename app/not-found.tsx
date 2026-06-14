@@ -156,7 +156,7 @@ export default function NotFound() {
 
         <Link
           href="/"
-          className="mt-4 rounded-sm bg-white px-8 py-3 text-sm text-black transition-all duration-300 hover:bg-opacity-90 hover:scale-105"
+          className="mt-4 rounded-sm bg-white px-8 py-3 text-sm text-black transition-all duration-700 hover:bg-opacity-90 hover:scale-105"
           style={{
             fontWeight: 500,
             letterSpacing: "0.05em",
