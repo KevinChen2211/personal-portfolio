@@ -1258,15 +1258,11 @@ export default function GalleryPage() {
                   style={{
                     objectFit: "cover",
                     objectPosition: expandedObjectPosition,
-                    // Bleed 1px past every edge so sub-pixel rounding during
-                    // the scale animation never exposes the background as
-                    // thin vertical/horizontal seam lines.
-                    top: "-1px",
-                    left: "-1px",
-                    right: "auto",
-                    bottom: "auto",
-                    width: "calc(100% + 2px)",
-                    height: "calc(100% + 2px)",
+                    // Slightly overscale so sub-pixel rounding during the
+                    // size animation never exposes the background as thin
+                    // vertical/horizontal seam lines. ("fill" images can't
+                    // have width/height overridden, so we bleed via scale.)
+                    transform: "scale(1.01)",
                   }}
                 />
               </div>
@@ -1305,14 +1301,9 @@ export default function GalleryPage() {
                     style={{
                       objectFit: "cover",
                       objectPosition: nextImageData.objectPosition,
-                      // Bleed 1px past every edge to avoid sub-pixel seam
-                      // lines while the image slides between collections.
-                      top: "-1px",
-                      left: "-1px",
-                      right: "auto",
-                      bottom: "auto",
-                      width: "calc(100% + 2px)",
-                      height: "calc(100% + 2px)",
+                      // Overscale slightly to avoid sub-pixel seam lines while
+                      // the image slides between collections.
+                      transform: "scale(1.01)",
                     }}
                   />
                 </div>
