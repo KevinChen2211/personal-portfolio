@@ -11,31 +11,31 @@ export const projects: Project[] = [
   {
     title: "Melbourne RoboCats Mentorship",
     description: `
-Mentored an all-girls high-school team (Melbourne RoboCats) in the design and implementation of FIRST Robotics Competition (FRC) robot software and electrical systems. The focus of the season was building confidence in embedded programming on the NI RoboRIO using WPILib (C++), while teaching students how to think like control-systems engineers—not just write code.
+I mentored Melbourne RoboCats, an all-girls high-school team, on the software and electrical side of their FIRST Robotics Competition (FRC) robot. Most of the season went into getting the students comfortable with embedded programming on the NI RoboRIO using WPILib (C++), and helping them think about the robot as a control system rather than just a pile of code.
 
 ![IMAGE:/projects-images/robocats_1.jpg]
 
-We started with fundamentals: explaining how the RoboRIO, power distribution hub, motor controllers, and sensors formed a complete electro-mechanical system. Together we designed a control-system architecture that separated autonomous logic, tele-operated control, subsystem control (drive, intake, shooter, climber), and shared utilities. Students learned how to structure code into reusable components and how to map game requirements into concrete software features.
+We started with the basics: how the RoboRIO, power distribution hub, motor controllers, and sensors all fit together as one system. From there we laid out a code structure that kept autonomous logic, driver control, the individual subsystems (drive, intake, shooter, climber), and shared helpers separate. The students got used to breaking the game down into features and turning those into reusable bits of code.
 
-On the embedded side, I guided students through motor control using WPILib, including configuring CAN-based motor controllers, setting current limits, and managing neutral modes. We integrated encoders, gyroscopes, and limit switches to provide feedback for closed-loop control and to prevent mechanical over-travel. Students implemented drive algorithms, mechanism control, and safety interlocks that respected FRC rules and protected hardware.
+On the embedded side, I walked them through motor control with WPILib, including setting up CAN motor controllers, current limits, and neutral modes. We wired in encoders, gyroscopes, and limit switches so the robot could run closed-loop control and not drive its mechanisms past their limits. The students wrote the drive code, mechanism control, and the safety checks that kept everything within the rules and easy on the hardware.
 
 ![IMAGE:/projects-images/robocats_2.jpg]
 
-A major milestone was developing autonomous routines. I worked with the team to break down the field into coordinates and paths, then translate those into sequences of commands combining sensor feedback and timed actions. We used telemetry and dashboards to visualize sensor data in real time, diagnose issues, and tune parameters such as PID gains, motion profiles, and timing offsets.
+Autonomous was the part everyone was most nervous about. We mapped the field out into coordinates and paths, then turned those into command sequences that mixed sensor feedback with timed moves. Dashboards and telemetry let us watch the sensor data live, track down problems, and tune things like PID gains, motion profiles, and timing.
 
-Electrically, we focused heavily on safe and reliable wiring practices: correct gauge selection, fuse and breaker usage, grounding, and signal integrity for CAN and sensor lines. Students learned how to design clean wiring layouts, label connections, and systematically debug issues like brownouts, intermittent CAN faults, or noisy sensor signals.
+Electrical work got just as much attention. We went through wire gauge, fuses and breakers, grounding, and keeping the CAN and sensor lines clean. The students learned to lay out tidy wiring, label everything, and actually work through problems like brownouts, dropped CAN packets, and noisy sensors instead of guessing at them.
 
 ![IMAGE:/projects-images/robocats_3.jpg]
 
-Throughout the season, I emphasized iterative development: write a small feature, test it on the robot, inspect the behaviour, and refine. We used this loop to improve drivability, reduce mechanical stress, and make the robot more forgiving for drivers under competition pressure. The students also presented their work, explaining control strategies and electrical design decisions to judges and mentors.
+The whole season ran on small loops: write a bit of code, test it on the robot, watch what it actually did, then fix it. That kept the robot drivable and forgiving for the drivers once competition pressure kicked in. The students also had to explain their control strategy and electrical choices to judges, which forced them to really understand their own work.
 
 ![IMAGE:/projects-images/robocats_4.jpg]
 
-Beyond the lab and competition floor, my time with the RoboCats extended into the wider engineering community. I had the opportunity to attend the Melbourne Formula 1 Grand Prix—an experience that connected the precision, teamwork, and systems thinking we practised on the robot to the world-class engineering behind motorsport.
+The season wasn't all in the workshop either. We made it to the Melbourne Formula 1 Grand Prix, which was a nice way to connect the precision and teamwork we were practising on the robot to engineering at the very top end of the sport.
 
 ![IMAGE:/projects-images/robocats_5.jpg]
 
-By the end of the season, the Melbourne RoboCats were independently extending the codebase, safely modifying electrical systems, and using telemetry to debug and optimize performance. The project not only produced a competitive FRC robot but also gave the students hands-on experience with real-world embedded systems, control theory, and collaborative engineering in a high-pressure, time-bounded environment.
+By the end, the RoboCats were adding to the codebase on their own, safely changing the electrical system, and using telemetry to debug and improve the robot without me hovering over them. They walked away with a competitive FRC robot and some real experience in embedded systems, control, and working as a team against a deadline.
 
 ![IMAGE:/projects-images/robocats_6.jpg]
 `.trim(),
@@ -55,33 +55,33 @@ By the end of the season, the Melbourne RoboCats were independently extending th
   {
     title: "Advanced RMIT Competitive Robotics",
     description: `
-As the founder of Advanced RMIT Competitive Robotics (ARCR), I established and led an 80+ member multidisciplinary engineering team through multiple requirements-led robot design-build-test cycles. What started as a vision to create a competitive robotics program quickly grew into a comprehensive engineering initiative that operated under strict budget constraints while delivering championship-winning results.
+I founded Advanced RMIT Competitive Robotics (ARCR) and grew it into a team of more than 80 students across mechanical, electrical, and software. We ran full design-build-test cycles on a tight budget, and the robots we built went on to win competitions.
 
 ![IMAGE:/projects-images/Robotics-social_event.png]
 
-The journey began with establishing the foundational structure of the organization. I led the team through complete design cycles, starting with CAD-based mechanical design where we produced manufacturable assemblies and technical drawings. Each robot design required careful consideration of weight limits, material selection, and manufacturability—balancing performance with the reality of our budget constraints.
+Getting the club off the ground meant first figuring out how it would actually run day to day. I took the team through complete design cycles, starting with CAD work that produced parts we could really manufacture and proper technical drawings. Every robot had to balance weight limits, material choices, and what we could realistically build with the money we had.
 
 ![IMAGE:/projects-images/Bot-CAD.png]
 
-One of the most critical aspects of my leadership was ensuring system integration across mechanical, electrical, and software disciplines. I created comprehensive requirements documents to ensure compliance with competition specifications, establishing clear interfaces between subsystems. This systematic approach prevented integration issues that could derail entire projects.
+A big part of leading the team was making sure the mechanical, electrical, and software work all fit together. I wrote up the requirements so everything stayed within the competition rules and the subsystems had clear interfaces, which saved us from the kind of integration headaches that can sink an entire build.
 
-The electronics design presented unique challenges. I designed robot electronics including power distribution systems and motor control circuits, supporting PCB development from initial schematics through layout and fabrication. These custom electronics boards were essential for reliable operation under the extreme conditions of competitive robotics competitions.
+The electronics were their own challenge. I designed the robot electronics, including power distribution and motor control circuits, and helped take PCBs from schematic through layout and fabrication. Custom boards were really the only way to get reliable behaviour under the beating these robots take in competition.
 
-Testing became a continuous cycle of iteration and refinement. I conducted iterative bench testing to validate individual components, followed by live testing in controlled environments. Each test revealed new insights that drove design improvements, gradually building system reliability through methodical failure analysis and rapid prototyping.
+Testing was a constant loop. We bench-tested individual parts, then ran live tests in a controlled setup. Every test taught us something and fed straight back into the next revision, so reliability built up gradually through failure analysis and a lot of prototyping.
 
 ![IMAGE:/projects-images/bot-testing.png]
 
-The results spoke for themselves. We won competitions, secured sponsorships from industry partners, and delivered workshops to both industry professionals and high school students through STEM outreach programs. The success of the program attracted collaboration opportunities with teams from prestigious institutions including MIT, Purdue, Duke, Carnegie Mellon, and Caltech.
+It paid off. We won competitions, brought in sponsors, and ran workshops for both industry people and high-school students through STEM outreach. The club's profile also opened doors to teams from MIT, Purdue, Duke, Carnegie Mellon, and Caltech.
 
 ![IMAGE:/projects-images/competition-bot.png]
 
 ![IMAGE:/projects-images/networking-bots.png]
 
-As ARCR's profile grew, I was invited to speak on SYN radio station to share the club's story: the engineering work we were doing, the competitions we were entering, and the culture we were building for students who wanted hands-on robotics experience beyond the classroom.
+As ARCR grew, I was invited onto SYN radio to talk about the club: the engineering we were doing, the competitions we were entering, and the hands-on culture we were trying to build for students who wanted more than classroom robotics.
 
-Towards the end of my degree, I also pushed for the club to be officially recognised by the university and to secure a dedicated academic advisor. That institutional backing was important for long-term sustainability—giving future cohorts a clearer pathway to resources, mentorship, and continuity as leadership changed year to year.
+Near the end of my degree I also pushed to get the club officially recognised by the university and to bring on a dedicated academic advisor. That backing mattered for the long run, since it gave future cohorts a clearer path to resources and mentorship as the leadership changed hands each year.
 
-This project wasn't just about building robots—it was about building engineers. Through multiple design cycles, I guided students through the complete engineering lifecycle, from concept ideation to live competition testing. The emphasis on iterative design, failure analysis, and rapid prototyping mirrored professional engineering workflows, preparing team members for careers in industry.
+In the end the club was about building engineers, not just robots. Running multiple design cycles took students from a rough idea all the way to live competition, and the focus on iteration, failure analysis, and prototyping lined up closely with how engineering actually works in industry.
 `.trim(),
     highlights: [
       "Founded and led an 80+ member multidisciplinary engineering team through multiple design-build-test cycles",
@@ -101,15 +101,15 @@ This project wasn't just about building robots—it was about building engineers
   {
     title: "Custom ISA and CPU Datapath Design",
     description: `
-Designed and implemented an 8-bit CPU datapath capable of executing a binary search algorithm written in assembly language. Based on a custom RISC-5 inspired instruction set architecture, this CPU incorporates fundamental computer architecture components including an instruction set, datapath, control unit, and memory hierarchy to ensure full support for the target algorithm's execution.
+I designed and built an 8-bit CPU datapath that can run a binary search algorithm written in assembly. It uses a custom, RISC-5 inspired instruction set, and includes all the usual pieces you need to actually execute a program: an instruction set, a datapath, a control unit, and a memory hierarchy.
 
-The CPU design adopts the Harvard architecture, which separates instruction memory from data memory. This design choice allows simultaneous access to program instructions and data, improving processing efficiency and supporting fast instruction throughput during execution. The entire system was implemented and verified using Intel Quartus Prime.
+The CPU uses a Harvard architecture, so instruction memory and data memory are kept separate. That lets it fetch an instruction and access data at the same time, which keeps the throughput up during execution. I built and verified the whole thing in Intel Quartus Prime.
 
-The instruction set architecture is based on RISC-5 principles and includes approximately 16 different opcodes specifically designed to support binary search operations. The binary search algorithm works by maintaining left and right boundaries, calculating a middle index, and comparing the middle value with the target to determine whether to search the upper or lower half of the sorted array.
+The instruction set has around 16 opcodes, picked specifically to support binary search. The algorithm keeps a left and right boundary, works out the middle index, and compares the middle value against the target to decide which half of the sorted array to look in next.
 
-The datapath includes several key components: a program counter that acts as the heart of the system, coordinating component operations; RAM configured as 8-bit width with 10 addressable locations; a register file with 16 addresses, each 8 bits wide, for temporary memory storage; an ALU providing arithmetic and logic operations including addition, subtraction, and bit shifting (left and right), with overflow flags for comparison operations; and a control unit that interprets opcodes and generates control signals to direct the CPU's operation.
+The datapath is made up of a few main parts: a program counter that coordinates everything, RAM that's 8 bits wide with 10 addressable locations, a register file with 16 addresses of 8 bits each for temporary storage, an ALU that handles addition, subtraction, and left/right bit shifts (with overflow flags for comparisons), and a control unit that reads each opcode and produces the control signals that drive the rest of the CPU.
 
-The project demonstrates the complete design cycle from ISA definition through datapath implementation to algorithm execution. The binary search algorithm was successfully simulated and verified, showing the CPU correctly locating target values within sorted arrays by iteratively narrowing the search space based on comparisons.
+The project covers the full cycle, from defining the ISA to building the datapath to running the algorithm on it. The binary search ran correctly in simulation, narrowing the search space comparison by comparison until it landed on the target value in the sorted array.
 
 https://www.youtube.com/watch?v=VAfr-Zdzpp8
 `.trim(),
@@ -128,23 +128,23 @@ https://www.youtube.com/watch?v=VAfr-Zdzpp8
   {
     title: "Tube Furnace for Silicon Oxidation Testing",
     description: `
-This was a DIY project I built in my garage to see if I could construct a functional tube furnace from scratch. I designed and built a custom tube furnace to study silicon oxidation processes by observing color changes in the oxide layer. The furnace consists of a quartz glass tube wrapped with 22AWG nichrome wire heating elements, secured with high-temperature ceramic cement, and insulated with ceramic fiber blanket. Power is controlled via a variac (variable autotransformer) to enable precise temperature ramping, while a high-temperature thermocouple monitors the process. The system is designed to heat at approximately 25 degrees per minute to prevent thermal shock and ensure uniform oxidation. Steam is introduced at one end of the tube to enhance the oxidation process, allowing me to observe how different temperatures and exposure times affect the rate and quality of silicon dioxide formation. The resulting oxide layers display distinct colors that correspond to their thickness, providing a visual method to assess oxidation progress and uniformity across the silicon wafer surface. This project demonstrates practical understanding of high-temperature materials, thermal control systems, and semiconductor processing fundamentals.
+This was a garage project I took on just to see if I could build a working tube furnace from scratch and use it to study silicon oxidation by watching the colour of the oxide layer change. The furnace is a quartz glass tube wrapped in 22AWG nichrome heating wire, held in place with high-temperature ceramic cement and wrapped in ceramic fibre blanket for insulation. A variac (variable autotransformer) controls the power so I can ramp the temperature smoothly, and a high-temperature thermocouple keeps an eye on the process. I run it at roughly 25 degrees per minute so nothing gets thermally shocked and the oxidation stays even. Feeding steam in at one end speeds the oxidation up, which lets me see how temperature and time change the rate and quality of the silicon dioxide that forms. The oxide layers come out in different colours depending on their thickness, so I get a quick visual read on how the oxidation is going across the wafer.
 
 ![IMAGE:/projects-images/tube-furnace-setup.png]
 
-The construction process began with selecting appropriate materials that could withstand the high temperatures required for silicon oxidation (typically 800-1200°C). The quartz glass tube serves as both the reaction chamber and a transparent window to observe the process. Quartz was chosen for its excellent thermal stability, low thermal expansion coefficient, and ability to maintain structural integrity at elevated temperatures.
+I started by picking materials that could actually survive the temperatures silicon oxidation needs (usually 800-1200°C). The quartz tube does double duty as the reaction chamber and a window to watch what's happening inside. I went with quartz because it handles heat well, barely expands, and holds its shape at high temperatures.
 
 ![IMAGE:/projects-images/nichrome-wire.png]
 
-The nichrome wire (22AWG) was carefully wrapped around the tube in a helical pattern, ensuring even spacing to promote uniform heat distribution. High-temperature ceramic cement was applied to secure the wire in place and provide electrical insulation between adjacent turns. This cement remains stable at temperatures exceeding 1000°C and prevents the wire from shifting during thermal cycling. After securing the heating elements, approximately one meter of ceramic fiber insulation was wrapped around the entire assembly. This insulation serves multiple purposes: it improves thermal efficiency by reducing heat loss to the environment, protects the operator from burns, and helps maintain a stable temperature profile along the length of the tube. The insulation also prevents rapid cooling that could cause thermal stress fractures in the quartz tube. Temperature control is critical for successful silicon oxidation. The variac allows for smooth voltage adjustment, enabling controlled heating rates. I programmed the system to ramp at approximately 25 degrees per minute, which prevents thermal shock that could crack the silicon wafers or the quartz tube. A high-temperature K-type thermocouple positioned inside the tube provides real-time temperature feedback, allowing for precise control throughout the process.
+I wound the 22AWG nichrome wire around the tube in an even helix so the heat would spread evenly, then locked it down with high-temperature ceramic cement, which also keeps the turns electrically separated. The cement holds up past 1000°C and stops the wire shifting as things heat up and cool down. After that I wrapped about a metre of ceramic fibre insulation around the whole assembly. That keeps the heat in, protects me from burns, and holds a steady temperature along the tube. It also stops the tube cooling so fast that it cracks. Temperature control is the part that really makes or breaks the process. The variac lets me adjust the voltage smoothly for a controlled ramp, and I keep it at around 25 degrees per minute so neither the wafers nor the quartz tube crack from thermal shock. A K-type thermocouple sitting inside the tube gives me live temperature feedback the whole way through.
 
 ![IMAGE:/projects-images/hot_tube_furnace.png]
 
-To enhance the oxidation process, steam is introduced at one end of the tube. The presence of water vapor significantly accelerates silicon oxidation compared to dry oxygen alone. By controlling both temperature and exposure time, I can observe how these parameters affect the oxidation rate. The resulting silicon dioxide layers exhibit characteristic colors based on their thickness due to thin-film interference effects. Thinner layers appear yellow or gold, while progressively thicker layers transition through colors including blue, purple, and eventually appearing transparent or white.
+To push the oxidation along, I introduce steam at one end of the tube. The water vapour speeds silicon oxidation up a lot compared to dry oxygen on its own. By changing the temperature and how long I leave it, I can watch how each one affects the oxidation rate. The silicon dioxide layers end up with their own colours depending on thickness, thanks to thin-film interference. Thin layers look yellow or gold, and as they get thicker they move through blue and purple before going more or less transparent or white.
 
 ![IMAGE:/projects-images/silicone-oxide-comparison.png]
 
-This visual method provides immediate feedback on oxidation progress without requiring destructive testing. By correlating the observed colors with known oxide thickness values, I can estimate the growth rate under different conditions. This project combines materials science, thermal engineering, and semiconductor processing knowledge to create a functional research tool that demonstrates practical understanding of high-temperature systems and oxidation kinetics.
+That gives me instant feedback on how the oxidation is going without having to destroy the sample to measure it. By matching the colours I see against known oxide thicknesses, I can estimate the growth rate under different conditions. It ended up being a genuinely useful little research tool, and it pulled together materials science, thermal engineering, and a bit of semiconductor processing into one build.
 `.trim(),
     highlights: [
       "Designed and constructed a custom tube furnace capable of reaching 1200°C using quartz glass tube, nichrome wire heating elements, and ceramic insulation",
@@ -160,19 +160,19 @@ This visual method provides immediate feedback on oxidation progress without req
   {
     title: "AWS Web Application",
     description: `
-Developed a comprehensive web application utilizing AWS services, including EC2, S3, API Gateway, Lambda, and DynamoDB. The application allows users to register, log in, and manage their music subscriptions with functionalities such as querying music information, subscribing to songs, and viewing artist images.
+I built a music subscription web app on top of a handful of AWS services: EC2, S3, API Gateway, Lambda, and DynamoDB. Users can register, log in, and manage their subscriptions, look up music info, subscribe to songs, and see artist images.
 
-**AWS EC2**: Deployed the application on an Ubuntu Server, ensuring full functionality in a web server environment.
+**AWS EC2**: Hosted the app on an Ubuntu server and got it running as a proper web server.
 
-**AWS DynamoDB**: Created and managed tables for user login and music data, implementing both through code and console.
+**AWS DynamoDB**: Set up and managed the tables for user logins and music data, both through code and the console.
 
-**AWS S3**: Programmatically downloaded and uploaded artist images, integrating them into the application.
+**AWS S3**: Pulled artist images down and pushed them back up programmatically, then wired them into the app.
 
-**Login and Registration System**: Developed a secure login and registration system validating user credentials and storing user data in DynamoDB.
+**Login and registration**: Built a login and registration flow that checks user credentials and stores the user data in DynamoDB.
 
-**API Gateway and Lambda Functions**: Implemented RESTful APIs for data operations, handling user interactions and data modifications through Lambda functions.
+**API Gateway and Lambda**: Wrote REST APIs for the data operations, with Lambda functions handling the user actions and updates behind them.
 
-**User Interface**: Designed intuitive web pages for user login, registration, and music subscription management, ensuring a seamless user experience.
+**User interface**: Put together the pages for login, registration, and managing subscriptions, and kept the flow simple to move through.
 
 https://www.youtube.com/watch?v=oIH_J6MM7_o
 `.trim(),
@@ -190,13 +190,13 @@ https://www.youtube.com/watch?v=oIH_J6MM7_o
   {
     title: "CAN Bus Communication and Control",
     description: `
-This project implements an embedded CAN communication system on an STM32F10x microcontroller. The system integrates button inputs, LED control, ADC sensing, and CAN bus messaging to demonstrate bidirectional communication between nodes on a CAN network.
+This is an embedded CAN communication system running on an STM32F10x microcontroller. It ties together button inputs, LED control, ADC sensing, and CAN messaging to show two nodes talking back and forth over a CAN network.
 
-The program initializes the system clock, GPIO interfaces, ADC module, timer, and CAN controller with configured message filters. Two push buttons are used to control system states: a wake-up button and a user button, each updating corresponding LEDs and broadcasting their status over the CAN bus using predefined message identifiers.
+On startup the program sets up the system clock, GPIO, ADC, a timer, and the CAN controller with its message filters. Two push buttons drive the state: a wake-up button and a user button, each one updating its LED and broadcasting its status over CAN using fixed message IDs.
 
-Once the system is initialized, a timer periodically triggers the transmission of ADC sensor readings over CAN. The ADC value is read from an analog input channel, packaged into a CAN message, and transmitted to other nodes on the network.
+Once it's up and running, a timer periodically fires off the ADC readings over CAN. It reads the value from an analog input, packs it into a CAN message, and sends it out to the other nodes on the network.
 
-The system also supports receiving CAN messages, which are parsed and used to control external LEDs (LED8 and LED9). Incoming messages are filtered by identifier and processed to determine whether the LEDs should be turned on or off based on the received data payload.
+It also receives CAN messages and uses them to control two external LEDs (LED8 and LED9). Incoming messages are filtered by ID, and the payload decides whether each LED turns on or off.
 
 https://www.youtube.com/watch?v=NtcbJck8bWE
 `.trim(),
@@ -212,7 +212,7 @@ https://www.youtube.com/watch?v=NtcbJck8bWE
   {
     title: "Yoga and Meditation App",
     description: `
-Built a cross-platform mobile application for delivering guided meditation content, collaborating closely with clients using modern development practices.
+I built a cross-platform mobile app that delivers guided meditation content, working closely with the client from start to finish.
 `.trim(),
     highlights: [
       "For a client built a cross-platform React Native app to deliver guided meditation content and user profile management",

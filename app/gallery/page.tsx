@@ -111,6 +111,7 @@ export default function GalleryPage() {
     useState<string>("100% center");
   const [isClosing, setIsClosing] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
+  const [pendingExpand, setPendingExpand] = useState(false);
   const [hoveredTitle, setHoveredTitle] = useState(false);
   const [isSuperscriptExiting, setIsSuperscriptExiting] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -254,6 +255,36 @@ export default function GalleryPage() {
   useEffect(() => {
     expandedIndexRef.current = expandedImageIndex;
   }, [expandedImageIndex]);
+
+  /* -------------------------------
+     Expand-to-fullscreen after the start frame is committed.
+     Running this from an effect (rather than inline in onClick) guarantees
+     the browser has painted the thumbnail-sized starting frame before we
+     change to fullscreen, so the zoom transition always plays.
+  ------------------------------- */
+  useEffect(() => {
+    if (!pendingExpand) return;
+    const rafId = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setExpandedImageStyle({
+          top: window.innerHeight / 2,
+          left: window.innerWidth / 2,
+          width: window.innerWidth,
+          height: window.innerHeight,
+        });
+        // Fade in the background
+        setTimeout(() => {
+          setIsOpening(false);
+        }, 10);
+        // Fade in preview after a short delay
+        setTimeout(() => {
+          setShowPreview(true);
+        }, 300);
+        setPendingExpand(false);
+      });
+    });
+    return () => cancelAnimationFrame(rafId);
+  }, [pendingExpand]);
 
   /* -------------------------------
      Mobile detection
@@ -872,6 +903,16 @@ export default function GalleryPage() {
                 className="image cursor-pointer transition-all duration-500 ease-out hover:scale-105"
                 draggable={false}
                 onClick={() => {
+                  // Ignore clicks while a previous open/close/transition is
+                  // still settling, otherwise the expand can be committed in
+                  // the same paint as the start frame and skip the zoom.
+                  if (
+                    isClosing ||
+                    isTransitioning ||
+                    expandedImageIndex !== null ||
+                    pendingExpand
+                  )
+                    return;
                   const img = imageRefs.current[i];
                   if (!img) return;
                   const rect = img.getBoundingClientRect();
@@ -894,6 +935,9 @@ export default function GalleryPage() {
                   const currentObjectPosition =
                     getComputedStyle(img).objectPosition;
 
+                  // Start at the thumbnail's exact position/size. The expand to
+                  // fullscreen is triggered from an effect once this starting
+                  // frame is committed, guaranteeing the transition plays.
                   setExpandedImageStyle({
                     top: rect.top + rect.height / 2,
                     left: rect.left + rect.width / 2,
@@ -901,25 +945,7 @@ export default function GalleryPage() {
                     height: rect.height,
                   });
                   setExpandedObjectPosition(currentObjectPosition);
-                  // Start fade in after a brief delay to ensure opacity starts at 0
-                  requestAnimationFrame(() => {
-                    requestAnimationFrame(() => {
-                      setExpandedImageStyle({
-                        top: window.innerHeight / 2,
-                        left: window.innerWidth / 2,
-                        width: window.innerWidth,
-                        height: window.innerHeight,
-                      });
-                      // Fade in the background
-                      setTimeout(() => {
-                        setIsOpening(false);
-                      }, 10);
-                      // Fade in preview after a short delay
-                      setTimeout(() => {
-                        setShowPreview(true);
-                      }, 300);
-                    });
-                  });
+                  setPendingExpand(true);
                 }}
                 style={{
                   objectFit: "cover",
@@ -1232,6 +1258,15 @@ export default function GalleryPage() {
                   style={{
                     objectFit: "cover",
                     objectPosition: expandedObjectPosition,
+                    // Bleed 1px past every edge so sub-pixel rounding during
+                    // the scale animation never exposes the background as
+                    // thin vertical/horizontal seam lines.
+                    top: "-1px",
+                    left: "-1px",
+                    right: "auto",
+                    bottom: "auto",
+                    width: "calc(100% + 2px)",
+                    height: "calc(100% + 2px)",
                   }}
                 />
               </div>
@@ -1270,6 +1305,14 @@ export default function GalleryPage() {
                     style={{
                       objectFit: "cover",
                       objectPosition: nextImageData.objectPosition,
+                      // Bleed 1px past every edge to avoid sub-pixel seam
+                      // lines while the image slides between collections.
+                      top: "-1px",
+                      left: "-1px",
+                      right: "auto",
+                      bottom: "auto",
+                      width: "calc(100% + 2px)",
+                      height: "calc(100% + 2px)",
                     }}
                   />
                 </div>
