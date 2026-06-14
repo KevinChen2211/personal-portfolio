@@ -900,7 +900,7 @@ export default function GalleryPage() {
                 quality={82}
                 priority={i === 0}
                 loading={i === 0 ? "eager" : "lazy"}
-                className="image cursor-pointer transition-all duration-500 ease-out hover:scale-105"
+                className="image cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] hover:opacity-95"
                 draggable={false}
                 onClick={() => {
                   // Ignore clicks while a previous open/close/transition is

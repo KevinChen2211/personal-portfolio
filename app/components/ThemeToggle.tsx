@@ -10,7 +10,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 p-2.5 sm:p-3 rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 touch-manipulation"
+      className="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 p-2.5 sm:p-3 rounded-full transition-all duration-700 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 touch-manipulation"
       style={{
         backgroundColor: palette.surface,
         border: `2px solid ${palette.border}`,

@@ -23,11 +23,12 @@ const ProjectCard = ({
   return (
     <div
       ref={cardRef}
-      className="flex flex-col transition-all duration-500 touch-manipulation"
+      className="flex flex-col transition-all duration-[1400ms] touch-manipulation"
       style={{
         opacity: isVisible ? 1 : 0,
         transform: `translateY(${isVisible ? 0 : 30}px)`,
-        transitionDelay: `${index * 100}ms`,
+        transitionDelay: `${index * 180}ms`,
+        transitionTimingFunction: "var(--ease-out)",
       }}
     >
       <Link href={`/projects/${project.slug}`} className="group">

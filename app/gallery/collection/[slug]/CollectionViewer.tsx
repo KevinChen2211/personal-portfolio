@@ -272,7 +272,8 @@ export default function CollectionViewer({
               className="absolute inset-0 flex items-center justify-center"
               style={{
                 opacity: idx === currentIndex && imageVisible ? 1 : 0,
-                transition: "opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1)",
+                transition: "opacity 1s var(--ease-out)",
+                zIndex: idx === currentIndex ? 2 : 1,
                 pointerEvents: idx === currentIndex ? "auto" : "none",
               }}
             >

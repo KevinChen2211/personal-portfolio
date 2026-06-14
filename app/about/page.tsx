@@ -37,13 +37,13 @@ export default function AboutPage() {
       <div className="max-w-6xl mx-auto">
         <Link
           href="/"
-          className="inline-block mb-8 text-lg transition-all duration-300 hover:underline hover:translate-x-[-4px]"
+          className="inline-block mb-8 text-lg transition-opacity duration-700 hover:underline hover:opacity-70"
           style={{ color: palette.primary }}
         >
           ← Back to Home
         </Link>
         <h1
-          className="text-5xl sm:text-6xl font-bold mb-4 transition-all duration-300 hover:scale-105"
+          className="text-5xl sm:text-6xl font-bold mb-4 transition-all duration-700 hover:opacity-90"
           style={{ color: palette.text }}
         >
           About Me
@@ -54,17 +54,17 @@ export default function AboutPage() {
         />
         <div
           ref={bioRef}
-          className="p-8 rounded-lg mb-8 transition-all duration-500 hover:shadow-lg hover:scale-[1.02]"
+          className="p-8 rounded-lg mb-8 transition-shadow duration-1000 hover:shadow-lg"
           style={{
             backgroundColor: palette.surface,
             border: `1px solid ${palette.border}`,
             opacity: bioVisible ? 1 : 0,
             transform: `translateY(${bioVisible ? 0 : 30}px)`,
-            transition: "all 0.5s ease-out",
+            transition: "all 1s var(--ease-out)",
           }}
         >
           <p
-            className="text-lg mb-6 leading-relaxed transition-all duration-300 hover:text-opacity-80 long-content"
+            className="text-lg mb-6 leading-relaxed transition-all duration-700 hover:text-opacity-80 long-content"
             style={{ color: palette.textSecondary }}
           >
             I currently hold a Bachelor of Engineering (Computer and Network
@@ -74,7 +74,7 @@ export default function AboutPage() {
             new ideas and challenging myself to see what I can create.
           </p>
           <p
-            className="text-lg mb-6 leading-relaxed transition-all duration-300 hover:text-opacity-80 long-content"
+            className="text-lg mb-6 leading-relaxed transition-all duration-700 hover:text-opacity-80 long-content"
             style={{ color: palette.textSecondary }}
           >
             My expertise spans full-stack development, computer engineering,
@@ -83,7 +83,7 @@ export default function AboutPage() {
             capabilities.
           </p>
           <p
-            className="text-lg mb-6 leading-relaxed transition-all duration-300 hover:text-opacity-80 long-content"
+            className="text-lg mb-6 leading-relaxed transition-all duration-700 hover:text-opacity-80 long-content"
             style={{ color: palette.textSecondary }}
           >
             Outside of engineering, I love to cook, travel, and explore new
@@ -94,17 +94,17 @@ export default function AboutPage() {
         {/* Job History Section */}
         <div
           ref={experienceRef}
-          className="p-8 rounded-lg mb-8 transition-all duration-500 hover:shadow-lg hover:scale-[1.01]"
+          className="p-8 rounded-lg mb-8 transition-shadow duration-1000 hover:shadow-lg"
           style={{
             backgroundColor: palette.surface,
             border: `1px solid ${palette.border}`,
             opacity: experienceVisible ? 1 : 0,
             transform: `translateY(${experienceVisible ? 0 : 30}px)`,
-            transition: "all 0.5s ease-out",
+            transition: "all 1s var(--ease-out)",
           }}
         >
           <h2
-            className="text-3xl font-bold mb-8 transition-all duration-300 hover:scale-105"
+            className="text-3xl font-bold mb-8 transition-all duration-700 hover:opacity-90"
             style={{ color: palette.text }}
           >
             Experience
@@ -112,16 +112,16 @@ export default function AboutPage() {
 
           <div className="space-y-8">
             {/* RMIT BattleBots */}
-            <div className="group transition-all duration-300 hover:translate-x-2">
+            <div className="group">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
                 <h3
-                  className="text-xl font-semibold transition-all duration-300 group-hover:text-opacity-80"
+                  className="text-xl font-semibold transition-all duration-700 group-hover:text-opacity-80"
                   style={{ color: palette.text }}
                 >
                   RMIT BattleBots (President & Founder)
                 </h3>
                 <span
-                  className="text-sm mt-1 sm:mt-0 px-3 py-1 rounded-full transition-all duration-300 group-hover:bg-opacity-20"
+                  className="text-sm mt-1 sm:mt-0 px-3 py-1 rounded-full transition-all duration-700 group-hover:bg-opacity-20"
                   style={{
                     color: palette.textSecondary,
                     backgroundColor: `${palette.primary}15`,
@@ -132,17 +132,17 @@ export default function AboutPage() {
               </div>
               <ul className="space-y-2 ml-4">
                 <li
-                  className="flex items-start transition-all duration-200 hover:translate-x-1 cursor-default"
+                  className="flex items-start cursor-default"
                   style={{ color: palette.textSecondary }}
                 >
                   <span
-                    className="mr-2 transition-all duration-200 group-hover:scale-125"
+                    className="mr-2"
                     style={{ color: palette.primary }}
                   >
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100 long-content"
+                    className="transition-opacity duration-500 hover:opacity-80 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Led 80+ students through 4 robot design cycles, engineering,
@@ -150,17 +150,17 @@ export default function AboutPage() {
                   </span>
                 </li>
                 <li
-                  className="flex items-start transition-all duration-200 hover:translate-x-1 cursor-default"
+                  className="flex items-start cursor-default"
                   style={{ color: palette.textSecondary }}
                 >
                   <span
-                    className="mr-2 transition-all duration-200 group-hover:scale-125"
+                    className="mr-2"
                     style={{ color: palette.primary }}
                   >
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100 long-content"
+                    className="transition-opacity duration-500 hover:opacity-80 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Participated and won state competitions and received
@@ -168,17 +168,17 @@ export default function AboutPage() {
                   </span>
                 </li>
                 <li
-                  className="flex items-start transition-all duration-200 hover:translate-x-1 cursor-default"
+                  className="flex items-start cursor-default"
                   style={{ color: palette.textSecondary }}
                 >
                   <span
-                    className="mr-2 transition-all duration-200 group-hover:scale-125"
+                    className="mr-2"
                     style={{ color: palette.primary }}
                   >
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100 long-content"
+                    className="transition-opacity duration-500 hover:opacity-80 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Organized weekly workshops across mechanical, electrical,
@@ -186,17 +186,17 @@ export default function AboutPage() {
                   </span>
                 </li>
                 <li
-                  className="flex items-start transition-all duration-200 hover:translate-x-1 cursor-default"
+                  className="flex items-start cursor-default"
                   style={{ color: palette.textSecondary }}
                 >
                   <span
-                    className="mr-2 transition-all duration-200 group-hover:scale-125"
+                    className="mr-2"
                     style={{ color: palette.primary }}
                   >
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100 long-content"
+                    className="transition-opacity duration-500 hover:opacity-80 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Collaborated with RMIT and I Belong to deliver STEM
@@ -204,17 +204,17 @@ export default function AboutPage() {
                   </span>
                 </li>
                 <li
-                  className="flex items-start transition-all duration-200 hover:translate-x-1 cursor-default"
+                  className="flex items-start cursor-default"
                   style={{ color: palette.textSecondary }}
                 >
                   <span
-                    className="mr-2 transition-all duration-200 group-hover:scale-125"
+                    className="mr-2"
                     style={{ color: palette.primary }}
                   >
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100 long-content"
+                    className="transition-opacity duration-500 hover:opacity-80 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Initiated sponsorships and organized club events, growing
@@ -222,17 +222,17 @@ export default function AboutPage() {
                   </span>
                 </li>
                 <li
-                  className="flex items-start transition-all duration-200 hover:translate-x-1 cursor-default"
+                  className="flex items-start cursor-default"
                   style={{ color: palette.textSecondary }}
                 >
                   <span
-                    className="mr-2 transition-all duration-200 group-hover:scale-125"
+                    className="mr-2"
                     style={{ color: palette.primary }}
                   >
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100 long-content"
+                    className="transition-opacity duration-500 hover:opacity-80 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Organized networking events with industry professionals.
@@ -243,18 +243,18 @@ export default function AboutPage() {
 
             {/* Bosch */}
             <div
-              className="group pt-6 border-t transition-all duration-300 hover:translate-x-2"
+              className="group pt-6 border-t"
               style={{ borderColor: palette.border }}
             >
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
                 <h3
-                  className="text-xl font-semibold transition-all duration-300 group-hover:text-opacity-80"
+                  className="text-xl font-semibold transition-all duration-700 group-hover:text-opacity-80"
                   style={{ color: palette.text }}
                 >
                   Bosch (DevOps Software Engineer)
                 </h3>
                 <span
-                  className="text-sm mt-1 sm:mt-0 px-3 py-1 rounded-full transition-all duration-300 group-hover:bg-opacity-20"
+                  className="text-sm mt-1 sm:mt-0 px-3 py-1 rounded-full transition-all duration-700 group-hover:bg-opacity-20"
                   style={{
                     color: palette.textSecondary,
                     backgroundColor: `${palette.primary}15`,
@@ -265,17 +265,17 @@ export default function AboutPage() {
               </div>
               <ul className="space-y-2 ml-4">
                 <li
-                  className="flex items-start transition-all duration-200 hover:translate-x-1 cursor-default"
+                  className="flex items-start cursor-default"
                   style={{ color: palette.textSecondary }}
                 >
                   <span
-                    className="mr-2 transition-all duration-200 group-hover:scale-125"
+                    className="mr-2"
                     style={{ color: palette.primary }}
                   >
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100 long-content"
+                    className="transition-opacity duration-500 hover:opacity-80 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Boosted software release efficiency by 40% by optimizing
@@ -283,17 +283,17 @@ export default function AboutPage() {
                   </span>
                 </li>
                 <li
-                  className="flex items-start transition-all duration-200 hover:translate-x-1 cursor-default"
+                  className="flex items-start cursor-default"
                   style={{ color: palette.textSecondary }}
                 >
                   <span
-                    className="mr-2 transition-all duration-200 group-hover:scale-125"
+                    className="mr-2"
                     style={{ color: palette.primary }}
                   >
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100 long-content"
+                    className="transition-opacity duration-500 hover:opacity-80 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Applied MISRA-C coding guidelines and ISO26262 standards for
@@ -301,17 +301,17 @@ export default function AboutPage() {
                   </span>
                 </li>
                 <li
-                  className="flex items-start transition-all duration-200 hover:translate-x-1 cursor-default"
+                  className="flex items-start cursor-default"
                   style={{ color: palette.textSecondary }}
                 >
                   <span
-                    className="mr-2 transition-all duration-200 group-hover:scale-125"
+                    className="mr-2"
                     style={{ color: palette.primary }}
                   >
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100 long-content"
+                    className="transition-opacity duration-500 hover:opacity-80 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Designed unit testing frameworks and scalable architecture
@@ -319,17 +319,17 @@ export default function AboutPage() {
                   </span>
                 </li>
                 <li
-                  className="flex items-start transition-all duration-200 hover:translate-x-1 cursor-default"
+                  className="flex items-start cursor-default"
                   style={{ color: palette.textSecondary }}
                 >
                   <span
-                    className="mr-2 transition-all duration-200 group-hover:scale-125"
+                    className="mr-2"
                     style={{ color: palette.primary }}
                   >
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100 long-content"
+                    className="transition-opacity duration-500 hover:opacity-80 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Worked in automotive systems using tools such as DOORs and
@@ -341,18 +341,18 @@ export default function AboutPage() {
 
             {/* HIVE Avionics */}
             <div
-              className="group pt-6 border-t transition-all duration-300 hover:translate-x-2"
+              className="group pt-6 border-t"
               style={{ borderColor: palette.border }}
             >
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
                 <h3
-                  className="text-xl font-semibold transition-all duration-300 group-hover:text-opacity-80"
+                  className="text-xl font-semibold transition-all duration-700 group-hover:text-opacity-80"
                   style={{ color: palette.text }}
                 >
                   HIVE (Avionics Bay Software Engineer)
                 </h3>
                 <span
-                  className="text-sm mt-1 sm:mt-0 px-3 py-1 rounded-full transition-all duration-300 group-hover:bg-opacity-20"
+                  className="text-sm mt-1 sm:mt-0 px-3 py-1 rounded-full transition-all duration-700 group-hover:bg-opacity-20"
                   style={{
                     color: palette.textSecondary,
                     backgroundColor: `${palette.primary}15`,
@@ -363,17 +363,17 @@ export default function AboutPage() {
               </div>
               <ul className="space-y-2 ml-4">
                 <li
-                  className="flex items-start transition-all duration-200 hover:translate-x-1 cursor-default"
+                  className="flex items-start cursor-default"
                   style={{ color: palette.textSecondary }}
                 >
                   <span
-                    className="mr-2 transition-all duration-200 group-hover:scale-125"
+                    className="mr-2"
                     style={{ color: palette.primary }}
                   >
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100 long-content"
+                    className="transition-opacity duration-500 hover:opacity-80 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Developed C++ firmware for real-time avionics-to-ground
@@ -381,17 +381,17 @@ export default function AboutPage() {
                   </span>
                 </li>
                 <li
-                  className="flex items-start transition-all duration-200 hover:translate-x-1 cursor-default"
+                  className="flex items-start cursor-default"
                   style={{ color: palette.textSecondary }}
                 >
                   <span
-                    className="mr-2 transition-all duration-200 group-hover:scale-125"
+                    className="mr-2"
                     style={{ color: palette.primary }}
                   >
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100 long-content"
+                    className="transition-opacity duration-500 hover:opacity-80 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Integrated sensors and telemetry to ensure accurate
@@ -403,18 +403,18 @@ export default function AboutPage() {
 
             {/* HIVE Head of Recovery */}
             <div
-              className="group pt-6 border-t transition-all duration-300 hover:translate-x-2"
+              className="group pt-6 border-t"
               style={{ borderColor: palette.border }}
             >
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
                 <h3
-                  className="text-xl font-semibold transition-all duration-300 group-hover:text-opacity-80"
+                  className="text-xl font-semibold transition-all duration-700 group-hover:text-opacity-80"
                   style={{ color: palette.text }}
                 >
                   HIVE (Head of Recovery)
                 </h3>
                 <span
-                  className="text-sm mt-1 sm:mt-0 px-3 py-1 rounded-full transition-all duration-300 group-hover:bg-opacity-20"
+                  className="text-sm mt-1 sm:mt-0 px-3 py-1 rounded-full transition-all duration-700 group-hover:bg-opacity-20"
                   style={{
                     color: palette.textSecondary,
                     backgroundColor: `${palette.primary}15`,
@@ -425,17 +425,17 @@ export default function AboutPage() {
               </div>
               <ul className="space-y-2 ml-4">
                 <li
-                  className="flex items-start transition-all duration-200 hover:translate-x-1 cursor-default"
+                  className="flex items-start cursor-default"
                   style={{ color: palette.textSecondary }}
                 >
                   <span
-                    className="mr-2 transition-all duration-200 group-hover:scale-125"
+                    className="mr-2"
                     style={{ color: palette.primary }}
                   >
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100 long-content"
+                    className="transition-opacity duration-500 hover:opacity-80 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Designed and tested black powder charge systems and
@@ -443,17 +443,17 @@ export default function AboutPage() {
                   </span>
                 </li>
                 <li
-                  className="flex items-start transition-all duration-200 hover:translate-x-1 cursor-default"
+                  className="flex items-start cursor-default"
                   style={{ color: palette.textSecondary }}
                 >
                   <span
-                    className="mr-2 transition-all duration-200 group-hover:scale-125"
+                    className="mr-2"
                     style={{ color: palette.primary }}
                   >
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100 long-content"
+                    className="transition-opacity duration-500 hover:opacity-80 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Achieved 100% retrieval success across 5 launches
@@ -464,18 +464,18 @@ export default function AboutPage() {
 
             {/* UNIQLO */}
             <div
-              className="group pt-6 border-t transition-all duration-300 hover:translate-x-2"
+              className="group pt-6 border-t"
               style={{ borderColor: palette.border }}
             >
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
                 <h3
-                  className="text-xl font-semibold transition-all duration-300 group-hover:text-opacity-80"
+                  className="text-xl font-semibold transition-all duration-700 group-hover:text-opacity-80"
                   style={{ color: palette.text }}
                 >
                   UNIQLO (Retail)
                 </h3>
                 <span
-                  className="text-sm mt-1 sm:mt-0 px-3 py-1 rounded-full transition-all duration-300 group-hover:bg-opacity-20"
+                  className="text-sm mt-1 sm:mt-0 px-3 py-1 rounded-full transition-all duration-700 group-hover:bg-opacity-20"
                   style={{
                     color: palette.textSecondary,
                     backgroundColor: `${palette.primary}15`,
@@ -486,17 +486,17 @@ export default function AboutPage() {
               </div>
               <ul className="space-y-2 ml-4">
                 <li
-                  className="flex items-start transition-all duration-200 hover:translate-x-1 cursor-default"
+                  className="flex items-start cursor-default"
                   style={{ color: palette.textSecondary }}
                 >
                   <span
-                    className="mr-2 transition-all duration-200 group-hover:scale-125"
+                    className="mr-2"
                     style={{ color: palette.primary }}
                   >
                     •
                   </span>
                   <span
-                    className="transition-all duration-200 hover:text-opacity-100 long-content"
+                    className="transition-opacity duration-500 hover:opacity-80 long-content"
                     style={{ opacity: 0.9 }}
                   >
                     Provided high-quality customer service and maintained
@@ -510,17 +510,17 @@ export default function AboutPage() {
 
         <div
           ref={skillsRef}
-          className="p-8 rounded-lg transition-all duration-500 hover:shadow-lg hover:scale-[1.01]"
+          className="p-8 rounded-lg transition-shadow duration-1000 hover:shadow-lg"
           style={{
             backgroundColor: palette.surface,
             border: `1px solid ${palette.border}`,
             opacity: skillsVisible ? 1 : 0,
             transform: `translateY(${skillsVisible ? 0 : 30}px)`,
-            transition: "all 0.5s ease-out",
+            transition: "all 1s var(--ease-out)",
           }}
         >
           <h3
-            className="text-2xl font-semibold mb-6 transition-all duration-300 hover:scale-105"
+            className="text-2xl font-semibold mb-6 transition-all duration-700 hover:opacity-90"
             style={{ color: palette.text }}
           >
             Skills & Technologies
@@ -542,7 +542,7 @@ export default function AboutPage() {
             ].map((skill, index) => (
               <span
                 key={skill}
-                className="px-4 py-2 rounded-full text-sm transition-all duration-300 hover:scale-110 hover:shadow-md cursor-default"
+                className="px-4 py-2 rounded-full text-sm transition-opacity duration-500 hover:opacity-80 cursor-default"
                 style={{
                   backgroundColor: palette.border,
                   color: palette.text,

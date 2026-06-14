@@ -3,6 +3,15 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Motion — slower, editorial pacing */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.45, 0.05, 0.55, 0.95);
+  --duration-fast: 600ms;
+  --duration-normal: 900ms;
+  --duration-slow: 1400ms;
+  --duration-slower: 1800ms;
+  --duration-slowest: 2400ms;
 }
 
 @theme inline {
@@ -88,7 +97,7 @@ body {
   background: var(--initial-bg, #3c2414);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
-  transition: background-color 0.3s ease;
+  transition: background-color var(--duration-fast) var(--ease-out);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -116,6 +125,48 @@ a,
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Subtle film grain over cream pages — ties photography to the UI */
+@keyframes film-grain {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-1%, -1%);
+  }
+  30% {
+    transform: translate(1%, 0.5%);
+  }
+  50% {
+    transform: translate(-0.5%, 1%);
+  }
+  70% {
+    transform: translate(0.5%, -0.5%);
+  }
+  90% {
+    transform: translate(-1%, 0.5%);
+  }
+}
+
+.film-grain {
+  position: fixed;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: 9997;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: film-grain 8s steps(8) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .film-grain {
+    animation: none;
+  }
 }
 
 /* Smooth scroll container enhancements */
@@ -214,7 +265,7 @@ html {
 
 .magic-star {
   --size: clamp(20px, 1.5vw, 30px);
-  animation: magic-star-scale 700ms ease forwards;
+  animation: magic-star-scale 1200ms var(--ease-out) forwards;
   display: block;
   height: var(--size);
   left: var(--star-left);
@@ -224,7 +275,7 @@ html {
 }
 
 .magic-star > svg {
-  animation: magic-star-rotate 1000ms linear infinite;
+  animation: magic-star-rotate 1800ms linear infinite;
   display: block;
   opacity: 0.9;
   filter: drop-shadow(0 0 4px var(--magic-color-2));
@@ -235,7 +286,7 @@ html {
 }
 
 .magic-text {
-  animation: background-pan 3s linear infinite;
+  animation: background-pan 6s linear infinite;
   background-image: linear-gradient(
     to right,
     var(--magic-color-1),

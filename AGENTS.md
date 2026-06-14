@@ -27,6 +27,12 @@ There is usually a dev server already running on `http://localhost:3000` (check 
 - `app/globals.css`, `app/color-palettes.ts` — theme tokens and palettes.
 - `next.config.ts` — image optimization config (AVIF/WebP, device sizes).
 
+## Motion
+
+Animations use shared CSS tokens in `globals.css`: `--ease-out`, `--ease-in-out`, `--duration-fast` (600ms) through `--duration-slowest` (2400ms). Prefer these for page-level motion (home, projects, journal). Gallery keeps its own snappier timings (~0.5–1s).
+
+A fixed `.film-grain` overlay lives in `app/template.tsx` (CSS in `globals.css`). Loading screen is name-only fade — no progress bar.
+
 ## Content conventions (`app/data/*`)
 
 - Inline images in prose use the marker `![IMAGE:/path/to/image.jpg]` (parsed by `app/utils/markdown.tsx`), not standard markdown image syntax with alt text.

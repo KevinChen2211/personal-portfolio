@@ -64,7 +64,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
           requestAnimationFrame(() => {
             setIsVisible(true);
           });
-        }, 150);
+        }, 280);
       } else {
         // Regular page transition - quick fade
         setIsVisible(false);
@@ -109,6 +109,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
   return (
     <>
       {showLoading && <LoadingScreen onComplete={handleLoadingComplete} />}
+      <div className="film-grain" aria-hidden="true" />
       {/* Background layer to prevent dark flash */}
       <div
         style={{
@@ -128,8 +129,8 @@ export default function Template({ children }: { children: React.ReactNode }) {
           opacity: isVisible ? 1 : 0.95, // Keep high opacity to prevent dark flash
           transform: isVisible ? "translateY(0)" : "translateY(2px)",
           transition: isVisible
-            ? "opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-            : "opacity 0.05s cubic-bezier(0.4, 0, 0.2, 1), transform 0.05s cubic-bezier(0.4, 0, 0.2, 1)",
+            ? "opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out)"
+            : "opacity 0.12s var(--ease-out), transform 0.12s var(--ease-out)",
           minHeight: "100vh",
           width: "100%",
           backgroundColor: "#FAF2E6", // Prevent black flash

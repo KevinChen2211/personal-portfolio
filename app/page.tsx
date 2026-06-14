@@ -14,6 +14,8 @@ export default function Home() {
   const [heroVisible, setHeroVisible] = useState(false);
   const [heroImageVisible, setHeroImageVisible] = useState(false);
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const imageParallaxRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [parallaxOffsets, setParallaxOffsets] = useState<number[]>([]);
 
   // Check if this is the first visit after loading screen
   useEffect(() => {
@@ -25,8 +27,8 @@ export default function Home() {
         setHeroVisible(true);
         setTimeout(() => {
           setHeroImageVisible(true);
-        }, 200); // Stagger image 200ms after text
-      }, 300); // Small delay after loading screen completes
+        }, 450); // Stagger image after text
+      }, 500); // Delay after loading screen completes
       
       sessionStorage.setItem("hasVisitedLanding", "true");
       return () => clearTimeout(timer);
@@ -47,10 +49,27 @@ export default function Home() {
     { src: "/images/Contact.jpg", link: "/contact", label: "Contact" },
   ];
 
-  // Scroll detection for navbar visibility
+  // Scroll detection for navbar + gentle parallax on section images
   useEffect(() => {
     let lastScrollY = window.scrollY;
     let ticking = false;
+
+    const updateParallax = () => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        setParallaxOffsets([]);
+        return;
+      }
+      setParallaxOffsets(
+        imageParallaxRefs.current.map((el) => {
+          if (!el) return 0;
+          const rect = el.getBoundingClientRect();
+          const centerY = rect.top + rect.height / 2;
+          const progress =
+            (centerY - window.innerHeight / 2) / window.innerHeight;
+          return progress * 20;
+        })
+      );
+    };
 
     const handleScroll = () => {
       if (!ticking) {
@@ -61,6 +80,8 @@ export default function Home() {
           const isAtBottom =
             currentScrollY + windowHeight >= documentHeight - 10;
           const scrollDifference = currentScrollY - lastScrollY;
+
+          updateParallax();
 
           // Show navbar at bottom when at the very bottom
           if (isAtBottom) {
@@ -84,8 +105,13 @@ export default function Home() {
       }
     };
 
+    updateParallax();
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("resize", updateParallax);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", updateParallax);
+    };
   }, []);
 
   // Hide mobile message after 5 seconds
@@ -140,7 +166,7 @@ export default function Home() {
       {/* Mobile Message */}
       {showMobileMessage && (
         <div
-          className="md:hidden fixed top-[73px] left-0 right-0 z-40 px-4 py-2 text-center text-xs font-medium transition-opacity duration-500"
+          className="md:hidden fixed top-[73px] left-0 right-0 z-40 px-4 py-2 text-center text-xs font-medium transition-opacity duration-1000"
           style={{
             backgroundColor: bgColor,
             color: textColor,
@@ -155,7 +181,7 @@ export default function Home() {
 
       {/* Header Navigation */}
       <header
-        className={`w-full px-6 md:px-12 lg:px-16 py-5 md:py-6 flex items-center justify-between fixed z-50 transition-all duration-300 ${
+        className={`w-full px-6 md:px-12 lg:px-16 py-5 md:py-6 flex items-center justify-between fixed z-50 transition-all duration-700 ${
           showNavbar
             ? navbarAtBottom
               ? "bottom-0 top-auto"
@@ -292,7 +318,7 @@ export default function Home() {
                 letterSpacing: "-0.01em",
                 opacity: heroVisible ? 1 : 0,
                 transform: heroVisible ? "translateY(0)" : "translateY(20px)",
-                transition: "opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
+                transition: "opacity 1.4s var(--ease-out), transform 1.4s var(--ease-out)",
               }}
             >
               Kevin Chen <span className="italic">(/keh-vin chen/)</span> is a
@@ -319,7 +345,7 @@ export default function Home() {
             style={{
               opacity: heroImageVisible ? 1 : 0,
               transform: heroImageVisible ? "translateY(0)" : "translateY(20px)",
-              transition: "opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
+              transition: "opacity 1.4s var(--ease-out), transform 1.4s var(--ease-out)",
             }}
           >
             <div className="relative w-full h-[50vh] max-h-[400px] md:h-[80vh] md:max-h-[900px]">
@@ -376,16 +402,26 @@ export default function Home() {
                 imageRefs.current[index] = el;
               }}
               className={`w-full flex ${justifyClass} ${
-                isLastImage ? "mb-0 md:pb-[0vh]" : "mb-[20vh]"
+                isLastImage ? "mb-0 md:pb-[0vh]" : "mb-[28vh]"
               } px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24`}
               style={{
                 opacity: isVisible ? 1 : 0,
                 transform: isVisible ? "translateY(0)" : "translateY(30px)",
-                transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
+                transition: "opacity 1.1s var(--ease-out), transform 1.1s var(--ease-out)",
               }}
             >
               <div className="flex flex-col items-start w-full md:w-auto max-w-[90vw] md:max-w-[50vw] lg:max-w-[45vw]">
-                <div className="relative inline-block w-full mb-3">
+                <div
+                  ref={(el) => {
+                    imageParallaxRefs.current[index] = el;
+                  }}
+                  className="relative inline-block w-full mb-3"
+                  style={{
+                    transform: `translateY(${parallaxOffsets[index] ?? 0}px)`,
+                    transition: "transform 0.15s linear",
+                    willChange: "transform",
+                  }}
+                >
                   <Link href={image.link} className="block">
                     <Image
                       src={image.src}
