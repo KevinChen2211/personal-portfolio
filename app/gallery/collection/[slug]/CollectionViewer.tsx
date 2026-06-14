@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Navbar from "../../../components/Navbar";
+import { usePrefersReducedMotion } from "../../../utils/motion";
 
 type CollectionViewerProps = {
   images: string[];
@@ -41,9 +42,7 @@ function NavButton({
       disabled={disabled}
       aria-label={isPrev ? "Previous image" : "Next image"}
       className={`absolute top-1/2 z-10 rounded-full transition-colors duration-200 focus:outline-none flex items-center justify-center ${
-        isPrev
-          ? "left-2 sm:left-5 md:left-7"
-          : "right-2 sm:right-5 md:right-7"
+        isPrev ? "left-2 sm:left-5 md:left-7" : "right-2 sm:right-5 md:right-7"
       }`}
       style={{
         // Tailwind's -translate-y-1/2 plus an inline translate would clash;
@@ -62,8 +61,7 @@ function NavButton({
         boxShadow: GLASS_SHADOW,
       }}
       onMouseEnter={(e) => {
-        if (!disabled)
-          e.currentTarget.style.backgroundColor = GLASS_BG_HOVER;
+        if (!disabled) e.currentTarget.style.backgroundColor = GLASS_BG_HOVER;
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = GLASS_BG;
@@ -101,6 +99,7 @@ export default function CollectionViewer({
   const [chromeVisible, setChromeVisible] = useState(false);
   const [imageVisible, setImageVisible] = useState(false);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   const goTo = useCallback(
     (idx: number) => {
@@ -108,15 +107,15 @@ export default function CollectionViewer({
       const clamped = Math.max(0, Math.min(idx, images.length - 1));
       setCurrentIndex(clamped);
     },
-    [images.length]
+    [images.length],
   );
   const goNext = useCallback(
     () => goTo(currentIndex + 1),
-    [currentIndex, goTo]
+    [currentIndex, goTo],
   );
   const goPrev = useCallback(
     () => goTo(currentIndex - 1),
-    [currentIndex, goTo]
+    [currentIndex, goTo],
   );
 
   // Soft fade-ins on mount.
@@ -185,7 +184,7 @@ export default function CollectionViewer({
             </p>
             <Link
               href="/gallery"
-              className="inline-block text-lg transition-all duration-300 hover:underline hover:translate-x-[-4px]"
+              className="inline-block text-lg transition-opacity duration-500 hover:underline hover:opacity-70"
               style={{ color: textColor, fontFamily: SERIF }}
             >
               ← Back to Gallery
@@ -232,7 +231,7 @@ export default function CollectionViewer({
         <div className="flex items-center justify-between gap-3">
           <Link
             href="/gallery"
-            className="text-xs md:text-sm transition-all duration-300 hover:underline hover:translate-x-[-3px] pointer-events-auto"
+            className="text-xs md:text-sm transition-opacity duration-500 hover:underline hover:opacity-70 pointer-events-auto"
             style={{ color: textColor, fontFamily: SERIF, opacity: 0.85 }}
           >
             ← Back to Gallery
@@ -257,9 +256,7 @@ export default function CollectionViewer({
       {/* Stage — pinned to the viewport so the photo sits at the true vertical
           centre (50vh) regardless of header/footer height. The chrome above
           and below floats over it. */}
-      <main
-        className="absolute inset-0 flex items-center justify-center px-12 sm:px-20 md:px-28 lg:px-36 pt-28 md:pt-32 pb-24 md:pb-28"
-      >
+      <main className="absolute inset-0 flex items-center justify-center px-12 sm:px-20 md:px-28 lg:px-36 pt-28 md:pt-32 pb-24 md:pb-28">
         {/* Image stage — a regular flex child of <main> so it lives inside
             main's content box and respects the top/bottom padding. Each
             image is then absolutely placed within this stage, which means
@@ -272,7 +269,9 @@ export default function CollectionViewer({
               className="absolute inset-0 flex items-center justify-center"
               style={{
                 opacity: idx === currentIndex && imageVisible ? 1 : 0,
-                transition: "opacity 1s var(--ease-out)",
+                transition: prefersReducedMotion
+                  ? "opacity 0.2s ease-out"
+                  : "opacity 1s var(--ease-out)",
                 zIndex: idx === currentIndex ? 2 : 1,
                 pointerEvents: idx === currentIndex ? "auto" : "none",
               }}

@@ -33,6 +33,8 @@ Animations use shared CSS tokens in `globals.css`: `--ease-out`, `--ease-in-out`
 
 A fixed `.film-grain` overlay lives in `app/template.tsx` (CSS in `globals.css`). Loading screen is name-only fade — no progress bar.
 
+`app/utils/motion.ts` exports `usePrefersReducedMotion()` — use it to skip or shorten animations when the user prefers reduced motion.
+
 ## Content conventions (`app/data/*`)
 
 - Inline images in prose use the marker `![IMAGE:/path/to/image.jpg]` (parsed by `app/utils/markdown.tsx`), not standard markdown image syntax with alt text.

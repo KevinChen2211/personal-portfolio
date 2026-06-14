@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
+import { usePrefersReducedMotion } from "./utils/motion";
 
 export default function Home() {
   const bgColor = "#FAF2E6";
@@ -10,18 +11,26 @@ export default function Home() {
   const [showNavbar, setShowNavbar] = useState(true);
   const [navbarAtBottom, setNavbarAtBottom] = useState(false);
   const [visibleImages, setVisibleImages] = useState<Set<number>>(new Set());
-  const [showMobileMessage, setShowMobileMessage] = useState(true);
   const [heroVisible, setHeroVisible] = useState(false);
   const [heroImageVisible, setHeroImageVisible] = useState(false);
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
   const imageParallaxRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [parallaxOffsets, setParallaxOffsets] = useState<number[]>([]);
+  const [mobileBannerVisible, setMobileBannerVisible] = useState(true);
+  const [mobileBannerFading, setMobileBannerFading] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   // Check if this is the first visit after loading screen
   useEffect(() => {
     const hasVisitedBefore = sessionStorage.getItem("hasVisitedLanding");
-    
+
     if (!hasVisitedBefore) {
+      if (prefersReducedMotion) {
+        setHeroVisible(true);
+        setHeroImageVisible(true);
+        sessionStorage.setItem("hasVisitedLanding", "true");
+        return;
+      }
       // First visit - wait for loading screen, then fade in
       const timer = setTimeout(() => {
         setHeroVisible(true);
@@ -29,7 +38,7 @@ export default function Home() {
           setHeroImageVisible(true);
         }, 450); // Stagger image after text
       }, 500); // Delay after loading screen completes
-      
+
       sessionStorage.setItem("hasVisitedLanding", "true");
       return () => clearTimeout(timer);
     } else {
@@ -37,7 +46,7 @@ export default function Home() {
       setHeroVisible(true);
       setHeroImageVisible(true);
     }
-  }, []);
+  }, [prefersReducedMotion]);
 
   // Image data with order, source, link, and label
   const images = [
@@ -67,7 +76,7 @@ export default function Home() {
           const progress =
             (centerY - window.innerHeight / 2) / window.innerHeight;
           return progress * 20;
-        })
+        }),
       );
     };
 
@@ -114,14 +123,19 @@ export default function Home() {
     };
   }, []);
 
-  // Hide mobile message after 5 seconds
+  // Mobile banner: linger, then fade out slowly
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowMobileMessage(false);
-    }, 5000);
+    const fadeDelay = prefersReducedMotion ? 3000 : 6500;
+    const hideDelay = prefersReducedMotion ? 3200 : 9500;
 
-    return () => clearTimeout(timer);
-  }, []);
+    const fadeTimer = setTimeout(() => setMobileBannerFading(true), fadeDelay);
+    const hideTimer = setTimeout(() => setMobileBannerVisible(false), hideDelay);
+
+    return () => {
+      clearTimeout(fadeTimer);
+      clearTimeout(hideTimer);
+    };
+  }, [prefersReducedMotion]);
 
   // Intersection Observer for fade-in animations
   useEffect(() => {
@@ -131,7 +145,7 @@ export default function Home() {
           if (entry.isIntersecting) {
             const index = parseInt(
               (entry.target as HTMLElement).dataset.index || "0",
-              10
+              10,
             );
             setVisibleImages((prev) => new Set(prev).add(index));
           }
@@ -140,7 +154,7 @@ export default function Home() {
       {
         threshold: 0.1,
         rootMargin: "0px 0px -50px 0px",
-      }
+      },
     );
 
     // Use setTimeout to ensure DOM is ready
@@ -163,19 +177,25 @@ export default function Home() {
       className="min-h-screen w-full relative overflow-y-auto pt-6 md:pt-8"
       style={{ backgroundColor: bgColor }}
     >
-      {/* Mobile Message */}
-      {showMobileMessage && (
+      {/* Mobile banner — quiet editorial note, slow fade */}
+      {mobileBannerVisible && (
         <div
-          className="md:hidden fixed top-[73px] left-0 right-0 z-40 px-4 py-2 text-center text-xs font-medium transition-opacity duration-1000"
+          className="md:hidden fixed top-[73px] left-0 right-0 z-40 px-6 py-2.5 text-center pointer-events-none"
           style={{
-            backgroundColor: bgColor,
+            backgroundColor: "transparent",
             color: textColor,
-            opacity: showMobileMessage ? 1 : 0,
+            opacity: mobileBannerFading ? 0 : 0.55,
+            transition: prefersReducedMotion
+              ? "opacity 0.2s ease-out"
+              : "opacity 2.5s var(--ease-out)",
             fontFamily:
               "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+            fontStyle: "italic",
+            fontSize: "11px",
+            letterSpacing: "0.04em",
           }}
         >
-          For best viewing experience please use desktop
+          Best viewed on desktop
         </div>
       )}
 
@@ -317,8 +337,14 @@ export default function Home() {
                 fontStyle: "normal",
                 letterSpacing: "-0.01em",
                 opacity: heroVisible ? 1 : 0,
-                transform: heroVisible ? "translateY(0)" : "translateY(20px)",
-                transition: "opacity 1.4s var(--ease-out), transform 1.4s var(--ease-out)",
+                transform: prefersReducedMotion
+                  ? "none"
+                  : heroVisible
+                    ? "translateY(0)"
+                    : "translateY(20px)",
+                transition: prefersReducedMotion
+                  ? "opacity 0.2s ease-out"
+                  : "opacity 1.4s var(--ease-out), transform 1.4s var(--ease-out)",
               }}
             >
               Kevin Chen <span className="italic">(/keh-vin chen/)</span> is a
@@ -340,12 +366,18 @@ export default function Home() {
           </div>
 
           {/* Kevin Chen Portrait Image */}
-          <div 
+          <div
             className="relative flex-shrink-0 w-full md:w-[55vw] md:max-w-[600px] md:ml-auto mb-6 md:mb-0"
             style={{
               opacity: heroImageVisible ? 1 : 0,
-              transform: heroImageVisible ? "translateY(0)" : "translateY(20px)",
-              transition: "opacity 1.4s var(--ease-out), transform 1.4s var(--ease-out)",
+              transform: prefersReducedMotion
+                ? "none"
+                : heroImageVisible
+                  ? "translateY(0)"
+                  : "translateY(20px)",
+              transition: prefersReducedMotion
+                ? "opacity 0.2s ease-out"
+                : "opacity 1.4s var(--ease-out), transform 1.4s var(--ease-out)",
             }}
           >
             <div className="relative w-full h-[50vh] max-h-[400px] md:h-[80vh] md:max-h-[900px]">
@@ -406,11 +438,19 @@ export default function Home() {
               } px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24`}
               style={{
                 opacity: isVisible ? 1 : 0,
-                transform: isVisible ? "translateY(0)" : "translateY(30px)",
-                transition: "opacity 1.1s var(--ease-out), transform 1.1s var(--ease-out)",
+                transform:
+                  prefersReducedMotion || isVisible
+                    ? "translateY(0)"
+                    : "translateY(30px)",
+                transition: prefersReducedMotion
+                  ? "opacity 0.2s ease-out"
+                  : "opacity 1.1s var(--ease-out), transform 1.1s var(--ease-out)",
               }}
             >
-              <div className="flex flex-col items-start w-full md:w-auto max-w-[90vw] md:max-w-[50vw] lg:max-w-[45vw]">
+              <Link
+                href={image.link}
+                className="group flex flex-col items-start w-full md:w-auto max-w-[90vw] md:max-w-[50vw] lg:max-w-[45vw]"
+              >
                 <div
                   ref={(el) => {
                     imageParallaxRefs.current[index] = el;
@@ -422,23 +462,20 @@ export default function Home() {
                     willChange: "transform",
                   }}
                 >
-                  <Link href={image.link} className="block">
-                    <Image
-                      src={image.src}
-                      alt={image.label}
-                      width={1600}
-                      height={1067}
-                      className="object-contain w-full h-auto max-h-[85vh]"
-                      quality={70}
-                      sizes="(max-width: 768px) 90vw, (max-width: 1024px) 50vw, 45vw"
-                      priority={index === 0}
-                      loading={index === 0 ? "eager" : "lazy"}
-                    />
-                  </Link>
+                  <Image
+                    src={image.src}
+                    alt={image.label}
+                    width={1600}
+                    height={1067}
+                    className="object-contain w-full h-auto max-h-[85vh]"
+                    quality={70}
+                    sizes="(max-width: 768px) 90vw, (max-width: 1024px) 50vw, 45vw"
+                    priority={index === 0}
+                    loading={index === 0 ? "eager" : "lazy"}
+                  />
                 </div>
-                <Link
-                  href={image.link}
-                  className={`text-xs md:text-sm font-semibold opacity-90 hover:opacity-100 hover:underline transition-opacity w-full ${textAlignClass}`}
+                <span
+                  className={`text-xs md:text-sm font-semibold opacity-90 group-hover:opacity-100 group-hover:underline transition-opacity duration-700 w-full ${textAlignClass}`}
                   style={{
                     color: textColor,
                     fontFamily:
@@ -446,8 +483,8 @@ export default function Home() {
                   }}
                 >
                   {image.label}
-                </Link>
-              </div>
+                </span>
+              </Link>
             </div>
           );
         })}

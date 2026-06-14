@@ -177,7 +177,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             </h1>
             <Link
               href="/projects"
-              className="text-base md:text-lg hover:underline"
+              className="text-base md:text-lg transition-opacity duration-500 hover:underline hover:opacity-70"
               style={{
                 color: textColor,
                 fontFamily:
@@ -203,7 +203,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           {/* Back Link */}
           <Link
             href="/projects"
-            className="inline-block mb-8 text-sm md:text-base hover:underline"
+            className="inline-block mb-8 text-sm md:text-base transition-opacity duration-500 hover:underline hover:opacity-70"
             style={{
               color: textColor,
               fontFamily:

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePrefersReducedMotion } from "../utils/motion";
 
 const preloadFonts = (): Promise<void> => {
   return new Promise((resolve) => {
@@ -33,15 +34,22 @@ export default function LoadingScreen({
 }: LoadingScreenProps) {
   const [nameVisible, setNameVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     let cancelled = false;
     const startTime = Date.now();
+    const effectiveMin = prefersReducedMotion ? 200 : minDisplayTime;
+    const exitMs = prefersReducedMotion ? 120 : 900;
 
     const run = async () => {
-      requestAnimationFrame(() => {
-        if (!cancelled) setNameVisible(true);
-      });
+      if (prefersReducedMotion) {
+        setNameVisible(true);
+      } else {
+        requestAnimationFrame(() => {
+          if (!cancelled) setNameVisible(true);
+        });
+      }
 
       try {
         await preloadFonts();
@@ -50,12 +58,12 @@ export default function LoadingScreen({
       if (cancelled) return;
 
       const elapsed = Date.now() - startTime;
-      const remaining = Math.max(0, minDisplayTime - elapsed);
+      const remaining = Math.max(0, effectiveMin - elapsed);
       await new Promise((resolve) => setTimeout(resolve, remaining));
       if (cancelled) return;
 
       setIsExiting(true);
-      await new Promise((resolve) => setTimeout(resolve, 900));
+      await new Promise((resolve) => setTimeout(resolve, exitMs));
       if (!cancelled) onComplete();
     };
 
@@ -64,7 +72,7 @@ export default function LoadingScreen({
     return () => {
       cancelled = true;
     };
-  }, [minDisplayTime, onComplete]);
+  }, [minDisplayTime, onComplete, prefersReducedMotion]);
 
   return (
     <div
@@ -72,7 +80,9 @@ export default function LoadingScreen({
       style={{
         backgroundColor: "#FAF2E6",
         opacity: isExiting ? 0 : 1,
-        transition: "opacity 0.9s var(--ease-out)",
+        transition: prefersReducedMotion
+          ? "opacity 0.15s ease-out"
+          : "opacity 0.9s var(--ease-out)",
         pointerEvents: isExiting ? "none" : "auto",
       }}
     >
@@ -83,9 +93,14 @@ export default function LoadingScreen({
           fontFamily:
             "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
           opacity: nameVisible ? 1 : 0,
-          transform: nameVisible ? "translateY(0)" : "translateY(12px)",
-          transition:
-            "opacity 1.2s var(--ease-out), transform 1.2s var(--ease-out)",
+          transform: prefersReducedMotion
+            ? "none"
+            : nameVisible
+              ? "translateY(0)"
+              : "translateY(12px)",
+          transition: prefersReducedMotion
+            ? "opacity 0.2s ease-out"
+            : "opacity 1.2s var(--ease-out), transform 1.2s var(--ease-out)",
         }}
       >
         KEVIN CHEN
