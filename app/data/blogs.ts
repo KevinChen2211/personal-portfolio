@@ -40,26 +40,26 @@ export const blogPosts: BlogPost[] = [
     slug: "the-art-of-being-uncomfortable",
     date: "2025-12-02",
     excerpt:
-      "Growth rarely happens in moments of ease. Over the past few years as a student, an engineer, and someone who is always trying to build something new, I've learned that being uncomfortable isn't something to avoid. It's something to seek out.",
+      "For most of my life I tried to stay comfortable. A few years in as a student and an engineer, I've started doing the opposite on purpose, because that's where most of my growth has actually come from.",
     content: `![IMAGE:/blog-images/choosing-discomfort-pushing-beyond-familiar-1.jpg]
 
-I have spent most of my life trying to be comfortable. Over the past few years, as a student, an engineer, and someone who is always trying to build something new, I've learned that being uncomfortable isn't something to avoid. It's something I should seek out.
+For most of my life I've tried to stay comfortable. But after a few years as a student, an engineer, and someone who's always building something, I've slowly come round to the opposite idea: being uncomfortable is worth going looking for, not avoiding.
 
-## Why I Think It's Good to Be Uncomfortable
+## Why being uncomfortable is good
 
-When I first started pushing myself into new technologies, roles, and bigger projects, I realised how quickly comfort can become a trap. I stop looking for more, and I stop wanting more from myself. Being uncomfortable forces me to face my weaknesses instead of working around them.
+The first few times I pushed myself into new tech, new roles, and bigger projects, I noticed how fast comfort turns into a trap. I stop reaching for more, and I stop expecting more of myself. Being uncomfortable drags my weaknesses out into the open instead of letting me quietly work around them.
 
-I believe that this is also where confidence is built. There's a moment after you've struggled through something difficult where you realise you beat it, you've adapted, you've figured it out, and you've grown. That experience is what I am after right now, making the next challenge feel a little less overwhelming.
+It's also where my confidence comes from. There's a specific feeling after you've fought through something hard, when you realise you actually got it done and came out better for it. That's the feeling I'm chasing, because it makes the next hard thing look a bit smaller.
 
-## Why I Seek It Out Personally
+## Why I go looking for it
 
-I've also seen how avoiding discomfort limits me. Some of the best moments in my life only happened because I said yes before I felt fully ready. Discomfort, for me, isn't just a challenge. It's a philosophy. It reminds me that improvement is a deliberate choice, and that the most rewarding opportunities often begin with uncertainty.
+I've watched avoiding discomfort make my world smaller. Some of the best things that have happened to me only happened because I said yes before I felt ready. So I treat discomfort less like a hurdle and more like a habit, a reminder that getting better is a choice I have to keep making.
 
 ---
 
-The more I push myself into situations that stretch my abilities, the larger my world becomes. New ideas, new people, new possibilities all of it starts with a willingness to be uncomfortable.
+The more I put myself in situations that stretch me, the bigger my world gets. New ideas, new people, and new chances tend to show up right after I've agreed to do something that scared me a little.
 
-It's taken the better part of 20 years for me to figure this out. Better late than never.
+It took me the better part of 20 years to work this out. Better late than never.
 `,
     author: "Kevin Chen",
     tags: ["Personal Thoughts", "Self-Improvement"],
