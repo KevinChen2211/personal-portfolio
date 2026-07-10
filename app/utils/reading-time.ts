@@ -1,6 +1,6 @@
 // Average adult reading speed for digital prose. Tweak if blog content
 // shifts toward more dense / technical material.
-const WORDS_PER_MINUTE = 150;
+const WORDS_PER_MINUTE = 220;
 
 /**
  * Estimate reading time (in whole minutes) for a markdown blog body.

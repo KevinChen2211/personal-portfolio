@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
-import { ThemeProvider } from "./components/ThemeProvider";
+import { siteConfig } from "./lib/site";
+import { personSchema, websiteSchema } from "./lib/structured-data";
+import JsonLd from "./components/JsonLd";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,11 +27,115 @@ const playfairDisplay = Playfair_Display({
   style: ["normal", "italic"],
 });
 
+// Local commercial fonts, self-hosted via next/font/local. This gives
+// automatic preloading and a size-adjusted fallback face (reduces the layout
+// shift that plain @font-face + font-display: swap caused), while exposing each
+// as a CSS variable consumed by the stacks in globals.css.
+const juana = localFont({
+  src: [
+    { path: "../public/fonts/Juana ExtraLight.woff2", weight: "200", style: "normal" },
+    {
+      path: "../public/fonts/Juana ExtraLight Italic.woff2",
+      weight: "200",
+      style: "italic",
+    },
+  ],
+  variable: "--font-juana",
+  display: "swap",
+  fallback: ["Playfair Display", "Times New Roman", "serif"],
+});
+
+const sweetRosetiaSans = localFont({
+  src: "../public/fonts/sweet-sans-pro-regular.woff2",
+  weight: "400",
+  style: "normal",
+  variable: "--font-sweet",
+  display: "swap",
+});
+
+const articulatCF = localFont({
+  src: "../public/fonts/Articulat CF Medium.otf",
+  weight: "500",
+  style: "normal",
+  variable: "--font-articulat",
+  display: "swap",
+});
+
+const menckenStdHeadNarrow = localFont({
+  src: "../public/fonts/fonnts.com-Mencken-Std-Head-Narrow-.otf",
+  weight: "400",
+  style: "normal",
+  variable: "--font-mencken",
+  display: "swap",
+  fallback: ["Playfair Display", "Times New Roman", "serif"],
+});
+
 export const metadata: Metadata = {
-  title: "Kevin Chen",
-  description: "Engineer & Creative Developer. Portfolio for Kevin Chen.",
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: siteConfig.title,
+    template: "%s · Kevin Chen",
+  },
+  description: siteConfig.description,
+  applicationName: siteConfig.name,
+  keywords: [
+    "Kevin Chen",
+    "engineer",
+    "creative developer",
+    "robotics",
+    "embedded systems",
+    "photography",
+    "portfolio",
+  ],
+  authors: [{ name: siteConfig.name, url: siteConfig.url }],
+  creator: siteConfig.name,
+  publisher: siteConfig.name,
+  category: "technology",
+  alternates: {
+    canonical: "/",
+  },
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   icons: {
-    icon: [],
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/icon.svg", type: "image/svg+xml" }],
+  },
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: siteConfig.name,
+    statusBarStyle: "default",
+  },
+  // Explicit indexing directives. `max-image-preview: large` lets Google show
+  // full-size image previews for the photography work, and `max-snippet: -1`
+  // removes the text-snippet length cap in results.
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: siteConfig.locale,
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    title: siteConfig.title,
+    description: siteConfig.description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.title,
+    description: siteConfig.description,
   },
 };
 
@@ -38,40 +145,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* 
-          To use IvyPresto Display Thin via Adobe Fonts:
-          1. Get your Adobe Fonts kit ID from fonts.adobe.com
-          2. Add this line before the script tag:
-             <link rel="stylesheet" href="https://use.typekit.net/[your-kit-id].css">
-          3. Update the fontFamily in page.tsx to use "ivypresto-display" as the first font
-        */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  const theme = localStorage.getItem('theme') || 
-                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-                  const palette = theme === 'dark' 
-                    ? { background: '#0a0a0f' }
-                    : { background: '#3c2414' };
-                  document.documentElement.style.setProperty('--initial-bg', palette.background);
-                  if (document.body) {
-                    document.body.style.backgroundColor = palette.background;
-                  }
-                } catch (e) {}
-              })();
-            `,
-          }}
-        />
-      </head>
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${juana.variable} ${sweetRosetiaSans.variable} ${articulatCF.variable} ${menckenStdHeadNarrow.variable} antialiased`}
         suppressHydrationWarning
       >
-        <ThemeProvider>{children}</ThemeProvider>
+        <JsonLd data={[personSchema(), websiteSchema()]} />
+        {children}
       </body>
     </html>
   );

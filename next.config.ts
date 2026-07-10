@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 31536000, // 1 year
     deviceSizes: [640, 828, 1080, 1280, 1920, 2560],
     imageSizes: [64, 96, 128, 256, 384],
+    // Every custom `quality` used across the app must be declared here or
+    // Next.js logs a warning (and will error in a future major).
+    qualities: [60, 70, 75, 80, 82, 85],
   },
   // Strip console.* in production builds (except errors/warnings) to keep
   // the client bundle small.

@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { projects } from "../../data/projects";
 import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
+import JsonLd from "../../components/JsonLd";
+import { creativeWorkSchema, breadcrumbSchema } from "../../lib/structured-data";
 import { parseMarkdown } from "../../utils/markdown";
 import React from "react";
 
@@ -10,6 +15,51 @@ interface ProjectPageProps {
 
 export function generateStaticParams() {
   return projects.map((project) => ({ slug: project.slug }));
+}
+
+// Strip image / video markers, links, and lightweight markdown so the
+// description can be reused as a plain-text meta/OG description.
+function toExcerpt(markdown: string, max = 155): string {
+  const text = markdown
+    .replace(/!\[IMAGE:[^\]]+\]/g, " ")
+    .replace(/\[IMAGE PLACEHOLDER:[^\]]+\]/g, " ")
+    .replace(/\[YOUTUBE:[^\]]+\]/g, " ")
+    .replace(/https?:\/\/\S+/g, " ")
+    .replace(/[#*`>_~]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (text.length <= max) return text;
+  return text.slice(0, max).replace(/\s+\S*$/, "").trimEnd() + "…";
+}
+
+export async function generateMetadata({
+  params,
+}: ProjectPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const project = projects.find((p) => p.slug === slug);
+  if (!project) return { title: "Project Not Found" };
+
+  const description = toExcerpt(project.description);
+  const images = project.image ? [project.image] : undefined;
+
+  return {
+    title: project.title,
+    description,
+    alternates: { canonical: `/projects/${project.slug}` },
+    openGraph: {
+      type: "article",
+      title: `${project.title} · Kevin Chen`,
+      description,
+      url: `/projects/${project.slug}`,
+      images,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${project.title} · Kevin Chen`,
+      description,
+      images,
+    },
+  };
 }
 
 // Parse project description with support for image placeholders and markdown
@@ -38,7 +88,7 @@ function parseProjectDescription(description: string, textColor: string) {
             elements.push(
               React.cloneElement(el, {
                 key: `para-${elementKey}-${idx}`,
-              } as any),
+              }),
             );
           } else {
             elements.push(el);
@@ -121,7 +171,7 @@ function parseProjectDescription(description: string, textColor: string) {
       parsed.forEach((el, idx) => {
         if (React.isValidElement(el)) {
           elements.push(
-            React.cloneElement(el, { key: `img-${elementKey}-${idx}` } as any),
+            React.cloneElement(el, { key: `img-${elementKey}-${idx}` }),
           );
         } else {
           elements.push(el);
@@ -157,39 +207,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const project = projects.find((p) => p.slug === slug);
 
   if (!project) {
-    return (
-      <div
-        className="min-h-screen w-full relative"
-        style={{ backgroundColor: bgColor }}
-      >
-        <Navbar />
-        <div className="px-6 sm:px-10 md:px-12 lg:px-20 xl:px-24 py-24 md:py-32 flex items-center justify-center">
-          <div className="text-center">
-            <h1
-              className="text-3xl sm:text-4xl md:text-5xl font-semibold mb-6"
-              style={{
-                color: textColor,
-                fontFamily:
-                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-              }}
-            >
-              Project Not Found
-            </h1>
-            <Link
-              href="/projects"
-              className="text-base md:text-lg transition-opacity duration-500 hover:underline hover:opacity-70"
-              style={{
-                color: textColor,
-                fontFamily:
-                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-              }}
-            >
-              ← Back to Projects
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
+    notFound();
   }
 
   return (
@@ -197,6 +215,21 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       className="min-h-screen w-full relative"
       style={{ backgroundColor: bgColor }}
     >
+      <JsonLd
+        data={[
+          creativeWorkSchema({
+            title: project.title,
+            description: toExcerpt(project.description),
+            slug: project.slug,
+            image: project.image,
+          }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Projects", path: "/projects" },
+            { name: project.title, path: `/projects/${project.slug}` },
+          ]),
+        ]}
+      />
       <Navbar />
       <main className="px-6 sm:px-10 md:px-12 lg:px-20 xl:px-24 py-24 md:py-32">
         <div className="max-w-4xl mx-auto">
@@ -207,7 +240,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             style={{
               color: textColor,
               fontFamily:
-                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                "var(--font-serif)",
               opacity: 0.8,
             }}
           >
@@ -224,7 +257,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               style={{
                 color: textColor,
                 fontFamily:
-                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                  "var(--font-serif)",
               }}
             >
               {project.title}
@@ -250,7 +283,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               style={{
                 color: textColor,
                 fontFamily:
-                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                  "var(--font-serif)",
               }}
             >
               Key Achievements
@@ -302,16 +335,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           </div>
         </div>
       </main>
-      <footer
-        className="w-full py-12 flex justify-center items-center"
-        style={{
-          backgroundColor: bgColor,
-          color: textColor,
-          fontFamily: "'Juana', var(--font-display), 'Playfair Display', serif",
-        }}
-      >
-        © Kevin Chen
-      </footer>
+      <Footer />
     </div>
   );
 }

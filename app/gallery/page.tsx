@@ -131,9 +131,6 @@ export default function GalleryPage() {
   const [isMobile, setIsMobile] = useState(false);
   const [isNavigatingToCollection, setIsNavigatingToCollection] =
     useState(false);
-  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(
-    null,
-  );
   const expandedTouchStartRef = useRef<{
     x: number;
     y: number;
@@ -437,7 +434,6 @@ export default function GalleryPage() {
         return;
       }
 
-      const deltaTime = Math.min((currentTime - lastTime) / 16.67, 2);
       lastTime = currentTime;
 
       const isExpanded = expandedIndexRef.current !== null;
@@ -533,7 +529,7 @@ export default function GalleryPage() {
           if (!updatedImg) return;
 
           // Force a reflow to ensure layout is updated
-          updatedImg.offsetHeight;
+          void updatedImg.offsetHeight;
 
           const rect = updatedImg.getBoundingClientRect();
           const currentObjectPosition =
@@ -799,6 +795,52 @@ export default function GalleryPage() {
 
   const uniqueCollections = getUniqueCollections();
 
+  // Open a gallery image into the fullscreen expanded view. Extracted from the
+  // thumbnail's onClick so it can also be triggered by keyboard (Enter/Space).
+  const openImageAt = (i: number) => {
+    // Ignore while a previous open/close/transition is still settling,
+    // otherwise the expand can be committed in the same paint as the start
+    // frame and skip the zoom.
+    if (
+      isClosing ||
+      isTransitioning ||
+      expandedImageIndex !== null ||
+      pendingExpand
+    )
+      return;
+    const src = galleryImages[i];
+    const img = imageRefs.current[i];
+    if (!img) return;
+    const rect = img.getBoundingClientRect();
+    setIsOpening(true);
+    setIsClosing(false);
+    const newCollection = parseCollection(src);
+    setExpandedImageIndex(i);
+    setExpandedImageSrc(src);
+    setExpandedCollection(newCollection);
+    setShowCollectionTitle(true);
+    setShowPreview(false);
+    setCollectionNameAnimate(false);
+    previousCollectionSlugRef.current = newCollection.slug;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setCollectionNameAnimate(true);
+      });
+    });
+    const currentObjectPosition = getComputedStyle(img).objectPosition;
+    // Start at the thumbnail's exact position/size. The expand to fullscreen
+    // is triggered from an effect once this starting frame is committed,
+    // guaranteeing the transition plays.
+    setExpandedImageStyle({
+      top: rect.top + rect.height / 2,
+      left: rect.left + rect.width / 2,
+      width: rect.width,
+      height: rect.height,
+    });
+    setExpandedObjectPosition(currentObjectPosition);
+    setPendingExpand(true);
+  };
+
   return (
     <div
       className={`min-h-screen w-full relative ${
@@ -821,7 +863,7 @@ export default function GalleryPage() {
             style={{
               color: mobileTextColor,
               fontFamily:
-                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                "var(--font-serif)",
             }}
           >
             Gallery
@@ -852,7 +894,7 @@ export default function GalleryPage() {
                       style={{
                         color: mobileTextColor,
                         fontFamily:
-                          "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                          "var(--font-serif)",
                       }}
                     >
                       {collection.name}
@@ -877,84 +919,52 @@ export default function GalleryPage() {
                 : "none",
             }}
           >
-            {galleryImages.map((src, i) => (
-              <div
-                key={i}
-                style={{
-                  position: "relative",
-                  width: "40vmin",
-                  height: "56vmin",
-                  flexShrink: 0,
-                }}
-              >
-                <Image
-                  ref={(el: HTMLImageElement | null) => {
-                    imageRefs.current[i] = el;
-                  }}
-                  src={src}
-                  alt=""
-                  fill
-                  // `vmin` isn't reliably honoured by browsers in srcset
-                  // selection, so use vw-based hints that err on the side of
-                  // a higher-resolution variant for crispness on retina.
-                  sizes="(max-width: 768px) 80vw, (max-width: 1280px) 45vw, 35vw"
-                  quality={82}
-                  priority={i === 0}
-                  loading={i === 0 ? "eager" : "lazy"}
-                  className="image cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] hover:opacity-95"
-                  draggable={false}
-                  onClick={() => {
-                    // Ignore clicks while a previous open/close/transition is
-                    // still settling, otherwise the expand can be committed in
-                    // the same paint as the start frame and skip the zoom.
-                    if (
-                      isClosing ||
-                      isTransitioning ||
-                      expandedImageIndex !== null ||
-                      pendingExpand
-                    )
-                      return;
-                    const img = imageRefs.current[i];
-                    if (!img) return;
-                    const rect = img.getBoundingClientRect();
-                    setIsOpening(true);
-                    setIsClosing(false);
-                    const newCollection = parseCollection(src);
-                    setExpandedImageIndex(i);
-                    setExpandedImageSrc(src);
-                    setExpandedCollection(newCollection);
-                    setShowCollectionTitle(true);
-                    setShowPreview(false); // Reset preview visibility
-                    // Reset and trigger collection name animation on initial open
-                    setCollectionNameAnimate(false);
-                    previousCollectionSlugRef.current = newCollection.slug;
-                    requestAnimationFrame(() => {
-                      requestAnimationFrame(() => {
-                        setCollectionNameAnimate(true);
-                      });
-                    });
-                    const currentObjectPosition =
-                      getComputedStyle(img).objectPosition;
-
-                    // Start at the thumbnail's exact position/size. The expand to
-                    // fullscreen is triggered from an effect once this starting
-                    // frame is committed, guaranteeing the transition plays.
-                    setExpandedImageStyle({
-                      top: rect.top + rect.height / 2,
-                      left: rect.left + rect.width / 2,
-                      width: rect.width,
-                      height: rect.height,
-                    });
-                    setExpandedObjectPosition(currentObjectPosition);
-                    setPendingExpand(true);
+            {galleryImages.map((src, i) => {
+              const collectionName = parseCollection(src).name;
+              return (
+                <div
+                  key={i}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Open the ${collectionName} collection`}
+                  onClick={() => openImageAt(i)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      openImageAt(i);
+                    }
                   }}
                   style={{
-                    objectFit: "cover",
-                    objectPosition: "100% center",
+                    position: "relative",
+                    width: "40vmin",
+                    height: "56vmin",
+                    flexShrink: 0,
                   }}
-                />
-              </div>
-            ))}
+                >
+                  <Image
+                    ref={(el: HTMLImageElement | null) => {
+                      imageRefs.current[i] = el;
+                    }}
+                    src={src}
+                    alt={collectionName}
+                    fill
+                    // `vmin` isn't reliably honoured by browsers in srcset
+                    // selection, so use vw-based hints that err on the side of
+                    // a higher-resolution variant for crispness on retina.
+                    sizes="(max-width: 768px) 80vw, (max-width: 1280px) 45vw, 35vw"
+                    quality={82}
+                    priority={i === 0}
+                    loading={i === 0 ? "eager" : "lazy"}
+                    className="image cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] hover:opacity-95"
+                    draggable={false}
+                    style={{
+                      objectFit: "cover",
+                      objectPosition: "100% center",
+                    }}
+                  />
+                </div>
+              );
+            })}
           </div>
         </>
       )}
@@ -998,6 +1008,10 @@ export default function GalleryPage() {
                 }`}
                 style={{
                   color: expandedTextColor,
+                  // Match the editorial serif used by the non-link title variant
+                  // and the rest of the gallery; without this the linked title
+                  // fell back to the inherited sans-serif body font.
+                  fontFamily: "var(--font-serif)",
                   opacity:
                     showCollectionTitle && !isNavigatingToCollection ? 1 : 0,
                   pointerEvents:
@@ -1060,7 +1074,7 @@ export default function GalleryPage() {
                       ? "auto"
                       : "none",
                   fontFamily:
-                    "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                    "var(--font-serif)",
                 }}
                 onMouseEnter={handleSuperscriptMouseEnter}
                 onMouseLeave={handleSuperscriptMouseLeave}
@@ -1260,7 +1274,7 @@ export default function GalleryPage() {
               >
                 <Image
                   src={expandedImageSrc}
-                  alt=""
+                  alt={expandedCollection.name}
                   fill
                   sizes="100vw"
                   quality={85}
@@ -1303,7 +1317,7 @@ export default function GalleryPage() {
                 >
                   <Image
                     src={nextImageData.src}
-                    alt=""
+                    alt={nextImageData.collection.name}
                     fill
                     sizes="100vw"
                     quality={85}

@@ -30,7 +30,10 @@ type LoadingScreenProps = {
 
 export default function LoadingScreen({
   onComplete,
-  minDisplayTime = 1400,
+  // Kept short so first paint of the real page happens quickly; long enough to
+  // register the wordmark as a brand moment. Fonts are also preloaded, so the
+  // screen rarely needs to wait on them.
+  minDisplayTime = 800,
 }: LoadingScreenProps) {
   const [nameVisible, setNameVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
@@ -91,7 +94,7 @@ export default function LoadingScreen({
         style={{
           color: "#2C2C2C",
           fontFamily:
-            "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+            "var(--font-serif)",
           opacity: nameVisible ? 1 : 0,
           transform: prefersReducedMotion
             ? "none"

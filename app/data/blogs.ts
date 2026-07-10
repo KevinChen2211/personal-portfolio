@@ -70,7 +70,7 @@ It took me the better part of 20 years to work this out. Better late than never.
     slug: "building-my-portfolio-tech-stack",
     date: "2025-11-21",
     excerpt:
-      "A comprehensive overview of the technologies, tools, and practices I used to build this modern portfolio website, from Next.js and React to Git version control and Vercel hosting.",
+      "A look at the technologies, tools, and practices behind this portfolio — from Next.js and React to Git version control and Vercel hosting.",
     content: `![IMAGE:/blog-images/Portfolio.jpg]
 
 This website has been in constant development since 2021. It has evolved over the years and changed styling as my preferences have changed.

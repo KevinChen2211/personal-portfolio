@@ -31,7 +31,7 @@ const exts = new Set([".jpg", ".jpeg", ".png"]);
 async function loadSharp() {
   try {
     return (await import("sharp")).default;
-  } catch (err) {
+  } catch {
     // Don't fail the dev/build pipeline just because sharp wasn't installed
     // (e.g. fresh clone without `npm install` yet, or a CI env that skipped
     // optional deps). Print a clear hint and bow out cleanly.

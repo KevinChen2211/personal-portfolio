@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #faf2e6;
+  --foreground: #2c2c2c;
 
   /* Motion — slower, editorial pacing */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -22,59 +22,16 @@
   --font-display: var(--font-display);
 }
 
-/* Juana Extra Light - Commercial font from Latinotype */
-@font-face {
-  font-family: "Juana";
-  src:
-    url("/fonts/Juana ExtraLight.woff2") format("woff2"),
-    url("/fonts/Juana ExtraLight.ttf") format("truetype");
-  font-weight: 200;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Juana";
-  src:
-    url("/fonts/Juana ExtraLight Italic.woff2") format("woff2"),
-    url("/fonts/Juana ExtraLight Italic.ttf") format("truetype");
-  font-weight: 200;
-  font-style: italic;
-  font-display: swap;
-}
-
-/* Sweet Rosetia Sans - Commercial font from Runsell Type */
-@font-face {
-  font-family: "Sweet Rosetia Sans";
-  src:
-    url("/fonts/sweet-sans-pro-regular.woff2") format("woff2"),
-    url("/fonts/sweet-sans-pro-regular.woff") format("woff");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* Articulat CF Medium - For long paragraphs and content */
-@font-face {
-  font-family: "Articulat CF Medium";
-  src: url("/fonts/Articulat CF Medium.otf") format("opentype");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* Mencken Std Head Narrow - For journal and project titles */
-@font-face {
-  font-family: "Mencken Std Head Narrow";
-  src: url("/fonts/fonnts.com-Mencken-Std-Head-Narrow-.otf") format("opentype");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
+/* The commercial fonts (Juana, Sweet Rosetia Sans, Articulat CF, Mencken Std
+   Head Narrow) are self-hosted through next/font/local in app/layout.tsx, which
+   handles @font-face generation, preloading, and size-adjusted fallbacks. They
+   are consumed here via their CSS variables (--font-juana, --font-sweet,
+   --font-articulat, --font-mencken). */
 
 /* Utility class for long paragraphs and content */
 .long-content {
   font-family:
-    "Articulat CF Medium",
+    var(--font-articulat),
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
@@ -96,21 +53,27 @@
 }
 */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--initial-bg, #3c2414);
+  background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   transition: background-color var(--duration-fast) var(--ease-out);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+
+  /* Editorial serif stacks. Defined on `body` (not `:root`) because the
+     next/font variables (--font-juana, --font-display, etc.) are scoped to the
+     <body> className — they are not available on <html>/:root, so resolving
+     them there would invalidate the declaration. The var() fallback keeps the
+     stack a serif even if a font variable is ever missing.
+       --font-serif        base body serif (hero, nav links, prose)
+       --font-serif-name   wordmark display face, prepended to the serif
+       --font-serif-title  condensed display face for project/journal titles */
+  --font-serif: var(--font-juana, "Juana"),
+    var(--font-display, "Playfair Display"), "Times New Roman", serif;
+  --font-serif-name: var(--font-sweet), var(--font-serif);
+  --font-serif-title: var(--font-mencken), var(--font-serif);
 }
 
 /* Mobile touch optimizations */
@@ -124,6 +87,15 @@ a,
   touch-action: manipulation;
   min-height: 44px;
   min-width: 44px;
+}
+
+/* Visible keyboard focus for interactive elements. :where() keeps the
+   specificity at 0 so components can still override it, and :focus-visible
+   means it only appears for keyboard / programmatic focus, not mouse clicks. */
+:where(a, button, [role="button"], [tabindex]):focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 /* Mobile-specific spacing */
@@ -224,97 +196,6 @@ html {
     opacity: 1;
     transform: translateX(0);
   }
-}
-
-/* Project card hover effect - card glows when hovered or nearby */
-.project-card:hover .card-gradient-before,
-.project-card .card-nearby.card-gradient-before {
-  opacity: 1 !important;
-}
-
-.project-card:hover .card-gradient-after,
-.project-card .card-nearby.card-gradient-after {
-  opacity: 1 !important;
-}
-
-/* Magic Text Effect - theme-aware colors */
-:root {
-  /* Default colors (will be overridden by component) */
-  --magic-color-1: rgb(99, 102, 241); /* Indigo for dark theme */
-  --magic-color-2: rgb(139, 92, 246); /* Purple for dark theme */
-  --magic-color-3: rgb(236, 72, 153); /* Pink for dark theme */
-}
-
-@keyframes background-pan {
-  from {
-    background-position: 0% center;
-  }
-  to {
-    background-position: -200% center;
-  }
-}
-
-@keyframes magic-star-scale {
-  from,
-  to {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1);
-  }
-}
-
-@keyframes magic-star-rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(180deg);
-  }
-}
-
-.magic {
-  display: inline-block;
-  position: relative;
-}
-
-.magic-star {
-  --size: clamp(20px, 1.5vw, 30px);
-  animation: magic-star-scale 1200ms var(--ease-out) forwards;
-  display: block;
-  height: var(--size);
-  left: var(--star-left);
-  position: absolute;
-  top: var(--star-top);
-  width: var(--size);
-}
-
-.magic-star > svg {
-  animation: magic-star-rotate 1800ms linear infinite;
-  display: block;
-  opacity: 0.9;
-  filter: drop-shadow(0 0 4px var(--magic-color-2));
-}
-
-.magic-star > svg > path {
-  fill: var(--magic-color-2);
-}
-
-.magic-text {
-  animation: background-pan 6s linear infinite;
-  background-image: linear-gradient(
-    to right,
-    var(--magic-color-1),
-    var(--magic-color-2),
-    var(--magic-color-3),
-    var(--magic-color-1)
-  );
-  background-size: 200%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  white-space: nowrap;
-  filter: brightness(1.2) saturate(1.4);
 }
 
 :root {
