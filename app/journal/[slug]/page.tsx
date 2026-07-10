@@ -7,6 +7,8 @@ import { readingTime } from "../../utils/reading-time";
 import { parseMarkdown } from "../../utils/markdown";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import JsonLd from "../../components/JsonLd";
+import { articleSchema, breadcrumbSchema } from "../../lib/structured-data";
 
 interface JournalPostPageProps {
   params: Promise<{ slug: string }>;
@@ -62,11 +64,31 @@ export default async function JournalPostPage({
     notFound();
   }
 
+  const firstImage = post.content.match(/!\[IMAGE:([^\]]+)\]/)?.[1];
+
   return (
     <div
       className="min-h-screen w-full relative"
       style={{ backgroundColor: bgColor }}
     >
+      <JsonLd
+        data={[
+          articleSchema({
+            title: post.title,
+            description: post.excerpt,
+            slug: post.slug,
+            date: post.date,
+            author: post.author,
+            image: firstImage,
+            tags: post.tags,
+          }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Journal", path: "/journal" },
+            { name: post.title, path: `/journal/${post.slug}` },
+          ]),
+        ]}
+      />
       <Navbar />
       <main className="px-6 sm:px-10 md:px-12 lg:px-20 xl:px-24 py-24 md:py-32">
         <div className="max-w-4xl mx-auto">

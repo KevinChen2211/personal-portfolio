@@ -2,8 +2,9 @@ import type { MetadataRoute } from "next";
 import { projects } from "./data/projects";
 import { blogPosts } from "./data/blogs";
 import { allImages, parseCollection } from "./gallery/data";
+import { siteConfig, absoluteUrl } from "./lib/site";
 
-const baseUrl = "https://kevinchen.com.au";
+const baseUrl = siteConfig.url;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -26,14 +27,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: now,
     changeFrequency: "yearly",
     priority: 0.6,
+    images: project.image ? [absoluteUrl(project.image)] : undefined,
   }));
 
-  const postRoutes: MetadataRoute.Sitemap = blogPosts.map((post) => ({
-    url: `${baseUrl}/journal/${post.slug}`,
-    lastModified: new Date(post.date),
-    changeFrequency: "yearly",
-    priority: 0.6,
-  }));
+  const postRoutes: MetadataRoute.Sitemap = blogPosts.map((post) => {
+    const firstImage = post.content.match(/!\[IMAGE:([^\]]+)\]/)?.[1];
+    return {
+      url: `${baseUrl}/journal/${post.slug}`,
+      lastModified: new Date(post.date),
+      changeFrequency: "yearly",
+      priority: 0.6,
+      images: firstImage ? [absoluteUrl(firstImage)] : undefined,
+    };
+  });
 
   const collectionSlugs = Array.from(
     new Set(allImages.map((src) => parseCollection(src).slug)),
@@ -44,6 +50,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "yearly",
       priority: 0.5,
+      images: allImages
+        .filter((src) => parseCollection(src).slug === slug)
+        .map((src) => absoluteUrl(src)),
     }),
   );
 

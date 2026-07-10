@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { projects } from "../../data/projects";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import JsonLd from "../../components/JsonLd";
+import { creativeWorkSchema, breadcrumbSchema } from "../../lib/structured-data";
 import { parseMarkdown } from "../../utils/markdown";
 import React from "react";
 
@@ -213,6 +215,21 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       className="min-h-screen w-full relative"
       style={{ backgroundColor: bgColor }}
     >
+      <JsonLd
+        data={[
+          creativeWorkSchema({
+            title: project.title,
+            description: toExcerpt(project.description),
+            slug: project.slug,
+            image: project.image,
+          }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Projects", path: "/projects" },
+            { name: project.title, path: `/projects/${project.slug}` },
+          ]),
+        ]}
+      />
       <Navbar />
       <main className="px-6 sm:px-10 md:px-12 lg:px-20 xl:px-24 py-24 md:py-32">
         <div className="max-w-4xl mx-auto">

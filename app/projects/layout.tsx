@@ -5,7 +5,12 @@ const description =
   "Engineering and creative projects by Kevin Chen — robotics, embedded systems, custom CPU design, cloud applications, and more.";
 
 export const metadata: Metadata = {
-  title,
+  // `default` titles this listing page; `template` cascades the "· Kevin Chen"
+  // suffix to the project [slug] detail pages under this layout.
+  title: {
+    default: title,
+    template: "%s · Kevin Chen",
+  },
   description,
   alternates: { canonical: "/projects" },
   openGraph: {

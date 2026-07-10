@@ -5,7 +5,13 @@ const description =
   "Writing by Kevin Chen on engineering, self-improvement, and building things.";
 
 export const metadata: Metadata = {
-  title,
+  // `default` titles this listing page ("Journal · Kevin Chen" via the root
+  // template); `template` cascades the suffix to the [slug] detail pages, which
+  // otherwise lose it because this intermediate layout sets its own title.
+  title: {
+    default: title,
+    template: "%s · Kevin Chen",
+  },
   description,
   alternates: { canonical: "/journal" },
   openGraph: {

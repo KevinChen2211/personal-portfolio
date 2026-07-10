@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { allImages, parseCollection } from "../../data";
 import CollectionViewer from "./CollectionViewer";
+import JsonLd from "../../../components/JsonLd";
+import { imageGallerySchema, breadcrumbSchema } from "../../../lib/structured-data";
 
 type Params = {
   params: Promise<{ slug: string }>;
@@ -88,5 +90,19 @@ export default async function CollectionPage({ params }: Params) {
     notFound();
   }
 
-  return <CollectionViewer images={images} title={title} />;
+  return (
+    <>
+      <JsonLd
+        data={[
+          imageGallerySchema({ title, slug, images }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Gallery", path: "/gallery" },
+            { name: title, path: `/gallery/collection/${slug}` },
+          ]),
+        ]}
+      />
+      <CollectionViewer images={images} title={title} />
+    </>
+  );
 }
