@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 
 export default function NotFound() {
-  const [glowPosition, setGlowPosition] = useState({ x: 0, y: 0 });
   const targetPositionRef = useRef({ x: 0, y: 0 });
   const currentGlowRef = useRef({ x: 0, y: 0 });
   const animationFrameRef = useRef<number | null>(null);
@@ -19,7 +18,6 @@ export default function NotFound() {
     const centerY = window.innerHeight / 2;
     targetPositionRef.current = { x: centerX, y: centerY };
     currentGlowRef.current = { x: centerX, y: centerY };
-    setGlowPosition({ x: centerX, y: centerY });
     document.documentElement.style.setProperty("--glow-x", `${centerX}px`);
     document.documentElement.style.setProperty("--glow-y", `${centerY}px`);
 
@@ -44,8 +42,8 @@ export default function NotFound() {
         y: current.y + (target.y - current.y) * lagFactor,
       };
 
-      // Update state and CSS variables
-      setGlowPosition(currentGlowRef.current);
+      // Update CSS variables (the glow element reads these directly, so no
+      // React re-render is needed on each animation frame).
       document.documentElement.style.setProperty(
         "--glow-x",
         `${currentGlowRef.current.x}px`
@@ -86,7 +84,7 @@ export default function NotFound() {
       <div className="absolute inset-0">
         {/* Giant background number - revealed by mask */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="text-[clamp(200px,40vw,600px)] font-black leading-none text-white/20 tracking-tighter tracking-wide">
+          <div className="text-[clamp(200px,40vw,600px)] font-black leading-none text-white/20 tracking-tighter">
             404
           </div>
         </div>
@@ -99,8 +97,8 @@ export default function NotFound() {
       <div
         className="fixed pointer-events-none z-10"
         style={{
-          left: `${glowPosition.x}px`,
-          top: `${glowPosition.y}px`,
+          left: "var(--glow-x, 50vw)",
+          top: "var(--glow-y, 50vh)",
           width: "400px",
           height: "400px",
           transform: "translate(-50%, -50%)",
@@ -151,7 +149,7 @@ export default function NotFound() {
         </h1>
 
         <p className="text-sm md:text-base text-white/50 mb-8">
-          Sorry, the page you are looking for doesn't exist.
+          Sorry, the page you are looking for doesn&apos;t exist.
         </p>
 
         <Link

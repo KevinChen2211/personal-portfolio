@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import Navbar from "../components/Navbar";
 
@@ -10,7 +9,7 @@ export default function ContactPage() {
 
   return (
     <div
-      className="h-screen w-full relative overflow-hidden pt-6 md:pt-8"
+      className="h-dvh w-full relative overflow-hidden pt-6 md:pt-8"
       style={{ backgroundColor: bgColor }}
     >
       <Navbar />
@@ -18,7 +17,7 @@ export default function ContactPage() {
       {/* Main Content Area */}
       <main
         className="relative px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 flex items-center"
-        style={{ height: "calc(100vh - 73px)", marginTop: "73px" }}
+        style={{ height: "calc(100dvh - 73px)", marginTop: "73px" }}
       >
         <div className="w-full flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-10">
           {/* Contact Image - Left Side */}
@@ -49,7 +48,7 @@ export default function ContactPage() {
                 letterSpacing: "-0.01em",
               }}
             >
-              Let's{" "}
+              Let&apos;s{" "}
               <span className="italic underline decoration-1 underline-offset-4">
                 connect
               </span>

@@ -19,13 +19,15 @@ There is usually a dev server already running on `http://localhost:3000` (check 
 
 ## Layout
 
-- `app/<route>/page.tsx` — routes: `page` (home), `projects`, `gallery`, `journal`, `about`, `contact`.
+- `app/<route>/page.tsx` — routes: `page` (home), `projects`, `gallery`, `journal`, `contact`.
 - Dynamic routes: `app/projects/[slug]`, `app/journal/[slug]`, `app/gallery/collection/[slug]`.
+- Per-route `layout.tsx` files (projects/gallery/journal/contact) exist only to attach page `metadata` since those pages are client components; dynamic routes use `generateMetadata`.
 - `app/data/projects.ts`, `app/data/blogs.ts` — all project and journal **content** lives here (prose, highlights, image markers). Edit copy here, not in the page components.
-- `app/components/` — shared UI (Navbar, ThemeProvider/ThemeToggle, LoadingScreen, useScrollAnimation).
+- `app/components/` — shared UI (Navbar, NavInner, Footer, LoadingScreen, useScrollAnimation). `NavInner` is the wordmark/nav/social block shared by both `Navbar` (sticky, all pages) and the home page's scroll-aware header; `Footer` is the shared "© Kevin Chen" strip.
 - `app/utils/` — markdown rendering, date, reading-time helpers.
-- `app/globals.css`, `app/color-palettes.ts` — theme tokens and palettes.
-- `next.config.ts` — image optimization config (AVIF/WebP, device sizes).
+- `app/globals.css` — theme tokens (motion durations/easings, plus `--font-serif` / `--font-serif-name` for the editorial serif stack), fonts, and global styles. The site is a single fixed cream palette (`#FAF2E6` bg / `#2C2C2C` text); there is no light/dark theme.
+- `app/sitemap.ts`, `app/robots.ts` — generated `sitemap.xml` / `robots.txt` (update the `baseUrl` if the domain changes).
+- `next.config.ts` — image optimization config (AVIF/WebP, device sizes, `images.qualities`).
 
 ## Motion
 
@@ -44,7 +46,7 @@ A fixed `.film-grain` overlay lives in `app/template.tsx` (CSS in `globals.css`)
 ## Gotchas
 
 - **`next/image` with `fill`**: never set `width`, `height`, `top`, `left`, `right`, or `bottom` in its `style`. Next throws a runtime error. To bleed past edges (e.g. to hide sub-pixel seam lines during scale animations) use `transform: "scale(1.01)"` instead.
-- **Image `quality`**: `images.qualities` is not configured in `next.config.ts`, so any `quality` other than the default `75` logs a dev warning. If you add/keep custom qualities, add them to `images.qualities`.
+- **Image `quality`**: any custom `quality` must be listed in `images.qualities` in `next.config.ts` (currently `[60, 70, 75, 80, 82, 85]`) or Next.js logs a dev warning. Add new values there.
 - **Gallery animations** (`app/gallery/page.tsx`): the desktop view uses a hand-rolled rAF scroll/parallax loop and CSS-transition-based open/close. To make a transition reliably play, commit the start frame first, then change to the end frame on a later frame (see the `pendingExpand` effect) — don't set both in the same paint.
 - This is a `"use client"` page-heavy app; most interactive pages are client components.
 

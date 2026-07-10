@@ -160,6 +160,11 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
           imagePath.includes("next-js") ||
           imagePath.includes("Vercel");
         const isPhoto = !isLogo && !isSvg;
+        const logoAlt = imagePath.includes("Vercel")
+          ? "Vercel logo"
+          : imagePath.includes("next-js")
+            ? "Next.js logo"
+            : "";
         elements.push(
           <div
             key={`img-${index}`}
@@ -184,10 +189,11 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
             >
               {isSvg ? (
                 // Use regular img tag for SVGs for better compatibility
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   key={imagePath}
                   src={imagePath}
-                  alt=""
+                  alt={logoAlt}
                   className="object-contain w-full h-auto"
                   style={{
                     maxWidth: "100%",
@@ -200,7 +206,7 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
                 <Image
                   key={imagePath}
                   src={imagePath}
-                  alt=""
+                  alt="Photo by Kevin Chen"
                   width={800}
                   height={600}
                   className="object-contain w-full h-auto"

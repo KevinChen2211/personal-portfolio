@@ -8,11 +8,9 @@ Personal site for Kevin Chen — engineer and creative developer. A single-page 
 - **Projects** — case studies with detail pages (`/projects/[slug]`)
 - **Gallery** — photo collections with full-screen viewers (`/gallery/collection/[slug]`)
 - **Journal** — blog posts rendered from markdown (`/journal/[slug]`)
-- **About** — bio, experience, and skills with scroll-triggered reveals
 - **Contact** — inquiry and availability
-- Light/dark theme toggle with shared color palettes
 - First-visit loading screen and session-aware hero fade-in
-- Metadata tuned for sharing (`app/layout.tsx`)
+- SEO metadata with Open Graph / Twitter cards, plus `sitemap.xml` and `robots.txt` (`app/layout.tsx`, `app/sitemap.ts`, `app/robots.ts`)
 
 ## Tech Stack
 
@@ -55,10 +53,10 @@ Personal site for Kevin Chen — engineer and creative developer. A single-page 
 - `app/projects/` — project listing and detail pages
 - `app/gallery/` — gallery and collection viewers
 - `app/journal/` — journal listing and post pages
-- `app/about/page.tsx` — about page
 - `app/contact/page.tsx` — contact page
-- `app/components/` — shared UI (navbar, theme, loading screen, scroll hooks)
+- `app/components/` — shared UI (navbar, loading screen, scroll hooks)
 - `app/data/` — projects and blog content
-- `app/layout.tsx` — global fonts, theme provider, and metadata
-- `app/globals.css` — Tailwind import and theme tokens
+- `app/layout.tsx` — global fonts and site metadata
+- `app/sitemap.ts`, `app/robots.ts` — generated `sitemap.xml` and `robots.txt`
+- `app/globals.css` — Tailwind import and motion/theme tokens
 - `public/` — images and static assets

@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { allImages, parseCollection } from "../../data";
 import CollectionViewer from "./CollectionViewer";
 
@@ -10,7 +12,7 @@ export const dynamicParams = true;
 
 export function generateStaticParams() {
   const uniqueSlugs = Array.from(
-    new Set(allImages.map((src) => parseCollection(src).slug))
+    new Set(allImages.map((src) => parseCollection(src).slug)),
   );
   return uniqueSlugs.map((slug) => ({ slug }));
 }
@@ -23,11 +25,11 @@ function normalizeWords(value: string) {
     .filter(Boolean);
 }
 
-export default async function CollectionPage({ params }: Params) {
-  const { slug } = await params;
-
+// Resolve the images + display title for a collection slug. Shared by the
+// page and generateMetadata so the two never drift apart.
+function resolveCollection(slug: string): { images: string[]; title: string } {
   const matchingCollectionImages = allImages.filter(
-    (src) => parseCollection(src).slug === slug
+    (src) => parseCollection(src).slug === slug,
   );
 
   const titleWords =
@@ -42,12 +44,49 @@ export default async function CollectionPage({ params }: Params) {
     return titleWords.every((word) => candidateWords.includes(word));
   });
 
-  const uniqueImages = Array.from(new Set(relatedImages));
-
+  const images = Array.from(new Set(relatedImages));
   const title =
-    uniqueImages.length > 0
-      ? parseCollection(uniqueImages[0]).name
+    images.length > 0
+      ? parseCollection(images[0]).name
       : slug.replace(/-/g, " ");
 
-  return <CollectionViewer images={uniqueImages} title={title} />;
+  return { images, title };
+}
+
+export async function generateMetadata({
+  params,
+}: Params): Promise<Metadata> {
+  const { slug } = await params;
+  const { images, title } = resolveCollection(slug);
+  if (images.length === 0) return { title: "Collection Not Found" };
+
+  const description = `Photography by Kevin Chen — the ${title} collection.`;
+  return {
+    title,
+    description,
+    alternates: { canonical: `/gallery/collection/${slug}` },
+    openGraph: {
+      title: `${title} · Kevin Chen`,
+      description,
+      url: `/gallery/collection/${slug}`,
+      images: [images[0]],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} · Kevin Chen`,
+      description,
+      images: [images[0]],
+    },
+  };
+}
+
+export default async function CollectionPage({ params }: Params) {
+  const { slug } = await params;
+  const { images, title } = resolveCollection(slug);
+
+  if (images.length === 0) {
+    notFound();
+  }
+
+  return <CollectionViewer images={images} title={title} />;
 }

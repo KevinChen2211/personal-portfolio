@@ -7,6 +7,7 @@ import { useScrollAnimation } from "../components/useScrollAnimation";
 import { usePrefersReducedMotion } from "../utils/motion";
 import { projects, type Project } from "../data/projects";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 // Project Card Component for projects page
 const ProjectCard = ({
@@ -19,7 +20,6 @@ const ProjectCard = ({
   const cardRef = useRef<HTMLDivElement>(null);
   const { isVisible } = useScrollAnimation(cardRef, { threshold: 0.1 });
   const prefersReducedMotion = usePrefersReducedMotion();
-  const bgColor = "#FAF2E6";
   const textColor = "#2C2C2C";
 
   return (
@@ -86,7 +86,6 @@ const ProjectCard = ({
 
 export default function ProjectsPage() {
   const bgColor = "#FAF2E6";
-  const textColor = "#2C2C2C";
 
   return (
     <div
@@ -103,16 +102,7 @@ export default function ProjectsPage() {
           </div>
         </div>
       </main>
-      <footer
-        className="w-full py-12 flex justify-center items-center"
-        style={{
-          backgroundColor: bgColor,
-          color: textColor,
-          fontFamily: "'Juana', var(--font-display), 'Playfair Display', serif",
-        }}
-      >
-        © Kevin Chen
-      </footer>
+      <Footer />
     </div>
   );
 }

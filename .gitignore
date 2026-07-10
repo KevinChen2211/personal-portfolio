@@ -40,6 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Next.js generated route/validator types (regenerated on dev/build)
+/types
+
 /prototype
 
 # image optimizer backups (created by `npm run optimize-images`)

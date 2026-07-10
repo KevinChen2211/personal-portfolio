@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "./components/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,11 +23,51 @@ const playfairDisplay = Playfair_Display({
   style: ["normal", "italic"],
 });
 
+const siteUrl = "https://kevinchen.com.au";
+const siteName = "Kevin Chen";
+const siteDescription =
+  "Portfolio of Kevin Chen — engineer and creative developer working across robotics, embedded systems, software, and photography.";
+
 export const metadata: Metadata = {
-  title: "Kevin Chen",
-  description: "Engineer & Creative Developer. Portfolio for Kevin Chen.",
-  icons: {
-    icon: [],
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Kevin Chen — Engineer & Creative Developer",
+    template: "%s · Kevin Chen",
+  },
+  description: siteDescription,
+  keywords: [
+    "Kevin Chen",
+    "engineer",
+    "creative developer",
+    "robotics",
+    "embedded systems",
+    "photography",
+    "portfolio",
+  ],
+  authors: [{ name: "Kevin Chen", url: siteUrl }],
+  creator: "Kevin Chen",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_AU",
+    url: siteUrl,
+    siteName,
+    title: "Kevin Chen — Engineer & Creative Developer",
+    description: siteDescription,
+    images: [
+      {
+        url: "/images/KevinChen.jpg",
+        alt: "Kevin Chen",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kevin Chen — Engineer & Creative Developer",
+    description: siteDescription,
+    images: ["/images/KevinChen.jpg"],
   },
 };
 
@@ -39,39 +78,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* 
-          To use IvyPresto Display Thin via Adobe Fonts:
-          1. Get your Adobe Fonts kit ID from fonts.adobe.com
-          2. Add this line before the script tag:
-             <link rel="stylesheet" href="https://use.typekit.net/[your-kit-id].css">
-          3. Update the fontFamily in page.tsx to use "ivypresto-display" as the first font
-        */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  const theme = localStorage.getItem('theme') || 
-                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-                  const palette = theme === 'dark' 
-                    ? { background: '#0a0a0f' }
-                    : { background: '#3c2414' };
-                  document.documentElement.style.setProperty('--initial-bg', palette.background);
-                  if (document.body) {
-                    document.body.style.backgroundColor = palette.background;
-                  }
-                } catch (e) {}
-              })();
-            `,
-          }}
-        />
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} antialiased`}
         suppressHydrationWarning
       >
-        <ThemeProvider>{children}</ThemeProvider>
+        {children}
       </body>
     </html>
   );

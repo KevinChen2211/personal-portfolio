@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import Navbar from "../../../components/Navbar";
 import { usePrefersReducedMotion } from "../../../utils/motion";
 
@@ -41,7 +42,7 @@ function NavButton({
       onClick={onClick}
       disabled={disabled}
       aria-label={isPrev ? "Previous image" : "Next image"}
-      className={`absolute top-1/2 z-10 rounded-full transition-colors duration-200 focus:outline-none flex items-center justify-center ${
+      className={`absolute top-1/2 z-10 rounded-full transition-colors duration-200 flex items-center justify-center ${
         isPrev ? "left-2 sm:left-5 md:left-7" : "right-2 sm:right-5 md:right-7"
       }`}
       style={{
@@ -95,6 +96,7 @@ export default function CollectionViewer({
   const bgColor = "#FAF2E6";
   const textColor = "#2C2C2C";
 
+  const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [chromeVisible, setChromeVisible] = useState(false);
   const [imageVisible, setImageVisible] = useState(false);
@@ -139,14 +141,12 @@ export default function CollectionViewer({
         e.preventDefault();
         goPrev();
       } else if (e.key === "Escape") {
-        if (typeof window !== "undefined") {
-          window.location.href = "/gallery";
-        }
+        router.push("/gallery");
       }
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [goNext, goPrev]);
+  }, [goNext, goPrev, router]);
 
   // Touch swipe — only horizontal swipes navigate; vertical motion is
   // ignored so users can still naturally scroll if needed.
@@ -351,7 +351,7 @@ export default function CollectionViewer({
                   onClick={() => goTo(idx)}
                   aria-label={`Go to image ${idx + 1}`}
                   aria-current={active ? "true" : undefined}
-                  className="transition-all duration-300 focus:outline-none"
+                  className="transition-all duration-300"
                   style={{
                     width: active ? "26px" : "10px",
                     height: "3px",

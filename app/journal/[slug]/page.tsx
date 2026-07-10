@@ -1,9 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { blogPosts } from "../../data/blogs";
 import { formatDate } from "../../utils/date";
 import { readingTime } from "../../utils/reading-time";
 import { parseMarkdown } from "../../utils/markdown";
 import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 
 interface JournalPostPageProps {
   params: Promise<{ slug: string }>;
@@ -11,6 +14,39 @@ interface JournalPostPageProps {
 
 export function generateStaticParams() {
   return blogPosts.map((post) => ({ slug: post.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: JournalPostPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = blogPosts.find((p) => p.slug === slug);
+  if (!post) return { title: "Post Not Found" };
+
+  const firstImage = post.content.match(/!\[IMAGE:([^\]]+)\]/)?.[1];
+  const images = firstImage ? [firstImage] : undefined;
+
+  return {
+    title: post.title,
+    description: post.excerpt,
+    alternates: { canonical: `/journal/${post.slug}` },
+    openGraph: {
+      type: "article",
+      title: `${post.title} · Kevin Chen`,
+      description: post.excerpt,
+      url: `/journal/${post.slug}`,
+      publishedTime: post.date,
+      authors: post.author ? [post.author] : undefined,
+      tags: post.tags,
+      images,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${post.title} · Kevin Chen`,
+      description: post.excerpt,
+      images,
+    },
+  };
 }
 
 export default async function JournalPostPage({
@@ -23,39 +59,7 @@ export default async function JournalPostPage({
   const post = blogPosts.find((p) => p.slug === slug);
 
   if (!post) {
-    return (
-      <div
-        className="min-h-screen w-full relative"
-        style={{ backgroundColor: bgColor }}
-      >
-        <Navbar />
-        <div className="px-6 sm:px-10 md:px-12 lg:px-20 xl:px-24 py-24 md:py-32 flex items-center justify-center">
-          <div className="text-center">
-            <h1
-              className="text-3xl sm:text-4xl md:text-5xl font-semibold mb-6"
-              style={{
-                color: textColor,
-                fontFamily:
-                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-              }}
-            >
-              Post Not Found
-            </h1>
-            <Link
-              href="/journal"
-              className="text-base md:text-lg transition-opacity duration-500 hover:underline hover:opacity-70"
-              style={{
-                color: textColor,
-                fontFamily:
-                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
-              }}
-            >
-              ← Back to Journal
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
+    notFound();
   }
 
   return (
@@ -151,16 +155,7 @@ export default async function JournalPostPage({
           </article>
         </div>
       </main>
-      <footer
-        className="w-full py-12 flex justify-center items-center"
-        style={{
-          backgroundColor: bgColor,
-          color: textColor,
-          fontFamily: "'Juana', var(--font-display), 'Playfair Display', serif",
-        }}
-      >
-        © Kevin Chen
-      </footer>
+      <Footer />
     </div>
   );
 }
