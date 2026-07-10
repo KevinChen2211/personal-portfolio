@@ -12,13 +12,6 @@
   --duration-slow: 1400ms;
   --duration-slower: 1800ms;
   --duration-slowest: 2400ms;
-
-  /* Editorial serif stack. --font-display is the next/font (Playfair) variable
-     set in layout.tsx; --font-serif-name prepends the display face used for
-     the wordmark. */
-  --font-serif: "Juana", var(--font-display), "Playfair Display",
-    "Times New Roman", serif;
-  --font-serif-name: "Sweet Rosetia Sans", var(--font-serif);
 }
 
 @theme inline {
@@ -111,6 +104,17 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+
+  /* Editorial serif stack. Defined on `body` (not `:root`) because
+     --font-display is the next/font (Playfair) variable that next/font scopes
+     to the <body> className — it is not available on <html>/:root, so a
+     :root-level var(--font-display) would resolve to nothing and invalidate
+     the whole declaration. The var() fallback keeps the stack a serif even if
+     --font-display is ever missing. --font-serif-name prepends the display
+     face used for the wordmark. */
+  --font-serif: "Juana", var(--font-display, "Playfair Display"),
+    "Times New Roman", serif;
+  --font-serif-name: "Sweet Rosetia Sans", var(--font-serif);
 }
 
 /* Mobile touch optimizations */
