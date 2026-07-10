@@ -99,7 +99,7 @@ export default async function JournalPostPage({
             style={{
               color: textColor,
               fontFamily:
-                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                "var(--font-serif)",
               opacity: 0.8,
             }}
           >
@@ -114,7 +114,7 @@ export default async function JournalPostPage({
               style={{
                 color: textColor,
                 fontFamily:
-                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                  "var(--font-serif)",
                 opacity: 0.7,
                 fontVariantNumeric: "tabular-nums",
               }}
@@ -129,7 +129,7 @@ export default async function JournalPostPage({
               style={{
                 color: textColor,
                 fontFamily:
-                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                  "var(--font-serif)",
               }}
             >
               {post.title}
@@ -147,7 +147,7 @@ export default async function JournalPostPage({
                       color: textColor,
                       border: `1px solid ${textColor}40`,
                       fontFamily:
-                        "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                        "var(--font-serif)",
                       opacity: 0.8,
                     }}
                   >

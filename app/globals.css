@@ -22,59 +22,16 @@
   --font-display: var(--font-display);
 }
 
-/* Juana Extra Light - Commercial font from Latinotype */
-@font-face {
-  font-family: "Juana";
-  src:
-    url("/fonts/Juana ExtraLight.woff2") format("woff2"),
-    url("/fonts/Juana ExtraLight.ttf") format("truetype");
-  font-weight: 200;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Juana";
-  src:
-    url("/fonts/Juana ExtraLight Italic.woff2") format("woff2"),
-    url("/fonts/Juana ExtraLight Italic.ttf") format("truetype");
-  font-weight: 200;
-  font-style: italic;
-  font-display: swap;
-}
-
-/* Sweet Rosetia Sans - Commercial font from Runsell Type */
-@font-face {
-  font-family: "Sweet Rosetia Sans";
-  src:
-    url("/fonts/sweet-sans-pro-regular.woff2") format("woff2"),
-    url("/fonts/sweet-sans-pro-regular.woff") format("woff");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* Articulat CF Medium - For long paragraphs and content */
-@font-face {
-  font-family: "Articulat CF Medium";
-  src: url("/fonts/Articulat CF Medium.otf") format("opentype");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* Mencken Std Head Narrow - For journal and project titles */
-@font-face {
-  font-family: "Mencken Std Head Narrow";
-  src: url("/fonts/fonnts.com-Mencken-Std-Head-Narrow-.otf") format("opentype");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
+/* The commercial fonts (Juana, Sweet Rosetia Sans, Articulat CF, Mencken Std
+   Head Narrow) are self-hosted through next/font/local in app/layout.tsx, which
+   handles @font-face generation, preloading, and size-adjusted fallbacks. They
+   are consumed here via their CSS variables (--font-juana, --font-sweet,
+   --font-articulat, --font-mencken). */
 
 /* Utility class for long paragraphs and content */
 .long-content {
   font-family:
-    "Articulat CF Medium",
+    var(--font-articulat),
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
@@ -105,16 +62,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 
-  /* Editorial serif stack. Defined on `body` (not `:root`) because
-     --font-display is the next/font (Playfair) variable that next/font scopes
-     to the <body> className — it is not available on <html>/:root, so a
-     :root-level var(--font-display) would resolve to nothing and invalidate
-     the whole declaration. The var() fallback keeps the stack a serif even if
-     --font-display is ever missing. --font-serif-name prepends the display
-     face used for the wordmark. */
-  --font-serif: "Juana", var(--font-display, "Playfair Display"),
-    "Times New Roman", serif;
-  --font-serif-name: "Sweet Rosetia Sans", var(--font-serif);
+  /* Editorial serif stacks. Defined on `body` (not `:root`) because the
+     next/font variables (--font-juana, --font-display, etc.) are scoped to the
+     <body> className — they are not available on <html>/:root, so resolving
+     them there would invalidate the declaration. The var() fallback keeps the
+     stack a serif even if a font variable is ever missing.
+       --font-serif        base body serif (hero, nav links, prose)
+       --font-serif-name   wordmark display face, prepended to the serif
+       --font-serif-title  condensed display face for project/journal titles */
+  --font-serif: var(--font-juana, "Juana"),
+    var(--font-display, "Playfair Display"), "Times New Roman", serif;
+  --font-serif-name: var(--font-sweet), var(--font-serif);
+  --font-serif-title: var(--font-mencken), var(--font-serif);
 }
 
 /* Mobile touch optimizations */

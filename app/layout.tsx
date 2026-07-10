@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
-import ReactDOM from "react-dom";
+import localFont from "next/font/local";
 import "./globals.css";
 import { siteConfig } from "./lib/site";
 import { personSchema, websiteSchema } from "./lib/structured-data";
@@ -25,6 +25,49 @@ const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
   weight: ["400"],
   style: ["normal", "italic"],
+});
+
+// Local commercial fonts, self-hosted via next/font/local. This gives
+// automatic preloading and a size-adjusted fallback face (reduces the layout
+// shift that plain @font-face + font-display: swap caused), while exposing each
+// as a CSS variable consumed by the stacks in globals.css.
+const juana = localFont({
+  src: [
+    { path: "../public/fonts/Juana ExtraLight.woff2", weight: "200", style: "normal" },
+    {
+      path: "../public/fonts/Juana ExtraLight Italic.woff2",
+      weight: "200",
+      style: "italic",
+    },
+  ],
+  variable: "--font-juana",
+  display: "swap",
+  fallback: ["Playfair Display", "Times New Roman", "serif"],
+});
+
+const sweetRosetiaSans = localFont({
+  src: "../public/fonts/sweet-sans-pro-regular.woff2",
+  weight: "400",
+  style: "normal",
+  variable: "--font-sweet",
+  display: "swap",
+});
+
+const articulatCF = localFont({
+  src: "../public/fonts/Articulat CF Medium.otf",
+  weight: "500",
+  style: "normal",
+  variable: "--font-articulat",
+  display: "swap",
+});
+
+const menckenStdHeadNarrow = localFont({
+  src: "../public/fonts/fonnts.com-Mencken-Std-Head-Narrow-.otf",
+  weight: "400",
+  style: "normal",
+  variable: "--font-mencken",
+  display: "swap",
+  fallback: ["Playfair Display", "Times New Roman", "serif"],
 });
 
 export const metadata: Metadata = {
@@ -101,27 +144,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Preload the two above-the-fold custom fonts (loaded via @font-face in
-  // globals.css, which the browser only discovers after CSS parses). Juana
-  // drives the hero/nav/titles and Sweet Rosetia Sans the wordmark, so getting
-  // them in flight early cuts the flash-of-unstyled-text and helps LCP.
-  // `crossOrigin: "anonymous"` is required — fonts are always fetched in CORS
-  // mode, so without it the preload wouldn't match the @font-face request.
-  ReactDOM.preload("/fonts/Juana%20ExtraLight.woff2", {
-    as: "font",
-    type: "font/woff2",
-    crossOrigin: "anonymous",
-  });
-  ReactDOM.preload("/fonts/sweet-sans-pro-regular.woff2", {
-    as: "font",
-    type: "font/woff2",
-    crossOrigin: "anonymous",
-  });
-
   return (
     <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${juana.variable} ${sweetRosetiaSans.variable} ${articulatCF.variable} ${menckenStdHeadNarrow.variable} antialiased`}
         suppressHydrationWarning
       >
         <JsonLd data={[personSchema(), websiteSchema()]} />

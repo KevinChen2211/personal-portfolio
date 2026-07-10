@@ -863,7 +863,7 @@ export default function GalleryPage() {
             style={{
               color: mobileTextColor,
               fontFamily:
-                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                "var(--font-serif)",
             }}
           >
             Gallery
@@ -894,7 +894,7 @@ export default function GalleryPage() {
                       style={{
                         color: mobileTextColor,
                         fontFamily:
-                          "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                          "var(--font-serif)",
                       }}
                     >
                       {collection.name}
@@ -1008,6 +1008,10 @@ export default function GalleryPage() {
                 }`}
                 style={{
                   color: expandedTextColor,
+                  // Match the editorial serif used by the non-link title variant
+                  // and the rest of the gallery; without this the linked title
+                  // fell back to the inherited sans-serif body font.
+                  fontFamily: "var(--font-serif)",
                   opacity:
                     showCollectionTitle && !isNavigatingToCollection ? 1 : 0,
                   pointerEvents:
@@ -1070,7 +1074,7 @@ export default function GalleryPage() {
                       ? "auto"
                       : "none",
                   fontFamily:
-                    "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                    "var(--font-serif)",
                 }}
                 onMouseEnter={handleSuperscriptMouseEnter}
                 onMouseLeave={handleSuperscriptMouseLeave}

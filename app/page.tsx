@@ -194,7 +194,7 @@ export default function Home() {
               ? "opacity 0.2s ease-out"
               : "opacity 2.5s var(--ease-out)",
             fontFamily:
-              "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+              "var(--font-serif)",
             fontStyle: "italic",
             fontSize: "11px",
             letterSpacing: "0.04em",
@@ -227,7 +227,7 @@ export default function Home() {
               className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-[1.5] md:leading-[1.4]"
               style={{
                 fontFamily:
-                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                  "var(--font-serif)",
                 fontWeight: 500,
                 color: textColor,
                 fontStyle: "normal",
@@ -374,7 +374,7 @@ export default function Home() {
                   style={{
                     color: textColor,
                     fontFamily:
-                      "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                      "var(--font-serif)",
                   }}
                 >
                   {image.label}

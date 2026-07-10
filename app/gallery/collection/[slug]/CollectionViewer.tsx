@@ -12,8 +12,7 @@ type CollectionViewerProps = {
   title: string;
 };
 
-const SERIF =
-  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif";
+const SERIF = "var(--font-serif)";
 
 // Frosted-glass surface shared by every floating control so their look stays
 // in sync. Translucent enough to feel like a glass overlay, opaque enough to
@@ -351,24 +350,48 @@ export default function CollectionViewer({
                   onClick={() => goTo(idx)}
                   aria-label={`Go to image ${idx + 1}`}
                   aria-current={active ? "true" : undefined}
-                  className="transition-all duration-300"
+                  className="flex items-center justify-center transition-all duration-300"
                   style={{
+                    // Opt out of the global 44px touch-target min (globals.css),
+                    // which would otherwise inflate these slim progress dashes
+                    // into large squares. The ~16px-tall transparent box keeps
+                    // them comfortably tappable while the inner span stays thin.
+                    minWidth: 0,
+                    minHeight: 0,
                     width: active ? "26px" : "10px",
-                    height: "3px",
-                    backgroundColor: "#1a1a1a",
-                    opacity: active ? 1 : 0.45,
+                    height: "16px",
                     border: "none",
                     padding: 0,
                     cursor: "pointer",
-                    borderRadius: "2px",
+                    background: "transparent",
                   }}
                   onMouseEnter={(e) => {
-                    if (!active) e.currentTarget.style.opacity = "0.75";
+                    if (!active) {
+                      const dash = e.currentTarget
+                        .firstElementChild as HTMLElement | null;
+                      if (dash) dash.style.opacity = "0.75";
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    if (!active) e.currentTarget.style.opacity = "0.45";
+                    if (!active) {
+                      const dash = e.currentTarget
+                        .firstElementChild as HTMLElement | null;
+                      if (dash) dash.style.opacity = "0.45";
+                    }
                   }}
-                />
+                >
+                  <span
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      height: "3px",
+                      backgroundColor: "#1a1a1a",
+                      opacity: active ? 1 : 0.45,
+                      borderRadius: "2px",
+                      transition: "opacity 0.2s ease-out",
+                    }}
+                  />
+                </button>
               );
             })}
           </div>

@@ -140,7 +140,7 @@ export default function NotFound() {
           className="text-4xl md:text-6xl lg:text-7xl font-light mb-2"
           style={{
             fontFamily:
-              "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+              "var(--font-serif)",
             fontWeight: 300,
             letterSpacing: "-0.02em",
           }}

@@ -95,7 +95,7 @@ const JournalCard = ({
                   color: textColor,
                   border: `1px solid ${textColor}40`,
                   fontFamily:
-                    "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                    "var(--font-serif)",
                   opacity: 0.8,
                 }}
               >
@@ -111,7 +111,7 @@ const JournalCard = ({
           style={{
             color: textColor,
             fontFamily:
-              '"Mencken Std Head Narrow", "Juana", var(--font-display), "Playfair Display", "Times New Roman", serif',
+              "var(--font-serif-title)",
           }}
         >
           {post.title}
@@ -123,7 +123,7 @@ const JournalCard = ({
           style={{
             color: textColor,
             fontFamily:
-              "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+              "var(--font-serif)",
             opacity: 0.7,
             fontVariantNumeric: "tabular-nums",
           }}

@@ -240,7 +240,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             style={{
               color: textColor,
               fontFamily:
-                "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                "var(--font-serif)",
               opacity: 0.8,
             }}
           >
@@ -257,7 +257,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               style={{
                 color: textColor,
                 fontFamily:
-                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                  "var(--font-serif)",
               }}
             >
               {project.title}
@@ -283,7 +283,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               style={{
                 color: textColor,
                 fontFamily:
-                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                  "var(--font-serif)",
               }}
             >
               Key Achievements

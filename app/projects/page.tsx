@@ -74,7 +74,7 @@ const ProjectCard = ({
           style={{
             color: textColor,
             fontFamily:
-              '"Mencken Std Head Narrow", "Juana", var(--font-display), "Playfair Display", "Times New Roman", serif',
+              "var(--font-serif-title)",
           }}
         >
           {project.title}

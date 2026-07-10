@@ -41,7 +41,7 @@ export default function ContactPage() {
               className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl leading-[1.4] md:leading-[1.3] mb-3 md:mb-5"
               style={{
                 fontFamily:
-                  "'Juana', var(--font-display), 'Playfair Display', 'Times New Roman', serif",
+                  "var(--font-serif)",
                 fontWeight: 500,
                 color: textColor,
                 fontStyle: "normal",
