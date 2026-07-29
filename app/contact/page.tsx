@@ -19,7 +19,7 @@ export default function ContactPage() {
         className="relative px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 flex items-center"
         style={{ height: "calc(100dvh - 73px)", marginTop: "73px" }}
       >
-        <div className="w-full flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-10">
+        <div className="site-container flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-10">
           {/* Contact Image - Left Side */}
           <div className="w-full md:w-[50vw] lg:w-[45vw] max-w-[800px] flex-shrink-0 order-2 md:order-1">
             <div className="relative w-full h-[50vh] md:h-[85vh] max-h-[900px]">
@@ -37,7 +37,7 @@ export default function ContactPage() {
 
           {/* Contact Content - Right Side */}
           <div className="w-full md:flex-1 order-1 md:order-2 flex flex-col justify-center">
-            <div
+            <h1
               className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl leading-[1.4] md:leading-[1.3] mb-3 md:mb-5"
               style={{
                 fontFamily:
@@ -54,7 +54,7 @@ export default function ContactPage() {
               </span>
               {", "}
               feel free to reach out.
-            </div>
+            </h1>
 
             <div
               className="text-sm md:text-base leading-relaxed mb-4 md:mb-6 "
@@ -69,14 +69,14 @@ export default function ContactPage() {
 
             <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
               <div>
-                <h3
+                <h2
                   className="text-xs md:text-sm font-semibold mb-1"
                   style={{
                     color: textColor,
                   }}
                 >
                   Instagram
-                </h3>
+                </h2>
                 <a
                   href="https://www.instagram.com/kewinchen_/"
                   target="_blank"
@@ -90,14 +90,14 @@ export default function ContactPage() {
                 </a>
               </div>
               <div>
-                <h3
+                <h2
                   className="text-xs md:text-sm font-semibold mb-1"
                   style={{
                     color: textColor,
                   }}
                 >
                   LinkedIn
-                </h3>
+                </h2>
                 <a
                   href="https://www.linkedin.com/in/kevinchenengineer/"
                   target="_blank"

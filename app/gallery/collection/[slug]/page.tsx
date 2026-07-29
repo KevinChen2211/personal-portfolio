@@ -9,8 +9,8 @@ type Params = {
   params: Promise<{ slug: string }>;
 };
 
-// Allow visiting any slug even if it's not statically generated
-export const dynamicParams = true;
+// Collections come from the static registry; unknown slugs should be a 404.
+export const dynamicParams = false;
 
 export function generateStaticParams() {
   const uniqueSlugs = Array.from(
@@ -19,34 +19,12 @@ export function generateStaticParams() {
   return uniqueSlugs.map((slug) => ({ slug }));
 }
 
-function normalizeWords(value: string) {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]+/g, " ")
-    .split(/\s+/)
-    .filter(Boolean);
-}
-
 // Resolve the images + display title for a collection slug. Shared by the
 // page and generateMetadata so the two never drift apart.
 function resolveCollection(slug: string): { images: string[]; title: string } {
-  const matchingCollectionImages = allImages.filter(
+  const images = allImages.filter(
     (src) => parseCollection(src).slug === slug,
   );
-
-  const titleWords =
-    matchingCollectionImages.length > 0
-      ? normalizeWords(parseCollection(matchingCollectionImages[0]).name)
-      : normalizeWords(slug.replace(/-/g, " "));
-
-  const relatedImages = allImages.filter((src) => {
-    const { name, slug: parsedSlug } = parseCollection(src);
-    if (parsedSlug === slug) return true;
-    const candidateWords = normalizeWords(name);
-    return titleWords.every((word) => candidateWords.includes(word));
-  });
-
-  const images = Array.from(new Set(relatedImages));
   const title =
     images.length > 0
       ? parseCollection(images[0]).name
@@ -102,7 +80,7 @@ export default async function CollectionPage({ params }: Params) {
           ]),
         ]}
       />
-      <CollectionViewer images={images} title={title} />
+      <CollectionViewer key={slug} images={images} title={title} />
     </>
   );
 }

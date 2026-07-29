@@ -52,8 +52,8 @@ function NavButton({
         color: "#1a1a1a",
         opacity: chromeVisible ? (disabled ? 0.25 : 1) : 0,
         cursor: disabled ? "default" : "pointer",
-        width: 40,
-        height: 40,
+        width: 44,
+        height: 44,
         backgroundColor: GLASS_BG,
         backdropFilter: GLASS_BLUR,
         WebkitBackdropFilter: GLASS_BLUR,
@@ -227,29 +227,21 @@ export default function CollectionViewer({
             "opacity 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1)",
         }}
       >
-        <div className="flex items-center justify-between gap-3">
+        <div className="site-container flex flex-col md:flex-row md:items-center gap-0.5 md:gap-3">
           <Link
             href="/gallery"
-            className="text-xs md:text-sm transition-opacity duration-500 hover:underline hover:opacity-70 pointer-events-auto"
+            className="self-start text-xs md:text-sm transition-opacity duration-500 hover:underline hover:opacity-70 pointer-events-auto"
             style={{ color: textColor, fontFamily: SERIF, opacity: 0.85 }}
           >
             ← Back to Gallery
           </Link>
           <h1
-            className="hidden md:block text-base md:text-lg tracking-wide italic text-right pointer-events-auto truncate"
+            className="self-center text-[13px] italic text-center leading-tight md:ml-auto md:self-auto md:text-lg md:tracking-wide md:text-right pointer-events-auto truncate"
             style={{ color: textColor, fontFamily: SERIF, maxWidth: "60vw" }}
           >
             {title}
           </h1>
         </div>
-        {/* Mobile-only title — sits tight under the back link so portrait
-            photos never crowd it. */}
-        <h1
-          className="md:hidden mt-0.5 text-[13px] italic text-center pointer-events-auto leading-tight"
-          style={{ color: textColor, fontFamily: SERIF, opacity: 0.85 }}
-        >
-          {title}
-        </h1>
       </header>
 
       {/* Stage — pinned to the viewport so the photo sits at the true vertical

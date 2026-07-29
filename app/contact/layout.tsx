@@ -14,6 +14,12 @@ export const metadata: Metadata = {
     url: "/contact",
     images: ["/images/Contact.jpg"],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: `${title} · Kevin Chen`,
+    description,
+    images: ["/images/Contact.jpg"],
+  },
 };
 
 export default function ContactLayout({

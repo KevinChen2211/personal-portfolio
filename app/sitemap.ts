@@ -7,8 +7,6 @@ import { siteConfig, absoluteUrl } from "./lib/site";
 const baseUrl = siteConfig.url;
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
-
   const staticRoutes: MetadataRoute.Sitemap = [
     "",
     "/projects",
@@ -17,14 +15,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/contact",
   ].map((path) => ({
     url: `${baseUrl}${path}`,
-    lastModified: now,
     changeFrequency: "monthly",
     priority: path === "" ? 1 : 0.8,
   }));
 
   const projectRoutes: MetadataRoute.Sitemap = projects.map((project) => ({
     url: `${baseUrl}/projects/${project.slug}`,
-    lastModified: now,
     changeFrequency: "yearly",
     priority: 0.6,
     images: project.image ? [absoluteUrl(project.image)] : undefined,
@@ -47,7 +43,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const collectionRoutes: MetadataRoute.Sitemap = collectionSlugs.map(
     (slug) => ({
       url: `${baseUrl}/gallery/collection/${slug}`,
-      lastModified: now,
       changeFrequency: "yearly",
       priority: 0.5,
       images: allImages
