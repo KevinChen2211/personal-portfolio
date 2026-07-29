@@ -20,6 +20,12 @@ export const metadata: Metadata = {
     url: "/journal",
     images: ["/images/Journal.jpg"],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: `${title} · Kevin Chen`,
+    description,
+    images: ["/images/Journal.jpg"],
+  },
 };
 
 export default function JournalLayout({

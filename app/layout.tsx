@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
+import { Geist, Playfair_Display } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { siteConfig } from "./lib/site";
@@ -8,11 +8,6 @@ import JsonLd from "./components/JsonLd";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
@@ -25,6 +20,7 @@ const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
   weight: ["400"],
   style: ["normal", "italic"],
+  preload: false,
 });
 
 // Local commercial fonts, self-hosted via next/font/local. This gives
@@ -59,6 +55,7 @@ const articulatCF = localFont({
   style: "normal",
   variable: "--font-articulat",
   display: "swap",
+  preload: false,
 });
 
 const menckenStdHeadNarrow = localFont({
@@ -67,6 +64,7 @@ const menckenStdHeadNarrow = localFont({
   style: "normal",
   variable: "--font-mencken",
   display: "swap",
+  preload: false,
   fallback: ["Playfair Display", "Times New Roman", "serif"],
 });
 
@@ -147,7 +145,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${juana.variable} ${sweetRosetiaSans.variable} ${articulatCF.variable} ${menckenStdHeadNarrow.variable} antialiased`}
+        className={`${geistSans.variable} ${playfairDisplay.variable} ${juana.variable} ${sweetRosetiaSans.variable} ${articulatCF.variable} ${menckenStdHeadNarrow.variable} antialiased`}
         suppressHydrationWarning
       >
         <JsonLd data={[personSchema(), websiteSchema()]} />

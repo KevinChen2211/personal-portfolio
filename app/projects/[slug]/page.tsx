@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { projects } from "../../data/projects";
 import Navbar from "../../components/Navbar";
-import Footer from "../../components/Footer";
 import JsonLd from "../../components/JsonLd";
 import { creativeWorkSchema, breadcrumbSchema } from "../../lib/structured-data";
 import { parseMarkdown } from "../../utils/markdown";
@@ -335,7 +334,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

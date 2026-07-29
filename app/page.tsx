@@ -4,14 +4,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { usePrefersReducedMotion } from "./utils/motion";
-import NavInner from "./components/NavInner";
-import Footer from "./components/Footer";
+import Navbar from "./components/Navbar";
 
 export default function Home() {
   const bgColor = "#FAF2E6";
   const textColor = "#2C2C2C";
-  const [showNavbar, setShowNavbar] = useState(true);
-  const [navbarAtBottom, setNavbarAtBottom] = useState(false);
   const [visibleImages, setVisibleImages] = useState<Set<number>>(new Set());
   const [heroVisible, setHeroVisible] = useState(false);
   const [heroImageVisible, setHeroImageVisible] = useState(false);
@@ -59,10 +56,10 @@ export default function Home() {
     { src: "/images/Contact.jpg", link: "/contact", label: "Contact" },
   ];
 
-  // Scroll detection for navbar + gentle parallax on section images
+  // Gentle parallax on section images.
   useEffect(() => {
-    let lastScrollY = window.scrollY;
     let ticking = false;
+    let frameId: number | null = null;
 
     // Mutate the parallax layers' transforms directly instead of routing
     // through React state — this runs on every scroll frame, so re-rendering
@@ -87,33 +84,10 @@ export default function Home() {
 
     const handleScroll = () => {
       if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const currentScrollY = window.scrollY;
-          const windowHeight = window.innerHeight;
-          const documentHeight = document.documentElement.scrollHeight;
-          const isAtBottom =
-            currentScrollY + windowHeight >= documentHeight - 10;
-          const scrollDifference = currentScrollY - lastScrollY;
-
+        frameId = window.requestAnimationFrame(() => {
           updateParallax();
-
-          // Show navbar at bottom when at the very bottom
-          if (isAtBottom) {
-            setNavbarAtBottom(true);
-            setShowNavbar(true);
-          } else {
-            setNavbarAtBottom(false);
-
-            // Hide navbar when scrolling down past threshold, show when scrolling up or at top
-            if (currentScrollY > 100 && scrollDifference > 0) {
-              setShowNavbar(false);
-            } else {
-              setShowNavbar(true);
-            }
-          }
-
-          lastScrollY = currentScrollY;
           ticking = false;
+          frameId = null;
         });
         ticking = true;
       }
@@ -125,6 +99,7 @@ export default function Home() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", updateParallax);
+      if (frameId !== null) window.cancelAnimationFrame(frameId);
     };
   }, []);
 
@@ -179,7 +154,7 @@ export default function Home() {
 
   return (
     <div
-      className="min-h-screen w-full relative overflow-y-auto pt-6 md:pt-8"
+      className="min-h-screen w-full relative overflow-x-hidden pt-6 md:pt-8"
       style={{ backgroundColor: bgColor }}
     >
       {/* Mobile banner — quiet editorial note, slow fade */}
@@ -204,26 +179,14 @@ export default function Home() {
         </div>
       )}
 
-      {/* Header Navigation */}
-      <header
-        className={`w-full px-6 md:px-12 lg:px-16 py-5 md:py-6 flex items-center justify-between fixed z-50 transition-all duration-700 ${
-          showNavbar
-            ? navbarAtBottom
-              ? "bottom-0 top-auto"
-              : "top-0"
-            : "-translate-y-full"
-        }`}
-        style={{ backgroundColor: bgColor }}
-      >
-        <NavInner />
-      </header>
+      <Navbar />
 
       {/* Main Content Area */}
       <main className="relative px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 min-h-screen flex items-center pt-24 md:pt-30">
-        <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-12">
+        <div className="site-container flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-12">
           {/* Hero Text - Large Serif Display */}
           <div className="w-full md:max-w-[60vw] lg:max-w-[50vw] relative">
-            <div
+            <h1
               className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-[1.5] md:leading-[1.4]"
               style={{
                 fontFamily:
@@ -258,7 +221,7 @@ export default function Home() {
               </span>{" "}
               exploring innovative solutions, digital experiences, and creative
               projects.
-            </div>
+            </h1>
           </div>
 
           {/* Kevin Chen Portrait Image */}
@@ -292,7 +255,7 @@ export default function Home() {
       </main>
 
       {/* Scrollable Image Gallery Section */}
-      <section className="relative w-full pt-0">
+      <section className="relative w-full pt-0 pb-20 md:pb-28">
         {images.map((image, index) => {
           // 4-position cycle: 0, 1, 3, 2 (left, middle-left, right, middle-right)
           const positionMap = [0, 1, 3, 2];
@@ -331,7 +294,7 @@ export default function Home() {
               }}
               className={`w-full flex ${justifyClass} ${
                 isLastImage ? "mb-0 md:pb-[0vh]" : "mb-[28vh]"
-              } px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24`}
+              } px-4 sm:px-6 md:px-12 lg:px-20 xl:px-28`}
               style={{
                 opacity: isVisible ? 1 : 0,
                 transform:
@@ -385,8 +348,6 @@ export default function Home() {
         })}
       </section>
 
-      {/* Bottom padding for navbar when at bottom */}
-      <Footer />
     </div>
   );
 }

@@ -7,7 +7,6 @@ import { useRef } from "react";
 import { useScrollAnimation } from "../components/useScrollAnimation";
 import { usePrefersReducedMotion } from "../utils/motion";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import { formatDate } from "../utils/date";
 import { readingTime } from "../utils/reading-time";
 
@@ -62,7 +61,7 @@ const JournalCard = ({
                 alt={post.title}
                 fill
                 className="object-cover transition-opacity duration-700 group-hover:opacity-88"
-                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 33vw, 800px"
+                sizes="(max-width: 640px) 100vw, (max-width: 1279px) 50vw, 400px"
                 quality={70}
                 priority={index === 0}
                 loading={index < 3 ? "eager" : "lazy"}
@@ -106,7 +105,7 @@ const JournalCard = ({
         )}
 
         {/* Title */}
-        <h3
+        <h2
           className="text-4xl md:text-4xl lg:text-6xl xl:text-6xl text-center transition-opacity duration-500 group-hover:opacity-75 mb-2"
           style={{
             color: textColor,
@@ -115,7 +114,7 @@ const JournalCard = ({
           }}
         >
           {post.title}
-        </h3>
+        </h2>
 
         {/* Date · reading time */}
         <div
@@ -145,15 +144,15 @@ export default function JournalPage() {
     >
       <Navbar />
       <main className="px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 pt-20 pb-24 md:pt-24 md:pb-32">
-        <div className="w-full mx-auto max-w-full">
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-6 md:gap-8 lg:gap-10 xl:gap-12">
+        <div className="site-container">
+          <h1 className="sr-only">Journal</h1>
+          <div className="mx-auto grid w-full grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8 lg:gap-10 xl:gap-12">
             {blogPosts.map((post, index) => (
               <JournalCard key={post.id} post={post} index={index} />
             ))}
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

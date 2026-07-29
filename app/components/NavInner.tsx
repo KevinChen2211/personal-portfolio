@@ -13,20 +13,53 @@ const NAV_LINKS = [
 // Navbar and the home page's scroll-aware header. Rendered as a fragment so it
 // drops directly into a `flex justify-between` <header>. Pass `activePath` to
 // underline the current section.
-export default function NavInner({ activePath }: { activePath?: string }) {
+export default function NavInner({
+  activePath,
+  compact = false,
+}: {
+  activePath?: string;
+  compact?: boolean;
+}) {
   return (
     <>
       {/* Name - Left */}
       <Link
         href="/"
-        className="text-xs md:text-sm tracking-wide hover:opacity-70 transition-opacity"
+        aria-label="Kevin Chen, home"
+        className="flex w-[80px] md:w-[94px] items-center text-xs md:text-sm tracking-wide hover:opacity-70 transition-opacity"
         style={{
           color: TEXT_COLOR,
           fontFamily: "var(--font-serif-name)",
           fontWeight: "normal",
         }}
       >
-        <span className="font-bold">KEVIN CHEN</span>
+        <span
+          aria-hidden="true"
+          className="inline-flex whitespace-nowrap font-bold"
+        >
+          <span>K</span>
+          <span
+            className="inline-block overflow-hidden transition-[max-width,opacity,transform] duration-[900ms] ease-[var(--ease-out)] motion-reduce:transition-none"
+            style={{
+              maxWidth: compact ? 0 : "3.35em",
+              opacity: compact ? 0 : 1,
+              transform: compact ? "translateX(-0.2em)" : "translateX(0)",
+            }}
+          >
+            {"EVIN\u00A0"}
+          </span>
+          <span>C</span>
+          <span
+            className="inline-block overflow-hidden transition-[max-width,opacity,transform] duration-[900ms] ease-[var(--ease-out)] motion-reduce:transition-none"
+            style={{
+              maxWidth: compact ? 0 : "2.4em",
+              opacity: compact ? 0 : 1,
+              transform: compact ? "translateX(-0.2em)" : "translateX(0)",
+            }}
+          >
+            HEN
+          </span>
+        </span>
       </Link>
 
       {/* Navigation Links */}

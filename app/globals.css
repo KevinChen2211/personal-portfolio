@@ -18,7 +18,6 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
   --font-display: var(--font-display);
 }
 
@@ -74,6 +73,13 @@ body {
     var(--font-display, "Playfair Display"), "Times New Roman", serif;
   --font-serif-name: var(--font-sweet), var(--font-serif);
   --font-serif-title: var(--font-mencken), var(--font-serif);
+}
+
+/* Shared desktop rhythm. Full-bleed photography stages deliberately opt out. */
+.site-container {
+  width: 100%;
+  max-width: 90rem;
+  margin-inline: auto;
 }
 
 /* Mobile touch optimizations */

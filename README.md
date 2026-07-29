@@ -4,7 +4,8 @@ Personal site for Kevin Chen — engineer and creative developer. A single-page 
 
 ## Features
 
-- Landing page with scroll-aware navigation, hero animations, and a visual grid linking to each section
+- Landing page with a fixed navigation bar whose `KEVIN CHEN` wordmark contracts to `KC` on scroll
+- Centered desktop content rhythm with full-bleed treatment retained for the immersive gallery
 - **Projects** — case studies with detail pages (`/projects/[slug]`)
 - **Gallery** — photo collections with full-screen viewers (`/gallery/collection/[slug]`)
 - **Journal** — blog posts rendered from markdown (`/journal/[slug]`)
@@ -54,7 +55,7 @@ Personal site for Kevin Chen — engineer and creative developer. A single-page 
 - `app/gallery/` — gallery and collection viewers
 - `app/journal/` — journal listing and post pages
 - `app/contact/page.tsx` — contact page
-- `app/components/` — shared UI (navbar, loading screen, scroll hooks)
+- `app/components/` — shared UI (fixed navbar, loading screen, scroll hooks)
 - `app/data/` — projects and blog content
 - `app/layout.tsx` — global fonts and site metadata
 - `app/sitemap.ts`, `app/robots.ts` — generated `sitemap.xml` and `robots.txt`

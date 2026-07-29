@@ -149,7 +149,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
           transform: prefersReducedMotion
             ? "none"
             : isVisible
-              ? "translateY(0)"
+              ? "none"
               : "translateY(2px)",
           minHeight: "100vh",
           width: "100%",

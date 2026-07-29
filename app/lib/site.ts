@@ -3,7 +3,7 @@
 // domain / name / socials never drift apart across those files.
 
 export const siteConfig = {
-  url: "https://kevinchen.com.au",
+  url: "https://www.kevinchen.com.au",
   name: "Kevin Chen",
   title: "Kevin Chen — Engineer & Creative Developer",
   description:

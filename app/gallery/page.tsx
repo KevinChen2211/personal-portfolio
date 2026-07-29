@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { galleryImages, parseCollection, allImages } from "./data";
 import Navbar from "../components/Navbar";
+import { usePrefersReducedMotion } from "../utils/motion";
 
 function ScrollingDigit({ value }: { value: number }) {
   const [current, setCurrent] = useState(value);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     setCurrent(value);
@@ -27,7 +29,9 @@ function ScrollingDigit({ value }: { value: number }) {
       <div
         style={{
           transform: `translateY(${-current * 1.2}em)`,
-          transition: "transform 0.4s ease-out",
+          transition: prefersReducedMotion
+            ? "none"
+            : "transform 0.4s ease-out",
         }}
       >
         {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
@@ -84,6 +88,7 @@ export default function GalleryPage() {
   const mobileTextColor = "#2C2C2C"; // Dark text for light background
   const expandedTextColor = bgColor; // Same as background for enlarged image
   const router = useRouter();
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   const trackRef = useRef<HTMLDivElement | null>(null);
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
@@ -91,6 +96,9 @@ export default function GalleryPage() {
   const currentScrollPercentageRef = useRef<number>(-50);
   const expandedIndexRef = useRef<number | null>(null);
   const previousCollectionSlugRef = useRef<string | null>(null);
+  const expandedDialogRef = useRef<HTMLDivElement | null>(null);
+  const lastFocusedElementRef = useRef<HTMLElement | null>(null);
+  const wasExpandedRef = useRef(false);
 
   const [expandedImageIndex, setExpandedImageIndex] = useState<number | null>(
     null,
@@ -137,7 +145,7 @@ export default function GalleryPage() {
     time: number;
   } | null>(null);
   const hasCollectionLink = !!expandedCollection?.slug;
-  const zoomTransitionMs = 1300;
+  const zoomTransitionMs = prefersReducedMotion ? 0 : 1300;
 
   // Handle collection link click with fade-out
   const handleCollectionClick = (
@@ -154,7 +162,7 @@ export default function GalleryPage() {
     // page will trigger the optimized first-image fetch automatically.
     setTimeout(() => {
       router.push(`/gallery/collection/${slug}`);
-    }, 400);
+    }, prefersReducedMotion ? 0 : 400);
   };
 
   // Calculate collection info
@@ -220,7 +228,7 @@ export default function GalleryPage() {
   };
 
   // Get all collections (including current) that have images in galleryImages
-  const getAllCollections = () => {
+  const getAllCollections = useCallback(() => {
     if (!expandedCollection) return [];
 
     const collectionsMap = new Map<
@@ -246,13 +254,36 @@ export default function GalleryPage() {
     });
 
     return Array.from(collectionsMap.values());
-  };
+  }, [expandedCollection]);
 
   const allCollections = expandedImageIndex !== null ? getAllCollections() : [];
 
   useEffect(() => {
     expandedIndexRef.current = expandedImageIndex;
   }, [expandedImageIndex]);
+
+  useEffect(() => {
+    const expanded =
+      expandedImageIndex !== null && expandedImageStyle !== null;
+    let frameId: number | null = null;
+
+    if (expanded && !wasExpandedRef.current) {
+      wasExpandedRef.current = true;
+      frameId = requestAnimationFrame(() => {
+        expandedDialogRef.current?.focus({ preventScroll: true });
+      });
+    } else if (!expanded && wasExpandedRef.current) {
+      wasExpandedRef.current = false;
+      frameId = requestAnimationFrame(() => {
+        lastFocusedElementRef.current?.focus({ preventScroll: true });
+        lastFocusedElementRef.current = null;
+      });
+    }
+
+    return () => {
+      if (frameId !== null) cancelAnimationFrame(frameId);
+    };
+  }, [expandedImageIndex, expandedImageStyle]);
 
   /* -------------------------------
      Expand-to-fullscreen after the start frame is committed.
@@ -270,19 +301,24 @@ export default function GalleryPage() {
           width: window.innerWidth,
           height: window.innerHeight,
         });
-        // Fade in the background
-        setTimeout(() => {
+        if (prefersReducedMotion) {
           setIsOpening(false);
-        }, 10);
-        // Fade in preview after a short delay
-        setTimeout(() => {
           setShowPreview(true);
-        }, 300);
+        } else {
+          // Fade in the background.
+          setTimeout(() => {
+            setIsOpening(false);
+          }, 10);
+          // Fade in preview after a short delay.
+          setTimeout(() => {
+            setShowPreview(true);
+          }, 300);
+        }
         setPendingExpand(false);
       });
     });
     return () => cancelAnimationFrame(rafId);
-  }, [pendingExpand]);
+  }, [pendingExpand, prefersReducedMotion]);
 
   /* -------------------------------
      Mobile detection
@@ -318,8 +354,7 @@ export default function GalleryPage() {
 
     let percentage = -50;
     let targetPercentage = percentage;
-    let velocity = 60;
-    let lastTime = performance.now();
+    let velocity = prefersReducedMotion ? 0 : 60;
     let animationFrameId: number | null = null;
     let isPageVisible = document.visibilityState === "visible";
     let lastRenderedPercentage = Number.NaN;
@@ -344,6 +379,7 @@ export default function GalleryPage() {
     let maxScroll = calculateMaxScroll();
     const handleResize = () => {
       maxScroll = calculateMaxScroll();
+      ensureAnimation();
     };
     window.addEventListener("resize", handleResize);
 
@@ -376,13 +412,14 @@ export default function GalleryPage() {
       e.preventDefault();
       const delta = e.deltaY * -0.035;
       targetPercentage = clamp(targetPercentage + delta);
-      velocity = delta * 0.15;
+      velocity = prefersReducedMotion ? 0 : delta * 0.15;
+      ensureAnimation();
     };
     window.addEventListener("wheel", handleWheel, { passive: false });
     const handleVisibilityChange = () => {
       isPageVisible = document.visibilityState === "visible";
       if (isPageVisible) {
-        lastTime = performance.now();
+        ensureAnimation();
       }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -415,8 +452,9 @@ export default function GalleryPage() {
         e.preventDefault();
         const delta = deltaX * -0.5; // Adjust sensitivity
         targetPercentage = clamp(targetPercentage + delta);
-        velocity = delta * 0.05;
+        velocity = prefersReducedMotion ? 0 : delta * 0.05;
         touchStartX = touchX;
+        ensureAnimation();
       }
     };
 
@@ -428,18 +466,22 @@ export default function GalleryPage() {
     window.addEventListener("touchmove", handleTouchMove, { passive: false });
     window.addEventListener("touchend", handleTouchEnd, { passive: true });
 
-    const animate = (currentTime: number) => {
-      if (!isPageVisible) {
+    function ensureAnimation() {
+      if (animationFrameId === null && isPageVisible) {
         animationFrameId = requestAnimationFrame(animate);
-        return;
       }
+    }
 
-      lastTime = currentTime;
-
+    function animate() {
+      animationFrameId = null;
+      if (!isPageVisible) return;
       const isExpanded = expandedIndexRef.current !== null;
 
       if (isExpanded) {
         targetPercentage = percentage; // freeze track movement
+        velocity = 0;
+      } else if (prefersReducedMotion) {
+        percentage = targetPercentage;
         velocity = 0;
       } else if (Math.abs(velocity) > 0.01) {
         targetPercentage = clamp(targetPercentage + velocity);
@@ -447,7 +489,11 @@ export default function GalleryPage() {
       }
 
       const distance = targetPercentage - percentage;
-      const lerpFactor = Math.abs(distance) > 1 ? 0.025 : 0.018;
+      const lerpFactor = prefersReducedMotion
+        ? 1
+        : Math.abs(distance) > 1
+          ? 0.025
+          : 0.018;
       percentage += distance * lerpFactor;
 
       if (Math.abs(distance) < 0.01 && Math.abs(velocity) < 0.01)
@@ -466,7 +512,7 @@ export default function GalleryPage() {
       }
 
       // Parallax
-      if (!isExpanded) {
+      if (!isExpanded && !prefersReducedMotion) {
         frameCounter = (frameCounter + 1) % 2;
         const shouldUpdateParallax =
           frameCounter === 0 &&
@@ -488,10 +534,14 @@ export default function GalleryPage() {
         }
       }
 
-      animationFrameId = requestAnimationFrame(animate);
-    };
+      const stillMoving =
+        !isExpanded &&
+        (Math.abs(targetPercentage - percentage) >= 0.01 ||
+          Math.abs(velocity) >= 0.01);
+      if (stillMoving) ensureAnimation();
+    }
 
-    animationFrameId = requestAnimationFrame(animate);
+    ensureAnimation();
 
     return () => {
       if (animationFrameId !== null) {
@@ -508,12 +558,12 @@ export default function GalleryPage() {
         img.style.willChange = "auto";
       }
     };
-  }, [isMobile]);
+  }, [isMobile, prefersReducedMotion]);
 
   /* -------------------------------
      SHRINK EXPANDED IMAGE SEAMLESSLY
   ------------------------------- */
-  const shrinkImage = () => {
+  const shrinkImage = useCallback(() => {
     if (expandedImageIndex === null || isClosing) return;
     setShowCollectionTitle(false);
     const imageIndexToScroll = expandedImageIndex;
@@ -563,8 +613,13 @@ export default function GalleryPage() {
           }, zoomTransitionMs);
         });
       });
-    }, 120);
-  };
+    }, prefersReducedMotion ? 0 : 120);
+  }, [
+    expandedImageIndex,
+    isClosing,
+    prefersReducedMotion,
+    zoomTransitionMs,
+  ]);
 
   /* -------------------------------
      Close on Escape
@@ -575,7 +630,7 @@ export default function GalleryPage() {
     };
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
-  }, [expandedImageIndex]);
+  }, [expandedImageIndex, shrinkImage]);
 
   /* -------------------------------
      Shrink on wheel while expanded
@@ -589,7 +644,7 @@ export default function GalleryPage() {
     };
     window.addEventListener("wheel", handleExpandedWheel, { passive: false });
     return () => window.removeEventListener("wheel", handleExpandedWheel);
-  }, [expandedImageIndex, isClosing, isTransitioning]);
+  }, [isClosing, isTransitioning, shrinkImage]);
 
   /* -------------------------------
      Swipe gestures for expanded view (desktop only)
@@ -689,7 +744,8 @@ export default function GalleryPage() {
     expandedImageIndex,
     isClosing,
     isTransitioning,
-    expandedCollection,
+    getAllCollections,
+    shrinkImage,
   ]);
 
   /* -------------------------------
@@ -702,8 +758,8 @@ export default function GalleryPage() {
     setShowCollectionTitle(false);
     setNextImageSlideIn(false);
 
-    // Transition duration matches existing (1000ms)
-    const transitionDuration = 1000;
+    // Transition duration matches existing motion unless the user opts out.
+    const transitionDuration = prefersReducedMotion ? 0 : 1000;
 
     // Start the slide-in animation after a brief delay to ensure DOM is ready
     const timeoutId = setTimeout(() => {
@@ -763,10 +819,15 @@ export default function GalleryPage() {
           });
         });
       }, transitionDuration);
-    }, 50);
+    }, prefersReducedMotion ? 0 : 50);
 
     return () => clearTimeout(timeoutId);
-  }, [isTransitioning, nextImageData, transitionDirection]);
+  }, [
+    isTransitioning,
+    nextImageData,
+    transitionDirection,
+    prefersReducedMotion,
+  ]);
 
   // Get unique collections for mobile simple view
   const getUniqueCollections = () => {
@@ -808,6 +869,10 @@ export default function GalleryPage() {
       pendingExpand
     )
       return;
+    lastFocusedElementRef.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
     const src = galleryImages[i];
     const img = imageRefs.current[i];
     if (!img) return;
@@ -850,15 +915,20 @@ export default function GalleryPage() {
         backgroundColor: bgColor,
         color: textColor,
         opacity: isNavigatingToCollection ? 0 : 1,
-        transition: isNavigatingToCollection ? "opacity 0.4s ease-out" : "none",
+        transition:
+          isNavigatingToCollection && !prefersReducedMotion
+            ? "opacity 0.4s ease-out"
+            : "none",
       }}
     >
       <Navbar />
+      <h1 className="sr-only">Photography gallery</h1>
 
       {/* MOBILE SIMPLE VIEW */}
       {isMobile ? (
         <div className="pt-24 pb-12 px-4 sm:px-6">
-          <h1
+          <div
+            aria-hidden="true"
             className="text-3xl font-bold mb-8"
             style={{
               color: mobileTextColor,
@@ -867,7 +937,7 @@ export default function GalleryPage() {
             }}
           >
             Gallery
-          </h1>
+          </div>
           <div className="grid grid-cols-1 gap-6">
             {uniqueCollections.map((collection) => (
               <Link
@@ -975,9 +1045,20 @@ export default function GalleryPage() {
         expandedImageStyle &&
         expandedImageSrc &&
         expandedCollection && (
-          <>
+          <div
+            ref={expandedDialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${expandedCollection.name} collection preview`}
+            tabIndex={-1}
+            className="fixed inset-0 z-[55] outline-none"
+          >
             <div
-              className="fixed inset-0 z-40 transition-opacity duration-[900ms]"
+              className={`fixed inset-0 z-40 ${
+                prefersReducedMotion
+                  ? "transition-none"
+                  : "transition-opacity duration-[900ms]"
+              }`}
               style={{
                 backgroundColor: bgColor,
                 opacity:
@@ -985,7 +1066,11 @@ export default function GalleryPage() {
               }}
             />
             <div
-              className="fixed inset-0 z-[45] pointer-events-none transition-opacity duration-[900ms]"
+              className={`fixed inset-0 z-[45] pointer-events-none ${
+                prefersReducedMotion
+                  ? "transition-none"
+                  : "transition-opacity duration-[900ms]"
+              }`}
               style={{
                 background:
                   "radial-gradient(ellipse at center, transparent 42%, rgba(44, 44, 44, 0.12) 100%)",
@@ -1018,6 +1103,7 @@ export default function GalleryPage() {
                     showCollectionTitle && !isNavigatingToCollection
                       ? "auto"
                       : "none",
+                  transitionDuration: prefersReducedMotion ? "0ms" : undefined,
                 }}
                 onMouseEnter={handleSuperscriptMouseEnter}
                 onMouseLeave={handleSuperscriptMouseLeave}
@@ -1025,7 +1111,11 @@ export default function GalleryPage() {
                 <span className="relative inline-block">
                   <span className="inline-block overflow-hidden">
                     <span
-                      className={`block transition-transform duration-1000 ease-in-out ${
+                      className={`block ${
+                        prefersReducedMotion
+                          ? "transition-none"
+                          : "transition-transform duration-1000 ease-in-out"
+                      } ${
                         collectionNameAnimate
                           ? "translate-y-0"
                           : "translate-y-full"
@@ -1046,7 +1136,8 @@ export default function GalleryPage() {
                         style={{
                           transform: getSuperscriptTransform(),
                           transition:
-                            isSuperscriptExiting || hoveredTitle
+                            !prefersReducedMotion &&
+                            (isSuperscriptExiting || hoveredTitle)
                               ? "transform 0.3s ease-in-out"
                               : "none",
                         }}
@@ -1075,6 +1166,7 @@ export default function GalleryPage() {
                       : "none",
                   fontFamily:
                     "var(--font-serif)",
+                  transitionDuration: prefersReducedMotion ? "0ms" : undefined,
                 }}
                 onMouseEnter={handleSuperscriptMouseEnter}
                 onMouseLeave={handleSuperscriptMouseLeave}
@@ -1082,7 +1174,11 @@ export default function GalleryPage() {
                 <span className="relative inline-block">
                   <span className="inline-block overflow-hidden">
                     <span
-                      className={`block transition-transform duration-1000 ease-in-out ${
+                      className={`block ${
+                        prefersReducedMotion
+                          ? "transition-none"
+                          : "transition-transform duration-1000 ease-in-out"
+                      } ${
                         collectionNameAnimate
                           ? "translate-y-0"
                           : "translate-y-full"
@@ -1103,7 +1199,8 @@ export default function GalleryPage() {
                         style={{
                           transform: getSuperscriptTransform(),
                           transition:
-                            isSuperscriptExiting || hoveredTitle
+                            !prefersReducedMotion &&
+                            (isSuperscriptExiting || hoveredTitle)
                               ? "transform 0.3s ease-in-out"
                               : "none",
                         }}
@@ -1134,6 +1231,7 @@ export default function GalleryPage() {
                   alignItems: "center",
                   justifyContent: "center",
                   gap: "0.2em",
+                  transitionDuration: prefersReducedMotion ? "0ms" : undefined,
                 }}
               >
                 <ScrollingNumber value={galleryPositionInfo.currentIndex} />
@@ -1165,6 +1263,7 @@ export default function GalleryPage() {
                       ? "auto"
                       : "none",
                   WebkitOverflowScrolling: "touch",
+                  transitionDuration: prefersReducedMotion ? "0ms" : undefined,
                 }}
               >
                 {allCollections.map((collection, idx) => {
@@ -1175,9 +1274,13 @@ export default function GalleryPage() {
                     idx < currentCollectionIndex ? "left" : "right";
 
                   return (
-                    <div
+                    <button
+                      type="button"
                       key={collection.galleryImageIndex}
-                      className="cursor-pointer relative flex-shrink-0"
+                      aria-label={`Preview the ${collection.name} collection`}
+                      aria-pressed={collection.isCurrent}
+                      disabled={collection.isCurrent || isTransitioning || isClosing}
+                      className="cursor-pointer relative flex-shrink-0 border-0 bg-transparent p-0 text-left disabled:cursor-default"
                       onClick={(e) => {
                         e.stopPropagation();
                         if (
@@ -1191,7 +1294,6 @@ export default function GalleryPage() {
                           imageRefs.current[collection.galleryImageIndex];
                         if (!img) return;
 
-                        const rect = img.getBoundingClientRect();
                         const currentObjectPosition =
                           getComputedStyle(img).objectPosition;
 
@@ -1237,7 +1339,7 @@ export default function GalleryPage() {
                           {collection.name}
                         </p>
                       </div>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
@@ -1248,7 +1350,7 @@ export default function GalleryPage() {
             {expandedImageSrc && (
               <div
                 className={
-                  disableCommitAnimation
+                  disableCommitAnimation || prefersReducedMotion
                     ? "transition-none"
                     : "transition-all duration-[1300ms] ease-out"
                 }
@@ -1266,7 +1368,8 @@ export default function GalleryPage() {
                       : "translate(-50%, -50%)",
                   zIndex: 50,
                   opacity: isNavigatingToCollection ? 0 : 1,
-                  transition: isNavigatingToCollection
+                  transition:
+                    isNavigatingToCollection && !prefersReducedMotion
                     ? "opacity 0.4s ease-out"
                     : undefined,
                   overflow: "hidden",
@@ -1299,7 +1402,11 @@ export default function GalleryPage() {
               transitionDirection &&
               expandedImageStyle && (
                 <div
-                  className="transition-all duration-1000 ease-out"
+                  className={
+                    prefersReducedMotion
+                      ? "transition-none"
+                      : "transition-all duration-1000 ease-out"
+                  }
                   style={{
                     width: `${expandedImageStyle.width}px`,
                     height: `${expandedImageStyle.height}px`,
@@ -1333,7 +1440,7 @@ export default function GalleryPage() {
                   />
                 </div>
               )}
-          </>
+          </div>
         )}
     </div>
   );

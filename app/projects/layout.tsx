@@ -19,6 +19,12 @@ export const metadata: Metadata = {
     url: "/projects",
     images: ["/images/Projects.jpg"],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: `${title} · Kevin Chen`,
+    description,
+    images: ["/images/Projects.jpg"],
+  },
 };
 
 export default function ProjectsLayout({
