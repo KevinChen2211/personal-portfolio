@@ -148,6 +148,16 @@ export default function RootLayout({
         className={`${geistSans.variable} ${playfairDisplay.variable} ${juana.variable} ${sweetRosetiaSans.variable} ${articulatCF.variable} ${menckenStdHeadNarrow.variable} antialiased`}
         suppressHydrationWarning
       >
+        {/* Runs before the first paint so the landing hero knows whether to
+            start hidden. The server can't know, so without this the hero is
+            always rendered at opacity 0 and returning visitors see a blank
+            hero band until hydration catches up. Consumed by the
+            `[data-first-visit]` rules in globals.css. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(!sessionStorage.getItem("hasVisitedLanding"))document.documentElement.dataset.firstVisit="true"}catch(e){}`,
+          }}
+        />
         <JsonLd data={[personSchema(), websiteSchema()]} />
         {children}
       </body>

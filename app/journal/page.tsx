@@ -9,12 +9,7 @@ import { usePrefersReducedMotion } from "../utils/motion";
 import Navbar from "../components/Navbar";
 import { formatDate } from "../utils/date";
 import { readingTime } from "../utils/reading-time";
-
-// Extract first image from blog content
-function getFirstImage(content: string): string | null {
-  const imageMatch = content.match(/!\[IMAGE:(.+?)\]/);
-  return imageMatch ? imageMatch[1] : null;
-}
+import { extractFirstImagePath } from "../utils/image-marker";
 
 // Journal Card Component with scroll animations
 const JournalCard = ({
@@ -28,7 +23,7 @@ const JournalCard = ({
   const { isVisible } = useScrollAnimation(cardRef, { threshold: 0.1 });
   const prefersReducedMotion = usePrefersReducedMotion();
   const textColor = "#2C2C2C";
-  const imageUrl = getFirstImage(post.content);
+  const imageUrl = extractFirstImagePath(post.content);
 
   return (
     <div

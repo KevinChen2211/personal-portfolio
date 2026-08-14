@@ -13,31 +13,31 @@ export const projects: Project[] = [
     description: `
 I mentored Melbourne RoboCats, an all-girls high-school team, on the software and electrical side of their FIRST Robotics Competition (FRC) robot. Most of the season went into getting the students comfortable with embedded programming on the NI RoboRIO using WPILib (C++), and helping them think about the robot as a control system rather than just a pile of code.
 
-![IMAGE:/projects-images/robocats_1.jpg]
+![IMAGE:/projects-images/robocats_1.jpg|Team 5648's robot on the competition field, surrounded by yellow game pieces]
 
 We started with the basics: how the RoboRIO, power distribution hub, motor controllers, and sensors all fit together as one system. From there we laid out a code structure that kept autonomous logic, driver control, the individual subsystems (drive, intake, shooter, climber), and shared helpers separate. The students got used to breaking the game down into features and turning those into reusable bits of code.
 
 On the embedded side, I walked them through motor control with WPILib, including setting up CAN motor controllers, current limits, and neutral modes. We wired in encoders, gyroscopes, and limit switches so the robot could run closed-loop control and not drive its mechanisms past their limits. The students wrote the drive code, mechanism control, and the safety checks that kept everything within the rules and easy on the hardware.
 
-![IMAGE:/projects-images/robocats_2.jpg]
+![IMAGE:/projects-images/robocats_2.jpg|Three RoboCats students in purple team shirts working on the robot's wiring in the pit]
 
 Autonomous was the part everyone was most nervous about. We mapped the field out into coordinates and paths, then turned those into command sequences that mixed sensor feedback with timed moves. Dashboards and telemetry let us watch the sensor data live, track down problems, and tune things like PID gains, motion profiles, and timing.
 
 Electrical work got just as much attention. We went through wire gauge, fuses and breakers, grounding, and keeping the CAN and sensor lines clean. The students learned to lay out tidy wiring, label everything, and actually work through problems like brownouts, dropped CAN packets, and noisy sensors instead of guessing at them.
 
-![IMAGE:/projects-images/robocats_3.jpg]
+![IMAGE:/projects-images/robocats_3.jpg|The robot on its cart, showing the green intake rollers and a polycarbonate side panel]
 
 The whole season ran on small loops: write a bit of code, test it on the robot, watch what it actually did, then fix it. That kept the robot drivable and forgiving for the drivers once competition pressure kicked in. The students also had to explain their control strategy and electrical choices to judges, which forced them to really understand their own work.
 
-![IMAGE:/projects-images/robocats_4.jpg]
+![IMAGE:/projects-images/robocats_4.jpg|A match underway on the field, game pieces mid-air beneath the FIRST banner]
 
 The season wasn't all in the workshop either. We made it to the Melbourne Formula 1 Grand Prix, which was a nice way to connect the precision and teamwork we were practising on the robot to engineering at the very top end of the sport.
 
-![IMAGE:/projects-images/robocats_5.jpg]
+![IMAGE:/projects-images/robocats_5.jpg|Group photo of teams 5648 and 6083 with both robots after the competition]
 
 By the end, the RoboCats were adding to the codebase on their own, safely changing the electrical system, and using telemetry to debug and improve the robot without me hovering over them. They walked away with a competitive FRC robot and some real experience in embedded systems, control, and working as a team against a deadline.
 
-![IMAGE:/projects-images/robocats_6.jpg]
+![IMAGE:/projects-images/robocats_6.jpg|Trackside at the Melbourne Formula 1 Grand Prix, a marshal walking the grass verge]
 `.trim(),
     highlights: [
       "Mentored an all-girls high-school FRC team (Melbourne RoboCats) in embedded software and electrical systems",
@@ -57,11 +57,11 @@ By the end, the RoboCats were adding to the codebase on their own, safely changi
     description: `
 I founded Advanced RMIT Competitive Robotics (ARCR) and grew it into a team of more than 80 students across mechanical, electrical, and software. We ran full design-build-test cycles on a tight budget, and the robots we built went on to win competitions.
 
-![IMAGE:/projects-images/Robotics-social_event.png]
+![IMAGE:/projects-images/Robotics-social_event.png|ARCR members gathered for a club social night]
 
 Getting the club off the ground meant first figuring out how it would actually run day to day. I took the team through complete design cycles, starting with CAD work that produced parts we could really manufacture and proper technical drawings. Every robot had to balance weight limits, material choices, and what we could realistically build with the money we had.
 
-![IMAGE:/projects-images/Bot-CAD.png]
+![IMAGE:/projects-images/Bot-CAD.png|CAD render of the combat robot, showing its sprocket drive, front wedge and yellow spinning weapon]
 
 A big part of leading the team was making sure the mechanical, electrical, and software work all fit together. I wrote up the requirements so everything stayed within the competition rules and the subsystems had clear interfaces, which saved us from the kind of integration headaches that can sink an entire build.
 
@@ -69,13 +69,13 @@ The electronics were their own challenge. I designed the robot electronics, incl
 
 Testing was a constant loop. We bench-tested individual parts, then ran live tests in a controlled setup. Every test taught us something and fed straight back into the next revision, so reliability built up gradually through failure analysis and a lot of prototyping.
 
-![IMAGE:/projects-images/bot-testing.png]
+![IMAGE:/projects-images/bot-testing.png|Testing a robot inside the polycarbonate arena while team members watch from outside]
 
 It paid off. We won competitions, brought in sponsors, and ran workshops for both industry people and high-school students through STEM outreach. The club's profile also opened doors to teams from MIT, Purdue, Duke, Carnegie Mellon, and Caltech.
 
-![IMAGE:/projects-images/competition-bot.png]
+![IMAGE:/projects-images/competition-bot.png|Six ARCR members holding the competition robot and its controller in the arena hall]
 
-![IMAGE:/projects-images/networking-bots.png]
+![IMAGE:/projects-images/networking-bots.png|Students seated for an ARCR panel discussion with guest speakers]
 
 As ARCR grew, I was invited onto SYN radio to talk about the club: the engineering we were doing, the competitions we were entering, and the hands-on culture we were trying to build for students who wanted more than classroom robotics.
 
@@ -130,19 +130,19 @@ https://www.youtube.com/watch?v=VAfr-Zdzpp8
     description: `
 This was a garage project I took on just to see if I could build a working tube furnace from scratch and use it to study silicon oxidation by watching the colour of the oxide layer change. The furnace is a quartz glass tube wrapped in 22AWG nichrome heating wire, held in place with high-temperature ceramic cement and wrapped in ceramic fibre blanket for insulation. A variac (variable autotransformer) controls the power so I can ramp the temperature smoothly, and a high-temperature thermocouple keeps an eye on the process. I run it at roughly 25 degrees per minute so nothing gets thermally shocked and the oxidation stays even. Feeding steam in at one end speeds the oxidation up, which lets me see how temperature and time change the rate and quality of the silicon dioxide that forms. The oxide layers come out in different colours depending on their thickness, so I get a quick visual read on how the oxidation is going across the wafer.
 
-![IMAGE:/projects-images/tube-furnace-setup.png]
+![IMAGE:/projects-images/tube-furnace-setup.png|The finished furnace wrapped in ceramic fibre insulation, plugged into a variac on the bench]
 
 I started by picking materials that could actually survive the temperatures silicon oxidation needs (usually 800-1200°C). The quartz tube does double duty as the reaction chamber and a window to watch what's happening inside. I went with quartz because it handles heat well, barely expands, and holds its shape at high temperatures.
 
-![IMAGE:/projects-images/nichrome-wire.png]
+![IMAGE:/projects-images/nichrome-wire.png|Nichrome wire wound in an even helix along the quartz tube and set in ceramic cement]
 
 I wound the 22AWG nichrome wire around the tube in an even helix so the heat would spread evenly, then locked it down with high-temperature ceramic cement, which also keeps the turns electrically separated. The cement holds up past 1000°C and stops the wire shifting as things heat up and cool down. After that I wrapped about a metre of ceramic fibre insulation around the whole assembly. That keeps the heat in, protects me from burns, and holds a steady temperature along the tube. It also stops the tube cooling so fast that it cracks. Temperature control is the part that really makes or breaks the process. The variac lets me adjust the voltage smoothly for a controlled ramp, and I keep it at around 25 degrees per minute so neither the wafers nor the quartz tube crack from thermal shock. A K-type thermocouple sitting inside the tube gives me live temperature feedback the whole way through.
 
-![IMAGE:/projects-images/hot_tube_furnace.png]
+![IMAGE:/projects-images/hot_tube_furnace.png|The furnace running, with the bore of the quartz tube glowing orange]
 
 To push the oxidation along, I introduce steam at one end of the tube. The water vapour speeds silicon oxidation up a lot compared to dry oxygen on its own. By changing the temperature and how long I leave it, I can watch how each one affects the oxidation rate. The silicon dioxide layers end up with their own colours depending on thickness, thanks to thin-film interference. Thin layers look yellow or gold, and as they get thicker they move through blue and purple before going more or less transparent or white.
 
-![IMAGE:/projects-images/silicone-oxide-comparison.png]
+![IMAGE:/projects-images/silicone-oxide-comparison.png|Four oxidised silicon samples after 30 minutes at 1050°C, running from blue through gold and pink to purple]
 
 That gives me instant feedback on how the oxidation is going without having to destroy the sample to measure it. By matching the colours I see against known oxide thicknesses, I can estimate the growth rate under different conditions. It ended up being a genuinely useful little research tool, and it pulled together materials science, thermal engineering, and a bit of semiconductor processing into one build.
 `.trim(),

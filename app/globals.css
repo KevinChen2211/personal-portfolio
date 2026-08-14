@@ -174,6 +174,39 @@ html {
   display: none;
 }
 
+/* Landing hero entrance.
+
+   Visible by default, so the server HTML and the first client render agree and
+   a returning visitor never sees a blank hero. Only a genuine first visit
+   starts hidden, flagged by the pre-paint script in layout.tsx — and on a
+   first visit the loading screen covers the viewport, so the hidden frame is
+   never seen. React adds `.is-visible` to play the entrance. */
+.hero-reveal {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
+}
+
+[data-first-visit] .hero-reveal:not(.is-visible) {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-reveal {
+    transition: opacity 0.2s ease-out;
+  }
+
+  /* No loading screen runs under reduced motion, so nothing would be covering
+     a hidden hero. Skip the entrance entirely. */
+  [data-first-visit] .hero-reveal:not(.is-visible) {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* Page Transition Animations */
 .page-transition-wrapper {
   /* Default visible state */
@@ -236,4 +269,25 @@ html {
   );
 
   /* Note: mask-image transitions aren't well supported, but the CSS variables update smoothly */
+}
+
+/* The 404 reveal is driven by a precise pointer. Hide the whole mechanic on
+   touch (there is no hover position to track, so the page would just be a
+   black rectangle) and under reduced motion (a full-viewport moving surface),
+   and give the system cursor back in both cases. Doing this in CSS rather than
+   JS means it applies before first paint, with no flash of the wrong state. */
+.reveal-page {
+  cursor: none;
+}
+
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .reveal-page {
+    cursor: auto;
+  }
+
+  .reveal-mask,
+  .reveal-glow,
+  .reveal-cursor {
+    display: none;
+  }
 }

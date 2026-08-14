@@ -3,6 +3,7 @@ import { projects } from "./data/projects";
 import { blogPosts } from "./data/blogs";
 import { allImages, parseCollection } from "./gallery/data";
 import { siteConfig, absoluteUrl } from "./lib/site";
+import { extractFirstImagePath } from "./utils/image-marker";
 
 const baseUrl = siteConfig.url;
 
@@ -27,7 +28,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   const postRoutes: MetadataRoute.Sitemap = blogPosts.map((post) => {
-    const firstImage = post.content.match(/!\[IMAGE:([^\]]+)\]/)?.[1];
+    const firstImage = extractFirstImagePath(post.content);
     return {
       url: `${baseUrl}/journal/${post.slug}`,
       lastModified: new Date(post.date),

@@ -40,15 +40,15 @@ A fixed `.film-grain` overlay lives in `app/template.tsx` (CSS in `globals.css`)
 
 ## Content conventions (`app/data/*`)
 
-- Inline images in prose use the marker `![IMAGE:/path/to/image.jpg]` (parsed by `app/utils/markdown.tsx`), not standard markdown image syntax with alt text.
+- Inline images in prose use the marker `![IMAGE:/path/to/image.jpg|Alt text]` (parsed by `app/utils/markdown.tsx`), not standard markdown image syntax. Always write the alt text after the pipe: describe what is actually in the frame, not who took it — a visible "Photo by Kevin Chen" caption already renders under every photo, so repeating it in `alt` tells a screen reader nothing. The pipe can be omitted for the Next.js/Vercel logos, which derive their alt from the filename. `app/utils/image-marker.ts` owns the marker format — anything pulling a path out of a marker (card thumbnails, OG images, the sitemap) must go through it rather than writing its own regex.
 - Project `description` is markdown prose; `highlights` is a string[] of résumé-style bullets. Preserve image markers and URLs exactly when editing copy.
 - Write in a natural, first-person voice. Avoid AI-tell phrasing (e.g. "comprehensive", "robust", "world-class", "the results spoke for themselves", "isn't just X, it's Y", heavy em-dashes and rule-of-three lists).
 
 ## Gotchas
 
 - **`next/image` with `fill`**: never set `width`, `height`, `top`, `left`, `right`, or `bottom` in its `style`. Next throws a runtime error. To bleed past edges (e.g. to hide sub-pixel seam lines during scale animations) use `transform: "scale(1.01)"` instead.
-- **Image `quality`**: any custom `quality` must be listed in `images.qualities` in `next.config.ts` (currently `[60, 70, 75, 80, 82, 85]`) or Next.js logs a dev warning. Add new values there.
-- **Gallery animations** (`app/gallery/page.tsx`): the desktop view uses a hand-rolled rAF scroll/parallax loop that pauses when idle, plus CSS-transition-based open/close. To make a transition reliably play, commit the start frame first, then change to the end frame on a later frame (see the `pendingExpand` effect) — don't set both in the same paint.
+- **Image `quality`**: any custom `quality` must be listed in `images.qualities` in `next.config.ts` (currently `[60, 70, 75, 80, 85]`) or Next.js logs a dev warning. Add new values there. Every full-size render of a gallery photo uses `PHOTO_QUALITY` (85) — changing `quality` or `sizes` on one surface but not the others makes the same photo a separate `/_next/image` entry and forces a cold AVIF encode on first view.
+- **Gallery animations** (`app/gallery/page.tsx`): the desktop view uses a hand-rolled rAF scroll/parallax loop that pauses when idle, plus CSS-transition-based open/close. To make a transition reliably play, commit the start frame first, then change to the end frame on a later frame (see the `pendingExpand` effect) — don't set both in the same paint. A correctly timed transition still looks broken if the image has no pixels yet, so the expanded view renders through `ExpandedPhoto`: the already-cached thumbnail variant underneath, the fullscreen variant cross-fading in on load. Keep both layers on the same `quality`/`sizes` contract as the track thumbnail.
 - This is a `"use client"` page-heavy app; most interactive pages are client components.
 
 ## Verifying UI changes
