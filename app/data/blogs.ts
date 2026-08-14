@@ -16,7 +16,7 @@ export const blogPosts: BlogPost[] = [
     slug: "the-year-ahead",
     date: "2026-01-01",
     excerpt: "Looking forward to the new year and what i want to achieve",
-    content: ` ![IMAGE:/blog-images/The-Year-Ahead.jpg]
+    content: ` ![IMAGE:/blog-images/The-Year-Ahead.jpg|A person sitting alone on a clifftop, looking out over open blue water]
     New Year's resolutions have never really been my thing. I'd usually set one vaguely ambitious goal, give the year a dramatic name, and then more or less just vibe my way through it. Now that I've graduated, I don't really have an excuse not to be more deliberate about improving myself. So this year, I've decided to hold myself accountable by setting smaller, more achievable goals. 
     
     - The first goal I want to commit to is reading more, especially non-fiction. If I manage to stick to it, I'll be sharing my thoughts and short reviews of what I read here. 
@@ -25,7 +25,7 @@ export const blogPosts: BlogPost[] = [
     
     - The final goal is to make healthier day-to-day decisions, whether that means skipping the upsized meal or being more mindful about how much time I spend doom-scrolling.
 
-    ![IMAGE:/blog-images/new-years-resolution.jpg]
+    ![IMAGE:/blog-images/new-years-resolution.jpg|Two worn brooms propped against a wall, one of them wearing a pair of sunglasses]
     ---
 
 
@@ -41,7 +41,7 @@ export const blogPosts: BlogPost[] = [
     date: "2025-12-02",
     excerpt:
       "For most of my life I tried to stay comfortable. A few years in as a student and an engineer, I've started doing the opposite on purpose, because that's where most of my growth has actually come from.",
-    content: `![IMAGE:/blog-images/choosing-discomfort-pushing-beyond-familiar-1.jpg]
+    content: `![IMAGE:/blog-images/choosing-discomfort-pushing-beyond-familiar-1.jpg|Misty eucalypt forest with tree ferns filling the understorey]
 
 For most of my life I've tried to stay comfortable. But after a few years as a student, an engineer, and someone who's always building something, I've slowly come round to the opposite idea: being uncomfortable is worth going looking for, not avoiding.
 
@@ -71,7 +71,7 @@ It took me the better part of 20 years to work this out. Better late than never.
     date: "2025-11-21",
     excerpt:
       "A look at the technologies, tools, and practices behind this portfolio — from Next.js and React to Git version control and Vercel hosting.",
-    content: `![IMAGE:/blog-images/Portfolio.jpg]
+    content: `![IMAGE:/blog-images/Portfolio.jpg|A man walking past a large graffiti mural of a red rose on a corrugated wall]
 
 This website has been in constant development since 2021. It has evolved over the years and changed styling as my preferences have changed.
 

@@ -149,12 +149,14 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
       return;
     }
 
-    // Handle images - format: ![IMAGE:path/to/image.png]
+    // Handle images - format: ![IMAGE:path/to/image.png] with optional alt
+    // text after a pipe: ![IMAGE:path/to/image.png|What the photo shows]
     if (trimmed.startsWith("![IMAGE:")) {
       flushList();
-      const imageMatch = trimmed.match(/!\[IMAGE:(.+?)\]/);
+      const imageMatch = trimmed.match(/!\[IMAGE:([^\]|]+?)(?:\|([^\]]*))?\]/);
       if (imageMatch) {
-        const imagePath = imageMatch[1];
+        const imagePath = imageMatch[1].trim();
+        const markerAlt = imageMatch[2]?.trim();
         const isSvg = imagePath.toLowerCase().endsWith(".svg");
         const isLogo =
           imagePath.includes("next-js") ||
@@ -165,6 +167,11 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
           : imagePath.includes("next-js")
             ? "Next.js logo"
             : "";
+        // A marker that supplies its own alt always wins. Without one, fall
+        // back to empty rather than a canned credit line — photos already
+        // carry a visible "Photo by Kevin Chen" caption below them, so
+        // repeating it in alt tells a screen reader nothing about the image.
+        const altText = markerAlt || logoAlt;
         elements.push(
           <div
             key={`img-${index}`}
@@ -193,7 +200,7 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
                 <img
                   key={imagePath}
                   src={imagePath}
-                  alt={logoAlt}
+                  alt={altText}
                   className="object-contain w-full h-auto"
                   style={{
                     maxWidth: "100%",
@@ -206,7 +213,7 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
                 <Image
                   key={imagePath}
                   src={imagePath}
-                  alt="Photo by Kevin Chen"
+                  alt={altText}
                   width={800}
                   height={600}
                   className="object-contain w-full h-auto"
