@@ -40,7 +40,7 @@ A fixed `.film-grain` overlay lives in `app/template.tsx` (CSS in `globals.css`)
 
 ## Content conventions (`app/data/*`)
 
-- Inline images in prose use the marker `![IMAGE:/path/to/image.jpg|Alt text]` (parsed by `app/utils/markdown.tsx`), not standard markdown image syntax. Always write the alt text after the pipe: describe what is actually in the frame, not who took it — a visible "Photo by Kevin Chen" caption already renders under every photo, so repeating it in `alt` tells a screen reader nothing. The pipe can be omitted for the Next.js/Vercel logos, which derive their alt from the filename.
+- Inline images in prose use the marker `![IMAGE:/path/to/image.jpg|Alt text]` (parsed by `app/utils/markdown.tsx`), not standard markdown image syntax. Always write the alt text after the pipe: describe what is actually in the frame, not who took it — a visible "Photo by Kevin Chen" caption already renders under every photo, so repeating it in `alt` tells a screen reader nothing. The pipe can be omitted for the Next.js/Vercel logos, which derive their alt from the filename. `app/utils/image-marker.ts` owns the marker format — anything pulling a path out of a marker (card thumbnails, OG images, the sitemap) must go through it rather than writing its own regex.
 - Project `description` is markdown prose; `highlights` is a string[] of résumé-style bullets. Preserve image markers and URLs exactly when editing copy.
 - Write in a natural, first-person voice. Avoid AI-tell phrasing (e.g. "comprehensive", "robust", "world-class", "the results spoke for themselves", "isn't just X, it's Y", heavy em-dashes and rule-of-three lists).
 

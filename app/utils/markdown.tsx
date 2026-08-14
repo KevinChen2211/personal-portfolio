@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import Image from "next/image";
+import { parseImageMarker } from "./image-marker";
 
 interface ParseMarkdownOptions {
   palette: {
@@ -153,10 +154,10 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
     // text after a pipe: ![IMAGE:path/to/image.png|What the photo shows]
     if (trimmed.startsWith("![IMAGE:")) {
       flushList();
-      const imageMatch = trimmed.match(/!\[IMAGE:([^\]|]+?)(?:\|([^\]]*))?\]/);
-      if (imageMatch) {
-        const imagePath = imageMatch[1].trim();
-        const markerAlt = imageMatch[2]?.trim();
+      const marker = parseImageMarker(trimmed);
+      if (marker) {
+        const imagePath = marker.path;
+        const markerAlt = marker.alt;
         const isSvg = imagePath.toLowerCase().endsWith(".svg");
         const isLogo =
           imagePath.includes("next-js") ||

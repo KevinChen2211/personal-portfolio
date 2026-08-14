@@ -5,6 +5,7 @@ import { blogPosts } from "../../data/blogs";
 import { formatDate } from "../../utils/date";
 import { readingTime } from "../../utils/reading-time";
 import { parseMarkdown } from "../../utils/markdown";
+import { extractFirstImagePath } from "../../utils/image-marker";
 import Navbar from "../../components/Navbar";
 import JsonLd from "../../components/JsonLd";
 import { articleSchema, breadcrumbSchema } from "../../lib/structured-data";
@@ -24,7 +25,7 @@ export async function generateMetadata({
   const post = blogPosts.find((p) => p.slug === slug);
   if (!post) return { title: "Post Not Found" };
 
-  const firstImage = post.content.match(/!\[IMAGE:([^\]]+)\]/)?.[1];
+  const firstImage = extractFirstImagePath(post.content);
   const images = firstImage ? [firstImage] : undefined;
 
   return {
@@ -63,7 +64,7 @@ export default async function JournalPostPage({
     notFound();
   }
 
-  const firstImage = post.content.match(/!\[IMAGE:([^\]]+)\]/)?.[1];
+  const firstImage = extractFirstImagePath(post.content);
 
   return (
     <div
