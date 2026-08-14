@@ -18,32 +18,39 @@ export default function Home() {
   const [mobileBannerFading, setMobileBannerFading] = useState(false);
   const prefersReducedMotion = usePrefersReducedMotion();
 
-  // Check if this is the first visit after loading screen
+  // Check if this is the first visit after loading screen.
+  // `hasVisitedLanding` is written by app/template.tsx, which owns the loading
+  // screen — writing it here too used to mark the visit before the loading
+  // screen had a chance to read the flag.
   useEffect(() => {
+    // Both hero elements are hidden by `[data-first-visit]` in globals.css
+    // until they get `.is-visible`. Drop the attribute once the entrance has
+    // finished so a client-side navigation back here doesn't replay it.
+    const finish = () => {
+      setHeroImageVisible(true);
+      document.documentElement.removeAttribute("data-first-visit");
+    };
+
     const hasVisitedBefore = sessionStorage.getItem("hasVisitedLanding");
 
-    if (!hasVisitedBefore) {
-      if (prefersReducedMotion) {
-        setHeroVisible(true);
-        setHeroImageVisible(true);
-        sessionStorage.setItem("hasVisitedLanding", "true");
-        return;
-      }
-      // First visit - wait for loading screen, then fade in
-      const timer = setTimeout(() => {
-        setHeroVisible(true);
-        setTimeout(() => {
-          setHeroImageVisible(true);
-        }, 450); // Stagger image after text
-      }, 500); // Delay after loading screen completes
-
-      sessionStorage.setItem("hasVisitedLanding", "true");
-      return () => clearTimeout(timer);
-    } else {
-      // Returning visitor - show immediately
+    if (hasVisitedBefore || prefersReducedMotion) {
+      // Already painted — this just keeps state in sync.
       setHeroVisible(true);
-      setHeroImageVisible(true);
+      finish();
+      return;
     }
+
+    // First visit - wait for loading screen, then fade in
+    let imageTimer: ReturnType<typeof setTimeout> | undefined;
+    const textTimer = setTimeout(() => {
+      setHeroVisible(true);
+      imageTimer = setTimeout(finish, 450); // Stagger image after text
+    }, 500); // Delay after loading screen completes
+
+    return () => {
+      clearTimeout(textTimer);
+      clearTimeout(imageTimer);
+    };
   }, [prefersReducedMotion]);
 
   // Image data with order, source, link, and label
@@ -187,7 +194,9 @@ export default function Home() {
           {/* Hero Text - Large Serif Display */}
           <div className="w-full md:max-w-[60vw] lg:max-w-[50vw] relative">
             <h1
-              className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-[1.5] md:leading-[1.4]"
+              className={`hero-reveal text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-[1.5] md:leading-[1.4] ${
+                heroVisible ? "is-visible" : ""
+              }`}
               style={{
                 fontFamily:
                   "var(--font-serif)",
@@ -195,15 +204,6 @@ export default function Home() {
                 color: textColor,
                 fontStyle: "normal",
                 letterSpacing: "-0.01em",
-                opacity: heroVisible ? 1 : 0,
-                transform: prefersReducedMotion
-                  ? "none"
-                  : heroVisible
-                    ? "translateY(0)"
-                    : "translateY(20px)",
-                transition: prefersReducedMotion
-                  ? "opacity 0.2s ease-out"
-                  : "opacity 1.4s var(--ease-out), transform 1.4s var(--ease-out)",
               }}
             >
               Kevin Chen <span className="italic">(/keh-vin chen/)</span> is a
@@ -226,18 +226,9 @@ export default function Home() {
 
           {/* Kevin Chen Portrait Image */}
           <div
-            className="relative flex-shrink-0 w-full md:w-[55vw] md:max-w-[600px] md:ml-auto mb-6 md:mb-0"
-            style={{
-              opacity: heroImageVisible ? 1 : 0,
-              transform: prefersReducedMotion
-                ? "none"
-                : heroImageVisible
-                  ? "translateY(0)"
-                  : "translateY(20px)",
-              transition: prefersReducedMotion
-                ? "opacity 0.2s ease-out"
-                : "opacity 1.4s var(--ease-out), transform 1.4s var(--ease-out)",
-            }}
+            className={`hero-reveal relative flex-shrink-0 w-full md:w-[55vw] md:max-w-[600px] md:ml-auto mb-6 md:mb-0 ${
+              heroImageVisible ? "is-visible" : ""
+            }`}
           >
             <div className="relative w-full h-[50vh] max-h-[400px] md:h-[80vh] md:max-h-[900px]">
               <Image
