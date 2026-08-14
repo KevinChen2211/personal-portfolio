@@ -237,3 +237,24 @@ html {
 
   /* Note: mask-image transitions aren't well supported, but the CSS variables update smoothly */
 }
+
+/* The 404 reveal is driven by a precise pointer. Hide the whole mechanic on
+   touch (there is no hover position to track, so the page would just be a
+   black rectangle) and under reduced motion (a full-viewport moving surface),
+   and give the system cursor back in both cases. Doing this in CSS rather than
+   JS means it applies before first paint, with no flash of the wrong state. */
+.reveal-page {
+  cursor: none;
+}
+
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .reveal-page {
+    cursor: auto;
+  }
+
+  .reveal-mask,
+  .reveal-glow,
+  .reveal-cursor {
+    display: none;
+  }
+}
