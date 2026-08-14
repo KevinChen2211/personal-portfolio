@@ -47,8 +47,8 @@ A fixed `.film-grain` overlay lives in `app/template.tsx` (CSS in `globals.css`)
 ## Gotchas
 
 - **`next/image` with `fill`**: never set `width`, `height`, `top`, `left`, `right`, or `bottom` in its `style`. Next throws a runtime error. To bleed past edges (e.g. to hide sub-pixel seam lines during scale animations) use `transform: "scale(1.01)"` instead.
-- **Image `quality`**: any custom `quality` must be listed in `images.qualities` in `next.config.ts` (currently `[60, 70, 75, 80, 82, 85]`) or Next.js logs a dev warning. Add new values there.
-- **Gallery animations** (`app/gallery/page.tsx`): the desktop view uses a hand-rolled rAF scroll/parallax loop that pauses when idle, plus CSS-transition-based open/close. To make a transition reliably play, commit the start frame first, then change to the end frame on a later frame (see the `pendingExpand` effect) — don't set both in the same paint.
+- **Image `quality`**: any custom `quality` must be listed in `images.qualities` in `next.config.ts` (currently `[60, 70, 75, 80, 85]`) or Next.js logs a dev warning. Add new values there. Every full-size render of a gallery photo uses `PHOTO_QUALITY` (85) — changing `quality` or `sizes` on one surface but not the others makes the same photo a separate `/_next/image` entry and forces a cold AVIF encode on first view.
+- **Gallery animations** (`app/gallery/page.tsx`): the desktop view uses a hand-rolled rAF scroll/parallax loop that pauses when idle, plus CSS-transition-based open/close. To make a transition reliably play, commit the start frame first, then change to the end frame on a later frame (see the `pendingExpand` effect) — don't set both in the same paint. A correctly timed transition still looks broken if the image has no pixels yet, so the expanded view renders through `ExpandedPhoto`: the already-cached thumbnail variant underneath, the fullscreen variant cross-fading in on load. Keep both layers on the same `quality`/`sizes` contract as the track thumbnail.
 - This is a `"use client"` page-heavy app; most interactive pages are client components.
 
 ## Verifying UI changes

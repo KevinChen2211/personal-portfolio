@@ -82,6 +82,93 @@ function ScrollingNumber({ value = 0 }: { value: number }) {
   );
 }
 
+// `vmin` isn't reliably honoured by browsers in srcset selection, so the track
+// thumbnails use vw-based hints that err on the side of a higher-resolution
+// variant for crispness on retina.
+const THUMB_SIZES =
+  "(max-width: 768px) 80vw, (max-width: 1280px) 45vw, 35vw";
+const FULLSCREEN_SIZES = "100vw";
+// One quality for every full-size render of a gallery photo. The thumbnail,
+// the fullscreen zoom and the collection viewer must agree, otherwise each
+// surface requests a different `/_next/image` URL and pays for a cold encode
+// of the same source file. (The filmstrip keeps its own lower quality — at
+// 128px wide it is a genuinely different asset.)
+const PHOTO_QUALITY = 85;
+
+/* -------------------------------
+   Two image layers so the zoom always has pixels to animate.
+
+   The base layer reuses the exact variant the track thumbnail already
+   loaded — same `sizes`, same `quality`, so it is guaranteed warm in the
+   browser cache and paints on the first frame. The fullscreen variant is a
+   cold fetch on first open (Next has to encode a fresh AVIF from a source
+   photo up to 2400px), so it cross-fades in on top once it decodes.
+
+   Without the base layer the wrapper animates an empty box for the whole
+   1300ms zoom and the photo only appears once the animation has finished.
+------------------------------- */
+function ExpandedPhoto({
+  src,
+  alt,
+  objectPosition,
+  prefersReducedMotion,
+}: {
+  src: string;
+  alt: string;
+  objectPosition: string;
+  prefersReducedMotion: boolean;
+}) {
+  const [hiResReady, setHiResReady] = useState(false);
+
+  // next/image fires onLoad for cached images, but check `complete` from the
+  // ref too so a hit that resolves before hydration can't leave the hi-res
+  // layer stuck at zero opacity.
+  const markReadyIfComplete = useCallback((el: HTMLImageElement | null) => {
+    if (el?.complete && el.naturalWidth > 0) setHiResReady(true);
+  }, []);
+
+  const layerStyle = {
+    objectFit: "cover" as const,
+    objectPosition,
+    // Slightly overscale so sub-pixel rounding during the size animation
+    // never exposes the background as thin seam lines. ("fill" images can't
+    // have width/height overridden, so we bleed via scale.)
+    transform: "scale(1.01)",
+  };
+
+  return (
+    <>
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes={THUMB_SIZES}
+        quality={PHOTO_QUALITY}
+        priority
+        draggable={false}
+        style={layerStyle}
+      />
+      <Image
+        src={src}
+        alt=""
+        aria-hidden="true"
+        fill
+        sizes={FULLSCREEN_SIZES}
+        quality={PHOTO_QUALITY}
+        priority
+        draggable={false}
+        ref={markReadyIfComplete}
+        onLoad={() => setHiResReady(true)}
+        style={{
+          ...layerStyle,
+          opacity: hiResReady ? 1 : 0,
+          transition: prefersReducedMotion ? "none" : "opacity 400ms ease-out",
+        }}
+      />
+    </>
+  );
+}
+
 export default function GalleryPage() {
   const bgColor = "#FAF2E6";
   const textColor = "#2C2C2C"; // Dark text for light background (keep consistent)
@@ -139,6 +226,7 @@ export default function GalleryPage() {
   const [isMobile, setIsMobile] = useState(false);
   const [isNavigatingToCollection, setIsNavigatingToCollection] =
     useState(false);
+  const [warmedIndices, setWarmedIndices] = useState<number[]>([]);
   const expandedTouchStartRef = useRef<{
     x: number;
     y: number;
@@ -331,6 +419,39 @@ export default function GalleryPage() {
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  /* -------------------------------
+     Warm the fullscreen variants off the input path.
+
+     The expanded view requests a different `/_next/image` variant than the
+     thumbnail, so on a cold cache a click has to wait on a fresh AVIF encode
+     before there is anything to zoom. Mounting that variant ahead of time
+     moves the cost off the click: on hover/focus for the photo the user is
+     reaching for, and on idle for the rest of the track.
+  ------------------------------- */
+  const warmImage = useCallback((index: number) => {
+    setWarmedIndices((prev) =>
+      prev.includes(index) ? prev : [...prev, index],
+    );
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) return; // the expanded view is desktop-only
+
+    const connection = (
+      navigator as Navigator & { connection?: { saveData?: boolean } }
+    ).connection;
+    if (connection?.saveData) return;
+
+    const warmAll = () => setWarmedIndices(galleryImages.map((_, i) => i));
+
+    if (typeof window.requestIdleCallback === "function") {
+      const handle = window.requestIdleCallback(warmAll, { timeout: 3000 });
+      return () => window.cancelIdleCallback(handle);
+    }
+    const timeoutId = setTimeout(warmAll, 1500);
+    return () => clearTimeout(timeoutId);
+  }, [isMobile]);
 
   /* -------------------------------
      Disable vertical scrolling (desktop only)
@@ -954,7 +1075,7 @@ export default function GalleryPage() {
                     height={1120}
                     className="w-full h-auto object-cover"
                     style={{ aspectRatio: "40 / 56" }}
-                    quality={80}
+                    quality={PHOTO_QUALITY}
                     sizes="(max-width: 768px) 100vw, 90vw"
                     loading="lazy"
                   />
@@ -998,6 +1119,8 @@ export default function GalleryPage() {
                   tabIndex={0}
                   aria-label={`Open the ${collectionName} collection`}
                   onClick={() => openImageAt(i)}
+                  onPointerEnter={() => warmImage(i)}
+                  onFocus={() => warmImage(i)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
@@ -1018,11 +1141,8 @@ export default function GalleryPage() {
                     src={src}
                     alt={collectionName}
                     fill
-                    // `vmin` isn't reliably honoured by browsers in srcset
-                    // selection, so use vw-based hints that err on the side of
-                    // a higher-resolution variant for crispness on retina.
-                    sizes="(max-width: 768px) 80vw, (max-width: 1280px) 45vw, 35vw"
-                    quality={82}
+                    sizes={THUMB_SIZES}
+                    quality={PHOTO_QUALITY}
                     priority={i === 0}
                     loading={i === 0 ? "eager" : "lazy"}
                     className="image cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] hover:opacity-95"
@@ -1037,6 +1157,30 @@ export default function GalleryPage() {
             })}
           </div>
         </>
+      )}
+
+      {/* Off-screen warmers. Mounting the fullscreen variant lets next/image
+          issue exactly the request the expanded view will make, so the zoom
+          opens on a decoded photo instead of an empty box. */}
+      {!isMobile && warmedIndices.length > 0 && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed top-0 left-0 overflow-hidden opacity-0"
+          style={{ width: 1, height: 1, zIndex: -1 }}
+        >
+          {warmedIndices.map((i) => (
+            <Image
+              key={galleryImages[i]}
+              src={galleryImages[i]}
+              alt=""
+              width={1}
+              height={1}
+              sizes={FULLSCREEN_SIZES}
+              quality={PHOTO_QUALITY}
+              loading="eager"
+            />
+          ))}
+        </div>
       )}
 
       {/* EXPANDED IMAGE - Desktop only */}
@@ -1375,23 +1519,12 @@ export default function GalleryPage() {
                   overflow: "hidden",
                 }}
               >
-                <Image
+                <ExpandedPhoto
+                  key={expandedImageSrc}
                   src={expandedImageSrc}
                   alt={expandedCollection.name}
-                  fill
-                  sizes="100vw"
-                  quality={85}
-                  priority
-                  draggable={false}
-                  style={{
-                    objectFit: "cover",
-                    objectPosition: expandedObjectPosition,
-                    // Slightly overscale so sub-pixel rounding during the
-                    // size animation never exposes the background as thin
-                    // vertical/horizontal seam lines. ("fill" images can't
-                    // have width/height overridden, so we bleed via scale.)
-                    transform: "scale(1.01)",
-                  }}
+                  objectPosition={expandedObjectPosition}
+                  prefersReducedMotion={prefersReducedMotion}
                 />
               </div>
             )}
@@ -1422,21 +1555,12 @@ export default function GalleryPage() {
                     overflow: "hidden",
                   }}
                 >
-                  <Image
+                  <ExpandedPhoto
+                    key={nextImageData.src}
                     src={nextImageData.src}
                     alt={nextImageData.collection.name}
-                    fill
-                    sizes="100vw"
-                    quality={85}
-                    priority
-                    draggable={false}
-                    style={{
-                      objectFit: "cover",
-                      objectPosition: nextImageData.objectPosition,
-                      // Overscale slightly to avoid sub-pixel seam lines while
-                      // the image slides between collections.
-                      transform: "scale(1.01)",
-                    }}
+                    objectPosition={nextImageData.objectPosition}
+                    prefersReducedMotion={prefersReducedMotion}
                   />
                 </div>
               )}
