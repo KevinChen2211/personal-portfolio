@@ -94,6 +94,10 @@ const FULLSCREEN_SIZES = "100vw";
 // of the same source file. (The filmstrip keeps its own lower quality — at
 // 128px wide it is a genuinely different asset.)
 const PHOTO_QUALITY = 85;
+const CAROUSEL_WHEEL_SENSITIVITY = 0.025;
+const CAROUSEL_WHEEL_MOMENTUM = 0.1;
+const CAROUSEL_LERP_FAST = 0.02;
+const CAROUSEL_LERP_FINE = 0.015;
 
 /* -------------------------------
    Two image layers so the zoom always has pixels to animate.
@@ -531,9 +535,9 @@ export default function GalleryPage() {
     const handleWheel = (e: WheelEvent) => {
       if (expandedIndexRef.current !== null) return;
       e.preventDefault();
-      const delta = e.deltaY * -0.035;
+      const delta = e.deltaY * -CAROUSEL_WHEEL_SENSITIVITY;
       targetPercentage = clamp(targetPercentage + delta);
-      velocity = prefersReducedMotion ? 0 : delta * 0.15;
+      velocity = prefersReducedMotion ? 0 : delta * CAROUSEL_WHEEL_MOMENTUM;
       ensureAnimation();
     };
     window.addEventListener("wheel", handleWheel, { passive: false });
@@ -613,8 +617,8 @@ export default function GalleryPage() {
       const lerpFactor = prefersReducedMotion
         ? 1
         : Math.abs(distance) > 1
-          ? 0.025
-          : 0.018;
+          ? CAROUSEL_LERP_FAST
+          : CAROUSEL_LERP_FINE;
       percentage += distance * lerpFactor;
 
       if (Math.abs(distance) < 0.01 && Math.abs(velocity) < 0.01)
