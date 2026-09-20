@@ -11,6 +11,51 @@ export interface BlogPost {
 
 export const blogPosts: BlogPost[] = [
   {
+    id: "4",
+    title: "Nostalgic for the Future",
+    slug: "nostalgic-for-the-future",
+    date: "2026-09-20",
+    excerpt:
+      "Living in a new city, meeting so many new people, and somehow already missing it while it's still happening.",
+    content: `![IMAGE:/blog-images/nostalgic-for-the-future.jpg|The dark grid of a high-rise filling the right of the frame against empty pale sky]
+
+It feels a bit strange. I'm living in a new city, meeting so many new people, and somehow, it's sad. Not that I'm not having fun, I am. But there's this lingering thought that I'm going to miss this one day.
+
+Someday, these are going to be old memories we look back on and laugh about, all the stupid things we did and the weird moments we shared. And maybe the weirdest part is missing something while it's still happening. Like I'm already standing in the doorway of this moment, halfway in it and halfway outside of it, watching it become a story.
+
+I keep thinking about how close the future is. Not some far-off "one day," but the near future. Next week. Next month. The version of me that's already left this exact room, this exact street, under this exact light at this exact hour.
+
+The future hasn't even been written yet, but somehow I'm nostalgic for it.
+
+Maybe it's because I can feel the pages turning, even when I'm trying to hold them still. Every new place, every new face, every small routine I'm building, I can already imagine the day when it becomes a memory. And it makes me want to rush and slow down at the same time.
+
+Yet somehow, I'm excited. Because the story hasn't unfolded yet. There are scenes I haven't lived, jokes we haven't made, and versions of myself I haven't met yet.
+
+And I think the only way to honour that is to stop rehearsing the goodbye and just be here fully, while it's still mine.
+
+![IMAGE:/blog-images/pages-turning.jpg|White foam swirling around dark rocks at the edge of turquoise water]
+
+There's a phrase in Japanese:
+
+> 物の哀れ
+> mono no aware
+
+Which describes the feeling you get when something beautiful is ending.
+
+I think this is why people cry on their birthdays.
+
+I'd like to think that the phrase teaches us not only that everything beautiful is temporary, but that it is beautiful because it is temporary.
+
+So, if you're someone who dreads the passing of time, I think maybe the sadness we feel about life isn't something we should fear. Maybe it's actually the very reason we should appreciate it more, while we still can.
+
+That's all.
+
+Bye!
+`,
+    author: "Kevin Chen",
+    tags: ["Personal Thoughts"],
+  },
+  {
     id: "3",
     title: "The Year Ahead",
     slug: "the-year-ahead",

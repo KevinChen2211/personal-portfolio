@@ -16,7 +16,9 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
   const lines = content.split("\n");
   const elements: ReactNode[] = [];
   let currentList: string[] = [];
+  let currentQuote: string[] = [];
   let listKey = 0;
+  let quoteKey = 0;
 
   const flushList = () => {
     if (currentList.length > 0) {
@@ -36,12 +38,57 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
     }
   };
 
+  // Consecutive `>` lines become a centered epigraph: first line display-size,
+  // any following lines a smaller caption (used for 物の哀れ / mono no aware).
+  const flushQuote = () => {
+    if (currentQuote.length === 0) return;
+    const [lead, ...rest] = currentQuote;
+    elements.push(
+      <figure
+        key={`quote-${quoteKey++}`}
+        className="my-10 md:my-14 mx-auto max-w-2xl text-center"
+      >
+        <p
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight"
+          style={{
+            color: palette.text,
+            fontFamily:
+              'var(--font-serif-title), "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", serif',
+          }}
+        >
+          {parseInlineMarkdown(lead)}
+        </p>
+        {rest.map((line, idx) => (
+          <p
+            key={idx}
+            className="text-xl sm:text-2xl md:text-3xl mt-3 italic leading-snug"
+            style={{
+              color: palette.text,
+              fontFamily: "var(--font-serif)",
+              opacity: 0.8,
+            }}
+          >
+            {parseInlineMarkdown(line)}
+          </p>
+        ))}
+      </figure>
+    );
+    currentQuote = [];
+  };
+
+  const flushBlocks = () => {
+    flushList();
+    flushQuote();
+  };
+
   const parseInlineMarkdown = (text: string): ReactNode[] => {
     const parts: ReactNode[] = [];
 
-    // Match **bold**, `code`, or regular text
+    // Match **bold**, *italic*, `code`, or regular text.
+    // Italic uses lookaround so `*word*` does not steal the inner pair of `**word**`.
     const patterns = [
       { regex: /\*\*(.+?)\*\*/g, type: "bold" },
+      { regex: /(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, type: "italic" },
       { regex: /`(.+?)`/g, type: "code" },
     ];
 
@@ -87,6 +134,15 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
             {match.content}
           </strong>
         );
+      } else if (match.type === "italic") {
+        parts.push(
+          <em
+            key={`italic-${match.index}`}
+            style={{ color: palette.text, fontStyle: "italic" }}
+          >
+            {match.content}
+          </em>
+        );
       } else if (match.type === "code") {
         parts.push(
           <code
@@ -120,7 +176,7 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
     // Handle YouTube embeds - format: [YOUTUBE:url] or just a YouTube URL
     const youtubeMatch = trimmed.match(/(?:\[YOUTUBE:\s*)?(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})(?:\])?/);
     if (youtubeMatch) {
-      flushList();
+      flushBlocks();
       const videoId = youtubeMatch[1];
       elements.push(
         <div
@@ -153,7 +209,7 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
     // Handle images - format: ![IMAGE:path/to/image.png] with optional alt
     // text after a pipe: ![IMAGE:path/to/image.png|What the photo shows]
     if (trimmed.startsWith("![IMAGE:")) {
-      flushList();
+      flushBlocks();
       const marker = parseImageMarker(trimmed);
       if (marker) {
         const imagePath = marker.path;
@@ -245,7 +301,7 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
 
     // Handle headings
     if (trimmed.startsWith("# ")) {
-      flushList();
+      flushBlocks();
       elements.push(
         <h2
           key={`h2-${index}`}
@@ -259,7 +315,7 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
     }
 
     if (trimmed.startsWith("## ")) {
-      flushList();
+      flushBlocks();
       elements.push(
         <h3
           key={`h3-${index}`}
@@ -273,7 +329,7 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
     }
 
     if (trimmed.startsWith("### ")) {
-      flushList();
+      flushBlocks();
       elements.push(
         <h4
           key={`h4-${index}`}
@@ -288,7 +344,7 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
 
     // Handle horizontal rule (---)
     if (trimmed === "---" || trimmed.match(/^-{3,}$/)) {
-      flushList();
+      flushBlocks();
       elements.push(
         <hr
           key={`hr-${index}`}
@@ -304,22 +360,32 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
 
     // Handle list items
     if (trimmed.startsWith("- ")) {
+      flushQuote();
       currentList.push(trimmed.replace("- ", ""));
+      return;
+    }
+
+    // Consecutive `>` lines: centered epigraph (display line + optional caption)
+    if (trimmed.startsWith(">")) {
+      flushList();
+      const quoted = trimmed.replace(/^>\s*/, "");
+      if (quoted) currentQuote.push(quoted);
       return;
     }
 
     // Handle empty lines
     if (trimmed === "") {
-      flushList();
-      // Only add br if we have content before
-      if (elements.length > 0) {
+      const flushingQuote = currentQuote.length > 0;
+      flushBlocks();
+      // Quotes already have their own vertical margin — skip the extra br
+      if (elements.length > 0 && !flushingQuote) {
         elements.push(<br key={`br-${index}`} />);
       }
       return;
     }
 
-    // Flush list if we hit a non-list item
-    flushList();
+    // Flush open lists / quotes if we hit a non-list item
+    flushBlocks();
 
     // Regular paragraph
     elements.push(
@@ -332,8 +398,8 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
     );
   });
 
-  // Flush any remaining list
-  flushList();
+  // Flush any remaining list or quote
+  flushBlocks();
 
   return elements;
 }
