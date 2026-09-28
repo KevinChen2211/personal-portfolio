@@ -210,7 +210,7 @@ export default function Home() {
               multidisciplinary{" "}
               <span className="italic underline decoration-1 underline-offset-4">
                 engineer
-              </span>{" "}
+              </span>
               ,{" "}
               <span className="italic underline decoration-1 underline-offset-4">
                 computer scientist
