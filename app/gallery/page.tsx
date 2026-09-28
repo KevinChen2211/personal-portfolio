@@ -1068,119 +1068,117 @@ export default function GalleryPage() {
       <Navbar />
       <h1 className="sr-only">Photography gallery</h1>
 
-      {/* MOBILE SIMPLE VIEW */}
-      {isMobile ? (
-        <div className="pt-24 pb-12 px-4 sm:px-6">
-          <div
-            aria-hidden="true"
-            className="text-3xl font-bold mb-8"
-            style={{
-              color: mobileTextColor,
-              fontFamily:
-                "var(--font-serif)",
-            }}
-          >
-            Gallery
-          </div>
-          <div className="grid grid-cols-1 gap-6">
-            {uniqueCollections.map((collection) => (
-              <Link
-                key={collection.slug}
-                href={`/gallery/collection/${collection.slug}`}
-                prefetch={false}
-                className="block"
-              >
-                <div className="relative w-full">
-                  <Image
-                    src={collection.previewImage}
-                    alt={collection.name}
-                    width={800}
-                    height={1120}
-                    className="w-full h-auto object-cover"
-                    style={{ aspectRatio: "40 / 56" }}
-                    quality={PHOTO_QUALITY}
-                    sizes="(max-width: 768px) 100vw, 90vw"
-                    loading="lazy"
-                  />
-                  <div className="mt-2">
-                    <h2
-                      className="text-lg font-semibold"
-                      style={{
-                        color: mobileTextColor,
-                        fontFamily:
-                          "var(--font-serif)",
-                      }}
-                    >
-                      {collection.name}
-                    </h2>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+      {/* MOBILE SIMPLE VIEW. Always in the server HTML and hidden from md up,
+          so phones and crawlers get real links to every collection without
+          waiting for JavaScript to choose a layout. */}
+      <div className="md:hidden pt-24 pb-12 px-4 sm:px-6">
+        <div
+          aria-hidden="true"
+          className="text-3xl font-bold mb-8"
+          style={{
+            color: mobileTextColor,
+            fontFamily:
+              "var(--font-serif)",
+          }}
+        >
+          Gallery
         </div>
-      ) : (
-        <>
-          {/* DESKTOP IMAGE TRACK */}
-          <div
-            ref={trackRef}
-            className="absolute left-1/2 top-3/5 flex gap-[4vmin] select-none"
-            style={{
-              transform: "translate(-50%, -50%)",
-              opacity: isNavigatingToCollection ? 0 : 1,
-              transition: isNavigatingToCollection
-                ? "opacity 0.15s ease-out"
-                : "none",
-            }}
-          >
-            {galleryImages.map((src, i) => {
-              const collectionName = parseCollection(src).name;
-              return (
-                <div
-                  key={i}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Open the ${collectionName} collection`}
-                  onClick={() => openImageAt(i)}
-                  onPointerEnter={() => warmImage(i)}
-                  onFocus={() => warmImage(i)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      openImageAt(i);
-                    }
-                  }}
-                  style={{
-                    position: "relative",
-                    width: "40vmin",
-                    height: "56vmin",
-                    flexShrink: 0,
-                  }}
-                >
-                  <Image
-                    ref={(el: HTMLImageElement | null) => {
-                      imageRefs.current[i] = el;
-                    }}
-                    src={src}
-                    alt={collectionName}
-                    fill
-                    sizes={THUMB_SIZES}
-                    quality={PHOTO_QUALITY}
-                    priority={i === 0}
-                    loading={i === 0 ? "eager" : "lazy"}
-                    className="image cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] hover:opacity-95"
-                    draggable={false}
+        <div className="grid grid-cols-1 gap-6">
+          {uniqueCollections.map((collection) => (
+            <Link
+              key={collection.slug}
+              href={`/gallery/collection/${collection.slug}`}
+              prefetch={false}
+              className="block"
+            >
+              <div className="relative w-full">
+                <Image
+                  src={collection.previewImage}
+                  alt={collection.name}
+                  width={800}
+                  height={1120}
+                  className="w-full h-auto object-cover"
+                  style={{ aspectRatio: "40 / 56" }}
+                  quality={PHOTO_QUALITY}
+                  sizes="(max-width: 768px) 100vw, 90vw"
+                  loading="lazy"
+                />
+                <div className="mt-2">
+                  <h2
+                    className="text-lg font-semibold"
                     style={{
-                      objectFit: "cover",
-                      objectPosition: "100% center",
+                      color: mobileTextColor,
+                      fontFamily:
+                        "var(--font-serif)",
                     }}
-                  />
+                  >
+                    {collection.name}
+                  </h2>
                 </div>
-              );
-            })}
-          </div>
-        </>
-      )}
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* DESKTOP IMAGE TRACK */}
+      <div
+        ref={trackRef}
+        className="hidden md:flex absolute left-1/2 top-3/5 gap-[4vmin] select-none"
+        style={{
+          transform: "translate(-50%, -50%)",
+          opacity: isNavigatingToCollection ? 0 : 1,
+          transition: isNavigatingToCollection
+            ? "opacity 0.15s ease-out"
+            : "none",
+        }}
+      >
+        {galleryImages.map((src, i) => {
+          const collectionName = parseCollection(src).name;
+          return (
+            <div
+              key={i}
+              role="button"
+              tabIndex={0}
+              aria-label={`Open the ${collectionName} collection`}
+              onClick={() => openImageAt(i)}
+              onPointerEnter={() => warmImage(i)}
+              onFocus={() => warmImage(i)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  openImageAt(i);
+                }
+              }}
+              style={{
+                position: "relative",
+                width: "40vmin",
+                height: "56vmin",
+                flexShrink: 0,
+              }}
+            >
+              <Image
+                ref={(el: HTMLImageElement | null) => {
+                  imageRefs.current[i] = el;
+                }}
+                src={src}
+                alt={collectionName}
+                fill
+                sizes={THUMB_SIZES}
+                quality={PHOTO_QUALITY}
+                priority={i === 0}
+                loading={i === 0 ? "eager" : "lazy"}
+                className="image cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] hover:opacity-95"
+                draggable={false}
+                style={{
+                  objectFit: "cover",
+                  objectPosition: "100% center",
+                }}
+              />
+            </div>
+          );
+        })}
+      </div>
 
       {/* Off-screen warmers. Mounting the fullscreen variant lets next/image
           issue exactly the request the expanded view will make, so the zoom
