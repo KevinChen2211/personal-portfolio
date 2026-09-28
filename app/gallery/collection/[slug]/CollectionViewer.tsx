@@ -5,6 +5,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Navbar from "../../../components/Navbar";
+import {
+  GLASS_BG,
+  GLASS_BG_HOVER,
+  GLASS_BLUR,
+  GLASS_BORDER,
+  GLASS_SHADOW,
+} from "../../../components/glass";
 import { usePrefersReducedMotion } from "../../../utils/motion";
 
 type CollectionViewerProps = {
@@ -13,15 +20,6 @@ type CollectionViewerProps = {
 };
 
 const SERIF = "var(--font-serif)";
-
-// Frosted-glass surface shared by every floating control so their look stays
-// in sync. Translucent enough to feel like a glass overlay, opaque enough to
-// keep dark icons readable over dark photos.
-const GLASS_BG = "rgba(250, 242, 230, 0.55)";
-const GLASS_BG_HOVER = "rgba(250, 242, 230, 0.78)";
-const GLASS_BORDER = "1px solid rgba(26, 26, 26, 0.08)";
-const GLASS_SHADOW = "0 2px 10px rgba(0, 0, 0, 0.06)";
-const GLASS_BLUR = "blur(14px) saturate(1.4)";
 
 function NavButton({
   direction,
