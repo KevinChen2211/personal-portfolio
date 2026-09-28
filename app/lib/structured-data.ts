@@ -20,6 +20,14 @@ export function personSchema() {
     url: siteConfig.url,
     image: absoluteUrl(siteConfig.image),
     jobTitle: siteConfig.jobTitle,
+    worksFor: { "@type": "Organization", ...siteConfig.employer },
+    alumniOf: { "@type": "CollegeOrUniversity", ...siteConfig.almaMater },
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: siteConfig.location.locality,
+      addressRegion: siteConfig.location.region,
+      addressCountry: siteConfig.location.country,
+    },
     description: siteConfig.description,
     knowsAbout: [...siteConfig.knowsAbout],
     sameAs,
@@ -32,7 +40,9 @@ export function websiteSchema() {
     "@type": "WebSite",
     "@id": websiteId,
     url: siteConfig.url,
-    name: siteConfig.title,
+    // Google shows this as the site name above each result, so it's the plain
+    // name rather than the title with its tagline.
+    name: siteConfig.name,
     description: siteConfig.description,
     inLanguage: "en-AU",
     publisher: { "@id": personId },

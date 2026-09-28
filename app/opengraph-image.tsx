@@ -39,7 +39,7 @@ export default async function OpengraphImage() {
             {"Kevin Chen"}
           </div>
           <div style={{ display: "flex", fontSize: 46, opacity: 0.7, marginTop: 20 }}>
-            {"Engineer & Creative Developer"}
+            {siteConfig.jobTitle}
           </div>
         </div>
 
