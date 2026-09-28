@@ -189,9 +189,38 @@ html {
     transform var(--duration-slow) var(--ease-out);
 }
 
+/* The portrait is the page's Largest Contentful Paint, and Chrome only counts
+   it once this fade has finished, so it runs shorter than the headline's. */
+.hero-reveal-portrait {
+  transition-duration: var(--duration-normal);
+}
+
 [data-first-visit] .hero-reveal:not(.is-visible) {
   opacity: 0;
   transform: translateY(20px);
+}
+
+/* First-visit intro overlay (components/LoadingScreen.tsx). The server HTML
+   for "/" always includes it, hidden unless the pre-paint script flagged a
+   first visit, so it covers the page from the first frame rather than
+   appearing once React hydrates. */
+.intro-overlay {
+  display: none;
+}
+
+[data-first-visit] .intro-overlay {
+  display: flex;
+}
+
+.intro-overlay-name {
+  animation: intro-name-in 1.2s var(--ease-out) both;
+}
+
+@keyframes intro-name-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -204,6 +233,14 @@ html {
   [data-first-visit] .hero-reveal:not(.is-visible) {
     opacity: 1;
     transform: none;
+  }
+
+  [data-first-visit] .intro-overlay {
+    display: none;
+  }
+
+  .intro-overlay-name {
+    animation: none;
   }
 }
 

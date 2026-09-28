@@ -46,12 +46,13 @@ export default function Home() {
       return;
     }
 
-    // First visit - wait for loading screen, then fade in
+    // First visit: these start under the intro overlay (app/template.tsx), so
+    // the hero is already arriving as the overlay fades out.
     let imageTimer: ReturnType<typeof setTimeout> | undefined;
     const textTimer = setTimeout(() => {
       setHeroVisible(true);
-      imageTimer = setTimeout(finish, 450); // Stagger image after text
-    }, 500); // Delay after loading screen completes
+      imageTimer = setTimeout(finish, 200); // Stagger image after text
+    }, 500);
 
     return () => {
       clearTimeout(textTimer);
@@ -233,7 +234,7 @@ export default function Home() {
 
           {/* Kevin Chen Portrait Image */}
           <div
-            className={`hero-reveal relative flex-shrink-0 w-full md:w-[55vw] md:max-w-[600px] md:ml-auto mb-6 md:mb-0 ${
+            className={`hero-reveal hero-reveal-portrait relative flex-shrink-0 w-full md:w-[55vw] md:max-w-[600px] md:ml-auto mb-6 md:mb-0 ${
               heroImageVisible ? "is-visible" : ""
             }`}
           >
