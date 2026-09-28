@@ -26,3 +26,9 @@ export function parseImageMarker(marker: string): ImageMarker | null {
 export function extractFirstImagePath(content: string): string | undefined {
   return parseImageMarker(content)?.path;
 }
+
+// Every inline image path in a body of prose, in order of appearance.
+export function extractImagePaths(content: string): string[] {
+  const pattern = new RegExp(IMAGE_MARKER_PATTERN.source, "g");
+  return Array.from(content.matchAll(pattern), (match) => match[1].trim());
+}

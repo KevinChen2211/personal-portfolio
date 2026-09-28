@@ -6,6 +6,7 @@ import { formatDate } from "../../utils/date";
 import { readingTime } from "../../utils/reading-time";
 import { parseMarkdown } from "../../utils/markdown";
 import { extractFirstImagePath } from "../../utils/image-marker";
+import { readImageSizes } from "../../utils/image-sizes";
 import Navbar from "../../components/Navbar";
 import JsonLd from "../../components/JsonLd";
 import { articleSchema, breadcrumbSchema } from "../../lib/structured-data";
@@ -65,6 +66,7 @@ export default async function JournalPostPage({
   }
 
   const firstImage = extractFirstImagePath(post.content);
+  const imageSizes = await readImageSizes(post.content);
 
   return (
     <div
@@ -172,6 +174,8 @@ export default async function JournalPostPage({
                   border: textColor,
                   primary: textColor,
                 },
+                imageSizes,
+                leadImage: firstImage,
               })}
             </div>
           </article>
