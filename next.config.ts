@@ -17,6 +17,23 @@ const nextConfig: NextConfig = {
     // collection viewer share one cache entry per size.
     qualities: [60, 70, 75, 80, 85],
   },
+  // Addresses from earlier versions of the site that Google still has on
+  // file. Permanent redirects pass their visitors and ranking to the pages
+  // that replaced them instead of a 404.
+  async redirects() {
+    return [
+      { source: "/Home.html", destination: "/", permanent: true },
+      { source: "/About.html", destination: "/", permanent: true },
+      { source: "/about", destination: "/", permanent: true },
+      { source: "/blog", destination: "/journal", permanent: true },
+      { source: "/blog/:slug", destination: "/journal/:slug", permanent: true },
+      {
+        source: "/projects/diy-semiconductors",
+        destination: "/projects/tube-furnace-silicon-oxidation",
+        permanent: true,
+      },
+    ];
+  },
   // Strip console.* in production builds (except errors/warnings) to keep
   // the client bundle small.
   compiler: {
