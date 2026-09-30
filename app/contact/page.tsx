@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import Navbar from "../components/Navbar";
 
 export default function ContactPage() {
@@ -9,16 +10,15 @@ export default function ContactPage() {
 
   return (
     <div
-      className="h-dvh w-full relative overflow-hidden pt-6 md:pt-8"
+      className="min-h-dvh md:h-dvh w-full relative md:overflow-hidden pt-6 md:pt-8"
       style={{ backgroundColor: bgColor }}
     >
       <Navbar />
 
-      {/* Main Content Area */}
-      <main
-        className="relative px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 flex items-center"
-        style={{ height: "calc(100dvh - 73px)", marginTop: "73px" }}
-      >
+      {/* Main Content Area. One fixed screen from md up; on phones it grows
+          and scrolls instead, because the text and photo stacked can be
+          taller than a small screen. 97px is the 73px offset plus pt-6. */}
+      <main className="relative px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 flex items-center mt-[73px] min-h-[calc(100dvh_-_97px)] pb-8 md:min-h-0 md:h-[calc(100dvh_-_73px)] md:pb-0">
         <div className="site-container flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-10">
           {/* Contact Image - Left Side */}
           <div className="w-full md:w-[50vw] lg:w-[45vw] max-w-[800px] flex-shrink-0 order-2 md:order-1">
@@ -55,6 +55,21 @@ export default function ContactPage() {
               {", "}
               feel free to reach out.
             </h1>
+
+            <p
+              className="text-sm md:text-base leading-relaxed mb-3 md:mb-4"
+              style={{ fontWeight: 400, color: textColor }}
+            >
+              I&apos;m a software engineer at AMD, based in Sydney. I studied at
+              RMIT University, where I founded{" "}
+              <Link
+                href="/projects/rmit-battlebots"
+                className="underline decoration-1 underline-offset-2 hover:opacity-70 transition-opacity"
+              >
+                RMIT BattleBots
+              </Link>
+              .
+            </p>
 
             <div
               className="text-sm md:text-base leading-relaxed mb-4 md:mb-6 "
