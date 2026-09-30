@@ -60,7 +60,7 @@ Bye!
     title: "The Year Ahead",
     slug: "the-year-ahead",
     date: "2026-01-01",
-    excerpt: "Looking forward to the new year and what i want to achieve",
+    excerpt: "Looking forward to the new year and what I want to achieve.",
     content: ` ![IMAGE:/blog-images/The-Year-Ahead.jpg|A person sitting alone on a clifftop, looking out over open blue water]
     New Year's resolutions have never really been my thing. I'd usually set one vaguely ambitious goal, give the year a dramatic name, and then more or less just vibe my way through it. Now that I've graduated, I don't really have an excuse not to be more deliberate about improving myself. So this year, I've decided to hold myself accountable by setting smaller, more achievable goals. 
     
@@ -81,7 +81,7 @@ Bye!
   },
   {
     id: "2",
-    title: "The Art of being Uncomfortable",
+    title: "The Art of Being Uncomfortable",
     slug: "the-art-of-being-uncomfortable",
     date: "2025-12-02",
     excerpt:

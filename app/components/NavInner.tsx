@@ -68,7 +68,7 @@ export default function NavInner({
           <Link
             key={href}
             href={href}
-            className={`text-xs md:text-sm font-semibold tracking-wide hover:opacity-70 transition-opacity ${
+            className={`inline-flex items-center text-xs md:text-sm font-semibold tracking-wide hover:opacity-70 transition-opacity ${
               activePath === href ? "underline" : ""
             }`}
             style={{
@@ -87,7 +87,7 @@ export default function NavInner({
           href="https://www.linkedin.com/in/kevinchenengineer/"
           target="_blank"
           rel="noreferrer"
-          className="hover:opacity-70 transition-opacity inline-block"
+          className="hover:opacity-70 transition-opacity inline-flex items-center"
           aria-label="LinkedIn"
         >
           <svg
@@ -102,7 +102,7 @@ export default function NavInner({
           href="https://github.com/KevinChen2211"
           target="_blank"
           rel="noreferrer"
-          className="hover:opacity-70 transition-opacity inline-block"
+          className="hover:opacity-70 transition-opacity inline-flex items-center"
           aria-label="GitHub"
         >
           <svg
@@ -117,7 +117,7 @@ export default function NavInner({
           href="https://www.instagram.com/kewinchen_/"
           target="_blank"
           rel="noreferrer"
-          className="hover:opacity-70 transition-opacity inline-block"
+          className="hover:opacity-70 transition-opacity inline-flex items-center"
           aria-label="Instagram"
         >
           <svg

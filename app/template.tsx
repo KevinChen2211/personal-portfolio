@@ -3,12 +3,16 @@
 import { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
 import LoadingScreen from "./components/LoadingScreen";
-import { usePrefersReducedMotion } from "./utils/motion";
+import { getPrefersReducedMotion, usePrefersReducedMotion } from "./utils/motion";
 
 export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
-  const [showLoading, setShowLoading] = useState(false);
+  // "/" always renders the intro overlay because the server can't know whether
+  // this is a first visit; CSS keeps it hidden unless the pre-paint script set
+  // [data-first-visit]. The effect below then either plays it or drops it.
+  const [showLoading, setShowLoading] = useState(pathname === "/");
+  const [loadingActive, setLoadingActive] = useState(false);
   const isInitialMount = useRef(true);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const prevPathnameRef = useRef<string | null>(null);
@@ -28,12 +32,15 @@ export default function Template({ children }: { children: React.ReactNode }) {
       // Only show loading screen if starting on landing page AND haven't visited before
       if (pathname === "/") {
         const hasVisitedBefore = sessionStorage.getItem("hasVisitedLanding");
-        if (!hasVisitedBefore && !prefersReducedMotion) {
-          setShowLoading(true);
+        // Read the media query directly: during hydration the hook still
+        // returns the server's `false`.
+        if (!hasVisitedBefore && !getPrefersReducedMotion()) {
+          setLoadingActive(true);
         } else {
           if (!hasVisitedBefore) {
             sessionStorage.setItem("hasVisitedLanding", "true");
           }
+          setShowLoading(false);
           // Returning to landing page - show immediately
           setIsVisible(true);
         }
@@ -122,7 +129,12 @@ export default function Template({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {showLoading && <LoadingScreen onComplete={handleLoadingComplete} />}
+      {showLoading && (
+        <LoadingScreen
+          active={loadingActive}
+          onComplete={handleLoadingComplete}
+        />
+      )}
       <div className="film-grain" aria-hidden="true" />
       {/* Background layer to prevent dark flash */}
       <div

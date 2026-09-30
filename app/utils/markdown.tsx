@@ -1,18 +1,25 @@
 import { ReactNode } from "react";
 import Image from "next/image";
 import { parseImageMarker } from "./image-marker";
+import type { ImageSize } from "./image-sizes";
 
-interface ParseMarkdownOptions {
+export interface ParseMarkdownOptions {
   palette: {
     text: string;
     textSecondary: string;
     border: string;
     primary: string;
   };
+  // Real pixel sizes keyed by image path (see readImageSizes). Images missing
+  // from the map get a 4:3 box, which shifts the text once they load.
+  imageSizes?: Map<string, ImageSize>;
+  // Path of the image to fetch up front rather than lazily, normally the
+  // first one, which sits above the fold.
+  leadImage?: string;
 }
 
 export function parseMarkdown(content: string, options: ParseMarkdownOptions): ReactNode[] {
-  const { palette } = options;
+  const { palette, imageSizes, leadImage } = options;
   const lines = content.split("\n");
   const elements: ReactNode[] = [];
   let currentList: string[] = [];
@@ -229,6 +236,8 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
         // carry a visible "Photo by Kevin Chen" caption below them, so
         // repeating it in alt tells a screen reader nothing about the image.
         const altText = markerAlt || logoAlt;
+        const size = imageSizes?.get(imagePath);
+        const isLead = imagePath === leadImage;
         elements.push(
           <div
             key={`img-${index}`}
@@ -258,6 +267,9 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
                   key={imagePath}
                   src={imagePath}
                   alt={altText}
+                  width={size?.width}
+                  height={size?.height}
+                  loading={isLead ? "eager" : "lazy"}
                   className="object-contain w-full h-auto"
                   style={{
                     maxWidth: "100%",
@@ -271,8 +283,8 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
                   key={imagePath}
                   src={imagePath}
                   alt={altText}
-                  width={800}
-                  height={600}
+                  width={size?.width ?? 800}
+                  height={size?.height ?? 600}
                   className="object-contain w-full h-auto"
                   style={{
                     maxWidth: "100%",
@@ -281,7 +293,8 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
                   }}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
                   quality={70}
-                  loading="lazy"
+                  preload={isLead}
+                  loading={isLead ? "eager" : "lazy"}
                 />
               )}
             </div>

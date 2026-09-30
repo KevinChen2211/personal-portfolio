@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePrefersReducedMotion } from "../utils/motion";
 
 const preloadFonts = (): Promise<void> => {
@@ -24,36 +24,37 @@ const preloadFonts = (): Promise<void> => {
 };
 
 type LoadingScreenProps = {
+  // False while this is only the server-rendered markup that CSS shows or
+  // hides; true once the template has confirmed a first visit.
+  active: boolean;
   onComplete: () => void;
   minDisplayTime?: number;
 };
 
 export default function LoadingScreen({
+  active,
   onComplete,
   // Kept short so first paint of the real page happens quickly; long enough to
   // register the wordmark as a brand moment. Fonts are also preloaded, so the
   // screen rarely needs to wait on them.
   minDisplayTime = 800,
 }: LoadingScreenProps) {
-  const [nameVisible, setNameVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  const nameRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
+    if (!active) return;
     let cancelled = false;
-    const startTime = Date.now();
+    // On a fresh load the name has been fading in since the server HTML
+    // painted, well before hydration; count that toward the minimum.
+    const shownFor =
+      Number(nameRef.current?.getAnimations?.()[0]?.currentTime) || 0;
+    const startTime = Date.now() - shownFor;
     const effectiveMin = prefersReducedMotion ? 200 : minDisplayTime;
     const exitMs = prefersReducedMotion ? 120 : 900;
 
     const run = async () => {
-      if (prefersReducedMotion) {
-        setNameVisible(true);
-      } else {
-        requestAnimationFrame(() => {
-          if (!cancelled) setNameVisible(true);
-        });
-      }
-
       try {
         await preloadFonts();
       } catch {}
@@ -75,12 +76,16 @@ export default function LoadingScreen({
     return () => {
       cancelled = true;
     };
-  }, [minDisplayTime, onComplete, prefersReducedMotion]);
+  }, [active, minDisplayTime, onComplete, prefersReducedMotion]);
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center"
+      aria-hidden="true"
+      className="intro-overlay fixed inset-0 z-[9999] items-center justify-center"
       style={{
+        // Pinned once the intro plays: the home page drops [data-first-visit]
+        // part-way through, which would otherwise hide the overlay mid-fade.
+        display: active ? "flex" : undefined,
         backgroundColor: "#FAF2E6",
         opacity: isExiting ? 0 : 1,
         transition: prefersReducedMotion
@@ -90,20 +95,12 @@ export default function LoadingScreen({
       }}
     >
       <div
-        className="text-4xl md:text-5xl font-bold tracking-wide"
+        ref={nameRef}
+        className="intro-overlay-name text-4xl md:text-5xl font-bold tracking-wide"
         style={{
           color: "#2C2C2C",
           fontFamily:
             "var(--font-serif)",
-          opacity: nameVisible ? 1 : 0,
-          transform: prefersReducedMotion
-            ? "none"
-            : nameVisible
-              ? "translateY(0)"
-              : "translateY(12px)",
-          transition: prefersReducedMotion
-            ? "opacity 0.2s ease-out"
-            : "opacity 1.2s var(--ease-out), transform 1.2s var(--ease-out)",
         }}
       >
         KEVIN CHEN

@@ -6,7 +6,9 @@ import { formatDate } from "../../utils/date";
 import { readingTime } from "../../utils/reading-time";
 import { parseMarkdown } from "../../utils/markdown";
 import { extractFirstImagePath } from "../../utils/image-marker";
+import { readImageSizes } from "../../utils/image-sizes";
 import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 import JsonLd from "../../components/JsonLd";
 import { articleSchema, breadcrumbSchema } from "../../lib/structured-data";
 
@@ -65,6 +67,11 @@ export default async function JournalPostPage({
   }
 
   const firstImage = extractFirstImagePath(post.content);
+  const imageSizes = await readImageSizes(post.content);
+  // blogPosts runs newest first, the same order as the journal index.
+  const postIndex = blogPosts.indexOf(post);
+  const newerPost = blogPosts[postIndex - 1];
+  const olderPost = blogPosts[postIndex + 1];
 
   return (
     <div
@@ -172,11 +179,67 @@ export default async function JournalPostPage({
                   border: textColor,
                   primary: textColor,
                 },
+                imageSizes,
+                leadImage: firstImage,
               })}
             </div>
           </article>
+
+          {/* Older / newer posts */}
+          {(olderPost || newerPost) && (
+            <nav
+              aria-label="More from the journal"
+              className="mt-16 md:mt-20 pt-8 border-t grid gap-6 sm:grid-cols-2"
+              style={{ borderColor: `${textColor}26` }}
+            >
+              {olderPost && (
+                <Link href={`/journal/${olderPost.slug}`} className="group block">
+                  <span
+                    className="block text-xs md:text-sm mb-1"
+                    style={{
+                      color: textColor,
+                      fontFamily: "var(--font-serif)",
+                      opacity: 0.7,
+                    }}
+                  >
+                    ← Older post
+                  </span>
+                  <span
+                    className="block text-lg md:text-xl group-hover:underline"
+                    style={{ color: textColor, fontFamily: "var(--font-serif)" }}
+                  >
+                    {olderPost.title}
+                  </span>
+                </Link>
+              )}
+              {newerPost && (
+                <Link
+                  href={`/journal/${newerPost.slug}`}
+                  className="group block sm:col-start-2 sm:text-right"
+                >
+                  <span
+                    className="block text-xs md:text-sm mb-1"
+                    style={{
+                      color: textColor,
+                      fontFamily: "var(--font-serif)",
+                      opacity: 0.7,
+                    }}
+                  >
+                    Newer post →
+                  </span>
+                  <span
+                    className="block text-lg md:text-xl group-hover:underline"
+                    style={{ color: textColor, fontFamily: "var(--font-serif)" }}
+                  >
+                    {newerPost.title}
+                  </span>
+                </Link>
+              )}
+            </nav>
+          )}
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

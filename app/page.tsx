@@ -2,9 +2,16 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type CSSProperties } from "react";
 import { usePrefersReducedMotion } from "./utils/motion";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import galleryImage from "../public/images/Gallery.jpg";
+import projectsImage from "../public/images/Projects.jpg";
+import gallery2Image from "../public/images/Gallery2.jpg";
+import journalImage from "../public/images/Journal.jpg";
+import gallery3Image from "../public/images/Gallery3.jpg";
+import contactImage from "../public/images/Contact.jpg";
 
 export default function Home() {
   const bgColor = "#FAF2E6";
@@ -40,12 +47,13 @@ export default function Home() {
       return;
     }
 
-    // First visit - wait for loading screen, then fade in
+    // First visit: these start under the intro overlay (app/template.tsx), so
+    // the hero is already arriving as the overlay fades out.
     let imageTimer: ReturnType<typeof setTimeout> | undefined;
     const textTimer = setTimeout(() => {
       setHeroVisible(true);
-      imageTimer = setTimeout(finish, 450); // Stagger image after text
-    }, 500); // Delay after loading screen completes
+      imageTimer = setTimeout(finish, 200); // Stagger image after text
+    }, 500);
 
     return () => {
       clearTimeout(textTimer);
@@ -53,14 +61,15 @@ export default function Home() {
     };
   }, [prefersReducedMotion]);
 
-  // Image data with order, source, link, and label
+  // Image data with order, source, link, and label. Static imports carry each
+  // photo's real dimensions, so its box is reserved before the file arrives.
   const images = [
-    { src: "/images/Gallery.jpg", link: "/gallery", label: "Gallery" },
-    { src: "/images/Projects.jpg", link: "/projects", label: "Projects" },
-    { src: "/images/Gallery2.jpg", link: "/gallery", label: "Gallery" },
-    { src: "/images/Journal.jpg", link: "/journal", label: "Journal" },
-    { src: "/images/Gallery3.jpg", link: "/gallery", label: "Gallery" },
-    { src: "/images/Contact.jpg", link: "/contact", label: "Contact" },
+    { src: galleryImage, link: "/gallery", label: "Gallery" },
+    { src: projectsImage, link: "/projects", label: "Projects" },
+    { src: gallery2Image, link: "/gallery", label: "Gallery" },
+    { src: journalImage, link: "/journal", label: "Journal" },
+    { src: gallery3Image, link: "/gallery", label: "Gallery" },
+    { src: contactImage, link: "/contact", label: "Contact" },
   ];
 
   // Gentle parallax on section images.
@@ -210,7 +219,7 @@ export default function Home() {
               multidisciplinary{" "}
               <span className="italic underline decoration-1 underline-offset-4">
                 engineer
-              </span>{" "}
+              </span>
               ,{" "}
               <span className="italic underline decoration-1 underline-offset-4">
                 computer scientist
@@ -226,7 +235,7 @@ export default function Home() {
 
           {/* Kevin Chen Portrait Image */}
           <div
-            className={`hero-reveal relative flex-shrink-0 w-full md:w-[55vw] md:max-w-[600px] md:ml-auto mb-6 md:mb-0 ${
+            className={`hero-reveal hero-reveal-portrait relative flex-shrink-0 w-full md:w-[55vw] md:max-w-[600px] md:ml-auto mb-6 md:mb-0 ${
               heroImageVisible ? "is-visible" : ""
             }`}
           >
@@ -297,9 +306,17 @@ export default function Home() {
                   : "opacity 1.1s var(--ease-out), transform 1.1s var(--ease-out)",
               }}
             >
+              {/* Width comes from the photo's aspect ratio, capped where the
+                  image hits its 85vh max height. Shrink-to-fit collapsed to
+                  the label's width until the photo loaded. */}
               <Link
                 href={image.link}
-                className="group flex flex-col items-start w-full md:w-auto max-w-[90vw] md:max-w-[50vw] lg:max-w-[45vw]"
+                className="group flex flex-col items-start w-full md:w-[min(50vw,85vh*var(--photo-ratio))] lg:w-[min(45vw,85vh*var(--photo-ratio))] max-w-[90vw]"
+                style={
+                  {
+                    "--photo-ratio": image.src.width / image.src.height,
+                  } as CSSProperties
+                }
               >
                 <div
                   ref={(el) => {
@@ -314,8 +331,7 @@ export default function Home() {
                   <Image
                     src={image.src}
                     alt={image.label}
-                    width={1600}
-                    height={1067}
+                    placeholder="blur"
                     className="object-contain w-full h-auto max-h-[85vh]"
                     quality={70}
                     sizes="(max-width: 768px) 90vw, (max-width: 1024px) 50vw, 45vw"
@@ -339,6 +355,7 @@ export default function Home() {
         })}
       </section>
 
+      <Footer />
     </div>
   );
 }

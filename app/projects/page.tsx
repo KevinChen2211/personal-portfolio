@@ -7,6 +7,7 @@ import { useScrollAnimation } from "../components/useScrollAnimation";
 import { usePrefersReducedMotion } from "../utils/motion";
 import { projects, type Project } from "../data/projects";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 // Project Card Component for projects page
 const ProjectCard = ({
@@ -102,6 +103,7 @@ export default function ProjectsPage() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

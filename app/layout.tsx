@@ -78,8 +78,11 @@ export const metadata: Metadata = {
   applicationName: siteConfig.name,
   keywords: [
     "Kevin Chen",
-    "engineer",
-    "creative developer",
+    "software engineer",
+    "AMD",
+    "Sydney",
+    "RMIT",
+    "RMIT BattleBots",
     "robotics",
     "embedded systems",
     "photography",

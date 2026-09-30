@@ -3,9 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { projects } from "../../data/projects";
 import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 import JsonLd from "../../components/JsonLd";
 import { creativeWorkSchema, breadcrumbSchema } from "../../lib/structured-data";
-import { parseMarkdown } from "../../utils/markdown";
+import { parseMarkdown, type ParseMarkdownOptions } from "../../utils/markdown";
+import { extractFirstImagePath } from "../../utils/image-marker";
+import { readImageSizes } from "../../utils/image-sizes";
 import React from "react";
 
 interface ProjectPageProps {
@@ -62,7 +65,11 @@ export async function generateMetadata({
 }
 
 // Parse project description with support for image placeholders and markdown
-function parseProjectDescription(description: string, textColor: string) {
+function parseProjectDescription(
+  description: string,
+  textColor: string,
+  images: Pick<ParseMarkdownOptions, "imageSizes" | "leadImage">,
+) {
   const lines = description.split("\n");
   const elements: React.ReactNode[] = [];
   let currentParagraph: string[] = [];
@@ -165,6 +172,7 @@ function parseProjectDescription(description: string, textColor: string) {
           border: textColor,
           primary: textColor,
         },
+        ...images,
       });
       // Add unique keys to prevent duplicates
       parsed.forEach((el, idx) => {
@@ -208,6 +216,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   if (!project) {
     notFound();
   }
+
+  const imageSizes = await readImageSizes(project.description);
 
   return (
     <div
@@ -272,7 +282,10 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               lineHeight: "1.8",
             }}
           >
-            {parseProjectDescription(project.description, textColor)}
+            {parseProjectDescription(project.description, textColor, {
+              imageSizes,
+              leadImage: extractFirstImagePath(project.description),
+            })}
           </div>
 
           {/* Key Achievements */}
@@ -334,6 +347,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

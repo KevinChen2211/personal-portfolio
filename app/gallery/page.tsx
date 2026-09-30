@@ -6,6 +6,13 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { galleryImages, parseCollection, allImages } from "./data";
 import Navbar from "../components/Navbar";
+import {
+  GLASS_BG,
+  GLASS_BG_HOVER,
+  GLASS_BLUR,
+  GLASS_BORDER,
+  GLASS_SHADOW,
+} from "../components/glass";
 import { usePrefersReducedMotion } from "../utils/motion";
 
 function ScrollingDigit({ value }: { value: number }) {
@@ -238,6 +245,10 @@ export default function GalleryPage() {
   } | null>(null);
   const hasCollectionLink = !!expandedCollection?.slug;
   const zoomTransitionMs = prefersReducedMotion ? 0 : 1300;
+  // The close button and the collection strip fade in together once the zoom
+  // is under way, and out as soon as a close or navigation starts.
+  const previewChromeVisible =
+    (showPreview || isTransitioning) && !isClosing && !isNavigatingToCollection;
 
   // Handle collection link click with fade-out
   const handleCollectionClick = (
@@ -746,6 +757,14 @@ export default function GalleryPage() {
     zoomTransitionMs,
   ]);
 
+  // Clicking the open photo (or the backdrop around it mid-zoom) closes it.
+  // The second click of a double-click on a thumbnail lands on the photo that
+  // has just opened, so ignore it rather than bouncing straight back.
+  const handleExpandedPhotoClick = (e: React.MouseEvent) => {
+    if (e.detail > 1 || pendingExpand || isTransitioning) return;
+    shrinkImage();
+  };
+
   /* -------------------------------
      Close on Escape
   ------------------------------- */
@@ -1049,119 +1068,117 @@ export default function GalleryPage() {
       <Navbar />
       <h1 className="sr-only">Photography gallery</h1>
 
-      {/* MOBILE SIMPLE VIEW */}
-      {isMobile ? (
-        <div className="pt-24 pb-12 px-4 sm:px-6">
-          <div
-            aria-hidden="true"
-            className="text-3xl font-bold mb-8"
-            style={{
-              color: mobileTextColor,
-              fontFamily:
-                "var(--font-serif)",
-            }}
-          >
-            Gallery
-          </div>
-          <div className="grid grid-cols-1 gap-6">
-            {uniqueCollections.map((collection) => (
-              <Link
-                key={collection.slug}
-                href={`/gallery/collection/${collection.slug}`}
-                prefetch={false}
-                className="block"
-              >
-                <div className="relative w-full">
-                  <Image
-                    src={collection.previewImage}
-                    alt={collection.name}
-                    width={800}
-                    height={1120}
-                    className="w-full h-auto object-cover"
-                    style={{ aspectRatio: "40 / 56" }}
-                    quality={PHOTO_QUALITY}
-                    sizes="(max-width: 768px) 100vw, 90vw"
-                    loading="lazy"
-                  />
-                  <div className="mt-2">
-                    <h2
-                      className="text-lg font-semibold"
-                      style={{
-                        color: mobileTextColor,
-                        fontFamily:
-                          "var(--font-serif)",
-                      }}
-                    >
-                      {collection.name}
-                    </h2>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+      {/* MOBILE SIMPLE VIEW. Always in the server HTML and hidden from md up,
+          so phones and crawlers get real links to every collection without
+          waiting for JavaScript to choose a layout. */}
+      <div className="md:hidden pt-24 pb-12 px-4 sm:px-6">
+        <div
+          aria-hidden="true"
+          className="text-3xl font-bold mb-8"
+          style={{
+            color: mobileTextColor,
+            fontFamily:
+              "var(--font-serif)",
+          }}
+        >
+          Gallery
         </div>
-      ) : (
-        <>
-          {/* DESKTOP IMAGE TRACK */}
-          <div
-            ref={trackRef}
-            className="absolute left-1/2 top-3/5 flex gap-[4vmin] select-none"
-            style={{
-              transform: "translate(-50%, -50%)",
-              opacity: isNavigatingToCollection ? 0 : 1,
-              transition: isNavigatingToCollection
-                ? "opacity 0.15s ease-out"
-                : "none",
-            }}
-          >
-            {galleryImages.map((src, i) => {
-              const collectionName = parseCollection(src).name;
-              return (
-                <div
-                  key={i}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Open the ${collectionName} collection`}
-                  onClick={() => openImageAt(i)}
-                  onPointerEnter={() => warmImage(i)}
-                  onFocus={() => warmImage(i)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      openImageAt(i);
-                    }
-                  }}
-                  style={{
-                    position: "relative",
-                    width: "40vmin",
-                    height: "56vmin",
-                    flexShrink: 0,
-                  }}
-                >
-                  <Image
-                    ref={(el: HTMLImageElement | null) => {
-                      imageRefs.current[i] = el;
-                    }}
-                    src={src}
-                    alt={collectionName}
-                    fill
-                    sizes={THUMB_SIZES}
-                    quality={PHOTO_QUALITY}
-                    priority={i === 0}
-                    loading={i === 0 ? "eager" : "lazy"}
-                    className="image cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] hover:opacity-95"
-                    draggable={false}
+        <div className="grid grid-cols-1 gap-6">
+          {uniqueCollections.map((collection) => (
+            <Link
+              key={collection.slug}
+              href={`/gallery/collection/${collection.slug}`}
+              prefetch={false}
+              className="block"
+            >
+              <div className="relative w-full">
+                <Image
+                  src={collection.previewImage}
+                  alt={collection.name}
+                  width={800}
+                  height={1120}
+                  className="w-full h-auto object-cover"
+                  style={{ aspectRatio: "40 / 56" }}
+                  quality={PHOTO_QUALITY}
+                  sizes="(max-width: 768px) 100vw, 90vw"
+                  loading="lazy"
+                />
+                <div className="mt-2">
+                  <h2
+                    className="text-lg font-semibold"
                     style={{
-                      objectFit: "cover",
-                      objectPosition: "100% center",
+                      color: mobileTextColor,
+                      fontFamily:
+                        "var(--font-serif)",
                     }}
-                  />
+                  >
+                    {collection.name}
+                  </h2>
                 </div>
-              );
-            })}
-          </div>
-        </>
-      )}
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* DESKTOP IMAGE TRACK */}
+      <div
+        ref={trackRef}
+        className="hidden md:flex absolute left-1/2 top-3/5 gap-[4vmin] select-none"
+        style={{
+          transform: "translate(-50%, -50%)",
+          opacity: isNavigatingToCollection ? 0 : 1,
+          transition: isNavigatingToCollection
+            ? "opacity 0.15s ease-out"
+            : "none",
+        }}
+      >
+        {galleryImages.map((src, i) => {
+          const collectionName = parseCollection(src).name;
+          return (
+            <div
+              key={i}
+              role="button"
+              tabIndex={0}
+              aria-label={`Open the ${collectionName} collection`}
+              onClick={() => openImageAt(i)}
+              onPointerEnter={() => warmImage(i)}
+              onFocus={() => warmImage(i)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  openImageAt(i);
+                }
+              }}
+              style={{
+                position: "relative",
+                width: "40vmin",
+                height: "56vmin",
+                flexShrink: 0,
+              }}
+            >
+              <Image
+                ref={(el: HTMLImageElement | null) => {
+                  imageRefs.current[i] = el;
+                }}
+                src={src}
+                alt={collectionName}
+                fill
+                sizes={THUMB_SIZES}
+                quality={PHOTO_QUALITY}
+                priority={i === 0}
+                loading={i === 0 ? "eager" : "lazy"}
+                className="image cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] hover:opacity-95"
+                draggable={false}
+                style={{
+                  objectFit: "cover",
+                  objectPosition: "100% center",
+                }}
+              />
+            </div>
+          );
+        })}
+      </div>
 
       {/* Off-screen warmers. Mounting the fullscreen variant lets next/image
           issue exactly the request the expanded view will make, so the zoom
@@ -1207,6 +1224,7 @@ export default function GalleryPage() {
                   ? "transition-none"
                   : "transition-opacity duration-[900ms]"
               }`}
+              onClick={handleExpandedPhotoClick}
               style={{
                 backgroundColor: bgColor,
                 opacity:
@@ -1227,6 +1245,48 @@ export default function GalleryPage() {
               }}
               aria-hidden="true"
             />
+            <button
+              type="button"
+              aria-label="Close preview"
+              onClick={() => {
+                if (!isTransitioning) shrinkImage();
+              }}
+              className="fixed top-6 right-6 md:top-8 md:right-8 z-60 flex items-center justify-center rounded-full transition-opacity duration-500"
+              style={{
+                width: 44,
+                height: 44,
+                color: "#1a1a1a",
+                backgroundColor: GLASS_BG,
+                backdropFilter: GLASS_BLUR,
+                WebkitBackdropFilter: GLASS_BLUR,
+                border: GLASS_BORDER,
+                boxShadow: GLASS_SHADOW,
+                opacity: previewChromeVisible ? 1 : 0,
+                pointerEvents: previewChromeVisible ? "auto" : "none",
+                transitionDuration: prefersReducedMotion ? "0ms" : undefined,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = GLASS_BG_HOVER;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = GLASS_BG;
+              }}
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
             {hasCollectionLink ? (
               <Link
                 href={`/gallery/collection/${expandedCollection.slug}`}
@@ -1397,19 +1457,9 @@ export default function GalleryPage() {
                     : "bottom-8 right-8 max-w-[60vw] overflow-x-auto"
                 }`}
                 style={{
-                  opacity:
-                    (showPreview || isTransitioning) &&
-                    !isClosing &&
-                    !isNavigatingToCollection
-                      ? 1
-                      : 0,
+                  opacity: previewChromeVisible ? 1 : 0,
                   zIndex: 60,
-                  pointerEvents:
-                    (showPreview || isTransitioning) &&
-                    !isClosing &&
-                    !isNavigatingToCollection
-                      ? "auto"
-                      : "none",
+                  pointerEvents: previewChromeVisible ? "auto" : "none",
                   WebkitOverflowScrolling: "touch",
                   transitionDuration: prefersReducedMotion ? "0ms" : undefined,
                 }}
@@ -1502,6 +1552,7 @@ export default function GalleryPage() {
                     ? "transition-none"
                     : "transition-all duration-[1300ms] ease-out"
                 }
+                onClick={handleExpandedPhotoClick}
                 style={{
                   width: `${expandedImageStyle.width}px`,
                   height: `${expandedImageStyle.height}px`,
@@ -1521,6 +1572,7 @@ export default function GalleryPage() {
                     ? "opacity 0.4s ease-out"
                     : undefined,
                   overflow: "hidden",
+                  cursor: "zoom-out",
                 }}
               >
                 <ExpandedPhoto
