@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef, type CSSProperties } from "react";
 import { usePrefersReducedMotion } from "./utils/motion";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import galleryImage from "../public/images/Gallery.jpg";
 import projectsImage from "../public/images/Projects.jpg";
 import gallery2Image from "../public/images/Gallery2.jpg";
@@ -354,6 +355,7 @@ export default function Home() {
         })}
       </section>
 
+      <Footer />
     </div>
   );
 }

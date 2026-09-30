@@ -8,6 +8,7 @@ import { parseMarkdown } from "../../utils/markdown";
 import { extractFirstImagePath } from "../../utils/image-marker";
 import { readImageSizes } from "../../utils/image-sizes";
 import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 import JsonLd from "../../components/JsonLd";
 import { articleSchema, breadcrumbSchema } from "../../lib/structured-data";
 
@@ -238,6 +239,7 @@ export default async function JournalPostPage({
           )}
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { useRef } from "react";
 import { useScrollAnimation } from "../components/useScrollAnimation";
 import { usePrefersReducedMotion } from "../utils/motion";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { formatDate } from "../utils/date";
 import { readingTime } from "../utils/reading-time";
 import { extractFirstImagePath } from "../utils/image-marker";
@@ -148,6 +149,7 @@ export default function JournalPage() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }
