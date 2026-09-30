@@ -230,32 +230,6 @@ export default function Home() {
               exploring innovative solutions, digital experiences, and creative
               projects.
             </h1>
-            <p
-              className={`hero-reveal long-content mt-6 md:mt-8 max-w-xl text-sm md:text-base leading-relaxed ${
-                heroVisible ? "is-visible" : ""
-              }`}
-              style={{ color: textColor }}
-            >
-              I&apos;m a software engineer at AMD, based in Sydney. At RMIT
-              University I founded{" "}
-              <Link
-                href="/projects/rmit-battlebots"
-                className="underline decoration-1 underline-offset-2 hover:opacity-70 transition-opacity"
-              >
-                Advanced RMIT Competitive Robotics
-              </Link>
-              , better known as RMIT BattleBots, and grew it to more than 80
-              students. I&apos;ve also mentored the{" "}
-              <Link
-                href="/projects/robocats-frc"
-                className="underline decoration-1 underline-offset-2 hover:opacity-70 transition-opacity"
-              >
-                Melbourne RoboCats
-              </Link>
-              , an all-girls high-school robotics team. When I&apos;m not
-              engineering, I&apos;m usually photographing people or writing
-              here.
-            </p>
           </div>
 
           {/* Kevin Chen Portrait Image */}
