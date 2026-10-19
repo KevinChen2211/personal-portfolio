@@ -4,6 +4,7 @@ import { allImages, parseCollection } from "../../data";
 import CollectionViewer from "./CollectionViewer";
 import JsonLd from "../../../components/JsonLd";
 import { imageGallerySchema, breadcrumbSchema } from "../../../lib/structured-data";
+import { openGraphDefaults } from "../../../lib/site";
 
 type Params = {
   params: Promise<{ slug: string }>;
@@ -46,6 +47,8 @@ export async function generateMetadata({
     description,
     alternates: { canonical: `/gallery/collection/${slug}` },
     openGraph: {
+      ...openGraphDefaults,
+      type: "website",
       title: `${title} · Kevin Chen`,
       description,
       url: `/gallery/collection/${slug}`,

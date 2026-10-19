@@ -6,6 +6,8 @@ import { useState, useEffect, useRef, type CSSProperties } from "react";
 import { usePrefersReducedMotion } from "./utils/motion";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import JsonLd from "./components/JsonLd";
+import { profilePageSchema } from "./lib/structured-data";
 import galleryImage from "../public/images/Gallery.jpg";
 import projectsImage from "../public/images/Projects.jpg";
 import gallery2Image from "../public/images/Gallery2.jpg";
@@ -64,12 +66,42 @@ export default function Home() {
   // Image data with order, source, link, and label. Static imports carry each
   // photo's real dimensions, so its box is reserved before the file arrives.
   const images = [
-    { src: galleryImage, link: "/gallery", label: "Gallery" },
-    { src: projectsImage, link: "/projects", label: "Projects" },
-    { src: gallery2Image, link: "/gallery", label: "Gallery" },
-    { src: journalImage, link: "/journal", label: "Journal" },
-    { src: gallery3Image, link: "/gallery", label: "Gallery" },
-    { src: contactImage, link: "/contact", label: "Contact" },
+    {
+      src: galleryImage,
+      link: "/gallery",
+      label: "Gallery",
+      alt: "A tiny red fairy door fixed to the base of a tree trunk beside a quiet street",
+    },
+    {
+      src: projectsImage,
+      link: "/projects",
+      label: "Projects",
+      alt: "Two speakers in armchairs on stage with microphones, seen past the heads of the audience",
+    },
+    {
+      src: gallery2Image,
+      link: "/gallery",
+      label: "Gallery",
+      alt: "A guitarist silhouetted beneath a carved stone archway, a fountain in the light beyond",
+    },
+    {
+      src: journalImage,
+      link: "/journal",
+      label: "Journal",
+      alt: "A window in a concrete stairwell wall lined with wire planters, reflecting the stairs",
+    },
+    {
+      src: gallery3Image,
+      link: "/gallery",
+      label: "Gallery",
+      alt: "A man in a floral shirt walking down a narrow market alley under red Korean signs",
+    },
+    {
+      src: contactImage,
+      link: "/contact",
+      label: "Contact",
+      alt: "A group of friends singing karaoke and pulling faces at the camera",
+    },
   ];
 
   // Gentle parallax on section images.
@@ -173,6 +205,7 @@ export default function Home() {
       className="min-h-screen w-full relative overflow-x-hidden pt-6 md:pt-8"
       style={{ backgroundColor: bgColor }}
     >
+      <JsonLd data={profilePageSchema()} />
       {/* Mobile banner — quiet editorial note, slow fade */}
       {mobileBannerVisible && (
         <div
@@ -330,7 +363,7 @@ export default function Home() {
                 >
                   <Image
                     src={image.src}
-                    alt={image.label}
+                    alt={image.alt}
                     placeholder="blur"
                     className="object-contain w-full h-auto max-h-[85vh]"
                     quality={70}

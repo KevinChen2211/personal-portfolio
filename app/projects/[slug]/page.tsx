@@ -6,6 +6,7 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import JsonLd from "../../components/JsonLd";
 import { creativeWorkSchema, breadcrumbSchema } from "../../lib/structured-data";
+import { openGraphDefaults } from "../../lib/site";
 import { parseMarkdown, type ParseMarkdownOptions } from "../../utils/markdown";
 import { extractFirstImagePath } from "../../utils/image-marker";
 import { readImageSizes } from "../../utils/image-sizes";
@@ -41,7 +42,7 @@ export async function generateMetadata({
   const project = projects.find((p) => p.slug === slug);
   if (!project) return { title: "Project Not Found" };
 
-  const description = toExcerpt(project.description);
+  const description = project.summary ?? toExcerpt(project.description);
   const images = project.image ? [project.image] : undefined;
 
   return {
@@ -49,6 +50,7 @@ export async function generateMetadata({
     description,
     alternates: { canonical: `/projects/${project.slug}` },
     openGraph: {
+      ...openGraphDefaults,
       type: "article",
       title: `${project.title} · Kevin Chen`,
       description,
@@ -218,6 +220,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   }
 
   const imageSizes = await readImageSizes(project.description);
+  const projectIndex = projects.indexOf(project);
+  const previousProject = projects[projectIndex - 1];
+  const nextProject = projects[projectIndex + 1];
 
   return (
     <div
@@ -228,7 +233,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         data={[
           creativeWorkSchema({
             title: project.title,
-            description: toExcerpt(project.description),
+            description: project.summary ?? toExcerpt(project.description),
             slug: project.slug,
             image: project.image,
           }),
@@ -345,6 +350,62 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               })}
             </ul>
           </div>
+
+          {/* Previous / next projects */}
+          {(previousProject || nextProject) && (
+            <nav
+              aria-label="More projects"
+              className="mt-16 md:mt-20 pt-8 border-t grid gap-6 sm:grid-cols-2"
+              style={{ borderColor: `${textColor}26` }}
+            >
+              {previousProject && (
+                <Link
+                  href={`/projects/${previousProject.slug}`}
+                  className="group block"
+                >
+                  <span
+                    className="block text-xs md:text-sm mb-1"
+                    style={{
+                      color: textColor,
+                      fontFamily: "var(--font-serif)",
+                      opacity: 0.7,
+                    }}
+                  >
+                    ← Previous project
+                  </span>
+                  <span
+                    className="block text-lg md:text-xl group-hover:underline"
+                    style={{ color: textColor, fontFamily: "var(--font-serif)" }}
+                  >
+                    {previousProject.title}
+                  </span>
+                </Link>
+              )}
+              {nextProject && (
+                <Link
+                  href={`/projects/${nextProject.slug}`}
+                  className="group block sm:col-start-2 sm:text-right"
+                >
+                  <span
+                    className="block text-xs md:text-sm mb-1"
+                    style={{
+                      color: textColor,
+                      fontFamily: "var(--font-serif)",
+                      opacity: 0.7,
+                    }}
+                  >
+                    Next project →
+                  </span>
+                  <span
+                    className="block text-lg md:text-xl group-hover:underline"
+                    style={{ color: textColor, fontFamily: "var(--font-serif)" }}
+                  >
+                    {nextProject.title}
+                  </span>
+                </Link>
+              )}
+            </nav>
+          )}
         </div>
       </main>
       <Footer />

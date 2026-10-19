@@ -11,6 +11,7 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import JsonLd from "../../components/JsonLd";
 import { articleSchema, breadcrumbSchema } from "../../lib/structured-data";
+import { openGraphDefaults } from "../../lib/site";
 
 interface JournalPostPageProps {
   params: Promise<{ slug: string }>;
@@ -35,6 +36,7 @@ export async function generateMetadata({
     description: post.excerpt,
     alternates: { canonical: `/journal/${post.slug}` },
     openGraph: {
+      ...openGraphDefaults,
       type: "article",
       title: `${post.title} · Kevin Chen`,
       description: post.excerpt,

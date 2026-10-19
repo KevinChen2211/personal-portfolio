@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { openGraphDefaults } from "../lib/site";
 
 const title = "Gallery";
 const description =
@@ -14,6 +15,8 @@ export const metadata: Metadata = {
   description,
   alternates: { canonical: "/gallery" },
   openGraph: {
+    ...openGraphDefaults,
+    type: "website",
     title: `${title} · Kevin Chen`,
     description,
     url: "/gallery",
