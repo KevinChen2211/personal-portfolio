@@ -1,5 +1,8 @@
 export interface Project {
   title: string;
+  // One sentence, under ~155 characters: the meta description search results
+  // show under the title. Falls back to the start of `description` if missing.
+  summary?: string;
   description: string;
   highlights: string[];
   icon?: string;
@@ -10,6 +13,8 @@ export interface Project {
 export const projects: Project[] = [
   {
     title: "Melbourne RoboCats Mentorship",
+    summary:
+      "Mentoring Melbourne RoboCats, an all-girls high-school FRC team, on WPILib C++ for the RoboRIO, CAN motor control, sensors, autonomous and wiring.",
     description: `
 I mentored Melbourne RoboCats, an all-girls high-school team, on the software and electrical side of their FIRST Robotics Competition (FRC) robot. Most of the season went into getting the students comfortable with embedded programming on the NI RoboRIO using WPILib (C++), and helping them think about the robot as a control system rather than just a pile of code.
 
@@ -54,6 +59,8 @@ By the end, the RoboCats were adding to the codebase on their own, safely changi
   },
   {
     title: "Advanced RMIT Competitive Robotics",
+    summary:
+      "I founded RMIT BattleBots (Advanced RMIT Competitive Robotics) in Melbourne and grew it to 80+ students building combat robots that won competitions.",
     description: `
 I founded Advanced RMIT Competitive Robotics (ARCR) and grew it into a team of more than 80 students across mechanical, electrical, and software. We ran full design-build-test cycles on a tight budget, and the robots we built went on to win competitions.
 
@@ -100,6 +107,8 @@ In the end the club was about building engineers, not just robots. Running multi
   },
   {
     title: "Custom ISA and CPU Datapath Design",
+    summary:
+      "An 8-bit Harvard architecture CPU with a custom RISC-V inspired instruction set, built in Intel Quartus Prime to run a binary search in assembly.",
     description: `
 I designed and built an 8-bit CPU datapath that can run a binary search algorithm written in assembly. It uses a custom, RISC-5 inspired instruction set, and includes all the usual pieces you need to actually execute a program: an instruction set, a datapath, a control unit, and a memory hierarchy.
 
@@ -127,6 +136,8 @@ https://www.youtube.com/watch?v=VAfr-Zdzpp8
   },
   {
     title: "Tube Furnace for Silicon Oxidation Testing",
+    summary:
+      "A tube furnace I built in my garage from quartz and nichrome wire, used to grow silicon dioxide at over 1000°C and read its thickness from the colour.",
     description: `
 This was a garage project I took on just to see if I could build a working tube furnace from scratch and use it to study silicon oxidation by watching the colour of the oxide layer change. The furnace is a quartz glass tube wrapped in 22AWG nichrome heating wire, held in place with high-temperature ceramic cement and wrapped in ceramic fibre blanket for insulation. A variac (variable autotransformer) controls the power so I can ramp the temperature smoothly, and a high-temperature thermocouple keeps an eye on the process. I run it at roughly 25 degrees per minute so nothing gets thermally shocked and the oxidation stays even. Feeding steam in at one end speeds the oxidation up, which lets me see how temperature and time change the rate and quality of the silicon dioxide that forms. The oxide layers come out in different colours depending on their thickness, so I get a quick visual read on how the oxidation is going across the wafer.
 
@@ -159,6 +170,8 @@ That gives me instant feedback on how the oxidation is going without having to d
   },
   {
     title: "AWS Web Application",
+    summary:
+      "A music subscription web app on AWS: hosted on EC2, DynamoDB for users and songs, S3 for artist images, and REST APIs on API Gateway and Lambda.",
     description: `
 I built a music subscription web app on top of a handful of AWS services: EC2, S3, API Gateway, Lambda, and DynamoDB. Users can register, log in, and manage their subscriptions, look up music info, subscribe to songs, and see artist images.
 
@@ -189,6 +202,8 @@ https://www.youtube.com/watch?v=oIH_J6MM7_o
   },
   {
     title: "CAN Bus Communication and Control",
+    summary:
+      "STM32F107 firmware for two nodes talking over CAN bus: button states, LED control and timed ADC readings, with incoming messages filtered by ID.",
     description: `
 This is an embedded CAN communication system running on an STM32F10x microcontroller. It ties together button inputs, LED control, ADC sensing, and CAN messaging to show two nodes talking back and forth over a CAN network.
 
@@ -211,6 +226,8 @@ https://www.youtube.com/watch?v=NtcbJck8bWE
   },
   {
     title: "Yoga and Meditation App",
+    summary:
+      "A cross-platform React Native app for iOS and Android that I built for a client, with guided meditation streaming, sign-in and user profiles.",
     description: `
 I built a cross-platform mobile app that delivers guided meditation content, working closely with the client from start to finish.
 `.trim(),
