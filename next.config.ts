@@ -6,7 +6,8 @@ const nextConfig: NextConfig = {
   // for the photography-heavy gallery; WebP is kept as a fallback for the
   // small slice of clients that still don't support AVIF.
   images: {
-    remotePatterns: [],
+    // YouTube thumbnails for the click-to-play video embeds.
+    remotePatterns: [{ protocol: "https", hostname: "i.ytimg.com", pathname: "/vi/**" }],
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 31536000, // 1 year
     deviceSizes: [640, 828, 1080, 1280, 1920, 2560],
