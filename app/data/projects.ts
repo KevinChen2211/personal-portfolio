@@ -12,7 +12,7 @@ export interface Project {
 
 export const projects: Project[] = [
   {
-    title: "Melbourne RoboCats Mentorship",
+    title: "Melbourne RoboCats FRC Mentorship",
     summary:
       "Mentoring Melbourne RoboCats, an all-girls high-school FRC team, on WPILib C++ for the RoboRIO, CAN motor control, sensors, autonomous and wiring.",
     description: `
@@ -58,7 +58,7 @@ By the end, the RoboCats were adding to the codebase on their own, safely changi
     slug: "robocats-frc",
   },
   {
-    title: "Advanced RMIT Competitive Robotics",
+    title: "Founding RMIT BattleBots",
     summary:
       "I founded RMIT BattleBots (Advanced RMIT Competitive Robotics) in Melbourne and grew it to 80+ students building combat robots that won competitions.",
     description: `
@@ -106,7 +106,7 @@ In the end the club was about building engineers, not just robots. Running multi
     slug: "rmit-battlebots",
   },
   {
-    title: "Custom ISA and CPU Datapath Design",
+    title: "8-bit CPU and Custom ISA Design",
     summary:
       "An 8-bit Harvard architecture CPU with a custom RISC-V inspired instruction set, built in Intel Quartus Prime to run a binary search in assembly.",
     description: `
@@ -169,7 +169,7 @@ That gives me instant feedback on how the oxidation is going without having to d
     slug: "tube-furnace-silicon-oxidation",
   },
   {
-    title: "AWS Web Application",
+    title: "Music Subscription App on AWS",
     summary:
       "A music subscription web app on AWS: hosted on EC2, DynamoDB for users and songs, S3 for artist images, and REST APIs on API Gateway and Lambda.",
     description: `
@@ -187,6 +187,8 @@ I built a music subscription web app on top of a handful of AWS services: EC2, S
 
 **User interface**: Put together the pages for login, registration, and managing subscriptions, and kept the flow simple to move through.
 
+Put together, a typical action goes like this: the page on EC2 calls a REST endpoint on API Gateway, a Lambda function does the work, and the result is read from or written to DynamoDB. Artist images come from S3.
+
 https://www.youtube.com/watch?v=oIH_J6MM7_o
 `.trim(),
     highlights: [
@@ -201,7 +203,7 @@ https://www.youtube.com/watch?v=oIH_J6MM7_o
     slug: "aws-web-application",
   },
   {
-    title: "CAN Bus Communication and Control",
+    title: "STM32 CAN Bus Communication and Control",
     summary:
       "STM32F107 firmware for two nodes talking over CAN bus: button states, LED control and timed ADC readings, with incoming messages filtered by ID.",
     description: `
@@ -212,6 +214,8 @@ On startup the program sets up the system clock, GPIO, ADC, a timer, and the CAN
 Once it's up and running, a timer periodically fires off the ADC readings over CAN. It reads the value from an analog input, packs it into a CAN message, and sends it out to the other nodes on the network.
 
 It also receives CAN messages and uses them to control two external LEDs (LED8 and LED9). Incoming messages are filtered by ID, and the payload decides whether each LED turns on or off.
+
+CAN is a broadcast bus: every node sees every message, and nothing is addressed to a particular device. Each message carries an ID instead, and a node uses the controller's hardware filters to accept only the IDs it cares about. That's why the fixed message IDs and the filter setup at startup matter so much here. It's the same scheme cars use to let their electronic control units share one pair of wires.
 
 https://www.youtube.com/watch?v=NtcbJck8bWE
 `.trim(),
@@ -225,11 +229,17 @@ https://www.youtube.com/watch?v=NtcbJck8bWE
     slug: "can-bus",
   },
   {
-    title: "Yoga and Meditation App",
+    title: "React Native Yoga and Meditation App",
     summary:
       "A cross-platform React Native app for iOS and Android that I built for a client, with guided meditation streaming, sign-in and user profiles.",
     description: `
 I built a cross-platform mobile app that delivers guided meditation content, working closely with the client from start to finish.
+
+The app is written in React Native, so one codebase runs on both iOS and Android. Users sign in, set up a profile, and stream the guided meditation sessions straight from the app.
+
+Before writing much code, the client and I worked through the screens together in Figma. That let us agree on the flow and the look while changes were still cheap. From there we built it in agile sprints, so the client saw working features as they landed and could steer what came next.
+
+The main technical pieces were user authentication, profile management, and streaming the meditation content. I also put a lot of time into how the app feels. Smooth animations and simple navigation matter in something people open to wind down, and I tested on both platforms to make sure it behaved the same on each.
 `.trim(),
     highlights: [
       "For a client built a cross-platform React Native app to deliver guided meditation content and user profile management",
