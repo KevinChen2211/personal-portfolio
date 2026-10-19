@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Playfair_Display } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
-import { siteConfig } from "./lib/site";
+import { siteConfig, openGraphDefaults } from "./lib/site";
 import { personSchema, websiteSchema } from "./lib/structured-data";
 import JsonLd from "./components/JsonLd";
 
@@ -81,6 +81,7 @@ export const metadata: Metadata = {
     "software engineer",
     "AMD",
     "Sydney",
+    "Melbourne",
     "RMIT",
     "RMIT BattleBots",
     "robotics",
@@ -126,10 +127,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
+    ...openGraphDefaults,
     type: "website",
-    locale: siteConfig.locale,
     url: siteConfig.url,
-    siteName: siteConfig.name,
     title: siteConfig.title,
     description: siteConfig.description,
   },

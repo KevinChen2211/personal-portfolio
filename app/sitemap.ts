@@ -7,7 +7,14 @@ import { extractFirstImagePath } from "./utils/image-marker";
 
 const baseUrl = siteConfig.url;
 
+// Only pages with a real date get `lastModified`. Google ignores the field
+// site-wide once it notices it doesn't track actual changes, so a made-up
+// build-time date is worse than none.
 export default function sitemap(): MetadataRoute.Sitemap {
+  const newestPostDate = blogPosts.length
+    ? new Date(Math.max(...blogPosts.map((post) => Date.parse(post.date))))
+    : undefined;
+
   const staticRoutes: MetadataRoute.Sitemap = [
     "",
     "/projects",
@@ -16,6 +23,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/contact",
   ].map((path) => ({
     url: `${baseUrl}${path}`,
+    ...(path === "/journal" && newestPostDate
+      ? { lastModified: newestPostDate }
+      : {}),
     changeFrequency: "monthly",
     priority: path === "" ? 1 : 0.8,
   }));

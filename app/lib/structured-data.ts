@@ -17,16 +17,32 @@ export function personSchema() {
     "@type": "Person",
     "@id": personId,
     name: siteConfig.name,
+    givenName: siteConfig.givenName,
+    familyName: siteConfig.familyName,
     url: siteConfig.url,
     image: absoluteUrl(siteConfig.image),
     jobTitle: siteConfig.jobTitle,
     worksFor: { "@type": "Organization", ...siteConfig.employer },
-    alumniOf: { "@type": "CollegeOrUniversity", ...siteConfig.almaMater },
+    alumniOf: {
+      "@type": "CollegeOrUniversity",
+      name: siteConfig.almaMater.name,
+      url: siteConfig.almaMater.url,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: siteConfig.almaMater.locality,
+        addressRegion: siteConfig.almaMater.region,
+        addressCountry: siteConfig.location.country,
+      },
+    },
     address: {
       "@type": "PostalAddress",
       addressLocality: siteConfig.location.locality,
       addressRegion: siteConfig.location.region,
       addressCountry: siteConfig.location.country,
+    },
+    homeLocation: {
+      "@type": "Place",
+      name: `${siteConfig.location.locality}, Australia`,
     },
     description: siteConfig.description,
     knowsAbout: [...siteConfig.knowsAbout],
@@ -46,6 +62,22 @@ export function websiteSchema() {
     description: siteConfig.description,
     inLanguage: "en-AU",
     publisher: { "@id": personId },
+  };
+}
+
+// Marks the home page as Kevin's profile page. Google reads ProfilePage as
+// "this page is about this person", which is what name searches look for.
+export function profilePageSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "@id": `${siteConfig.url}/#profilepage`,
+    url: siteConfig.url,
+    name: siteConfig.title,
+    description: siteConfig.description,
+    inLanguage: "en-AU",
+    isPartOf: { "@id": websiteId },
+    mainEntity: { "@id": personId },
   };
 }
 
@@ -80,7 +112,12 @@ export function articleSchema(post: {
     description: post.description,
     datePublished: post.date,
     dateModified: post.date,
-    author: { "@id": personId, name: post.author ?? siteConfig.name },
+    author: {
+      "@type": "Person",
+      "@id": personId,
+      name: post.author ?? siteConfig.name,
+      url: siteConfig.url,
+    },
     publisher: { "@id": personId },
     ...(post.image ? { image: absoluteUrl(post.image) } : {}),
     ...(post.tags && post.tags.length ? { keywords: post.tags.join(", ") } : {}),
