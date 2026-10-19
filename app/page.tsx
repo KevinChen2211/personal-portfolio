@@ -213,7 +213,7 @@ export default function Home() {
           style={{
             backgroundColor: "transparent",
             color: textColor,
-            opacity: mobileBannerFading ? 0 : 0.55,
+            opacity: mobileBannerFading ? 0 : 0.7,
             transition: prefersReducedMotion
               ? "opacity 0.2s ease-out"
               : "opacity 2.5s var(--ease-out)",
