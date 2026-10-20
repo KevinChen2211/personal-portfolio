@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import Image from "next/image";
 import { parseImageMarker } from "./image-marker";
+import YouTubeEmbed from "../components/YouTubeEmbed";
 import type { ImageSize } from "./image-sizes";
 
 export interface ParseMarkdownOptions {
@@ -197,16 +198,7 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
               aspectRatio: "16 / 9",
             }}
           >
-            <iframe
-              src={`https://www.youtube.com/embed/${videoId}`}
-              title="YouTube video player"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-              className="w-full h-full rounded-lg"
-              style={{
-                border: "none",
-              }}
-            />
+            <YouTubeEmbed videoId={videoId} />
           </div>
         </div>
       );
@@ -294,6 +286,7 @@ export function parseMarkdown(content: string, options: ParseMarkdownOptions): R
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
                   quality={70}
                   preload={isLead}
+                  fetchPriority={isLead ? "high" : undefined}
                   loading={isLead ? "eager" : "lazy"}
                 />
               )}

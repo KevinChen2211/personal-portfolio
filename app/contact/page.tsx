@@ -29,7 +29,8 @@ export default function ContactPage() {
                 fill
                 className="object-contain"
                 quality={75}
-                priority
+                preload
+                fetchPriority="high"
                 sizes="(max-width: 768px) 100vw, 50vw"
               />
             </div>

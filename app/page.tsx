@@ -213,7 +213,7 @@ export default function Home() {
           style={{
             backgroundColor: "transparent",
             color: textColor,
-            opacity: mobileBannerFading ? 0 : 0.55,
+            opacity: mobileBannerFading ? 0 : 0.7,
             transition: prefersReducedMotion
               ? "opacity 0.2s ease-out"
               : "opacity 2.5s var(--ease-out)",
@@ -279,7 +279,8 @@ export default function Home() {
                 fill
                 className="object-contain"
                 quality={80}
-                priority
+                preload
+                fetchPriority="high"
                 sizes="(max-width: 768px) 100vw, 55vw"
               />
             </div>
@@ -368,8 +369,7 @@ export default function Home() {
                     className="object-contain w-full h-auto max-h-[85vh]"
                     quality={70}
                     sizes="(max-width: 768px) 90vw, (max-width: 1024px) 50vw, 45vw"
-                    priority={index === 0}
-                    loading={index === 0 ? "eager" : "lazy"}
+                    loading="lazy"
                   />
                 </div>
                 <span
