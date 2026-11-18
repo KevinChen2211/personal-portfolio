@@ -3,6 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "../components/Navbar";
+import Postmark from "../components/Postmark";
+import contactPhoto from "../../public/images/contact_me.jpg";
+
+const photoRatio = contactPhoto.width / contactPhoto.height;
 
 export default function ContactPage() {
   const bgColor = "#FAF2E6";
@@ -22,9 +26,9 @@ export default function ContactPage() {
         <div className="site-container flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-10">
           {/* Contact Image - Left Side */}
           <div className="w-full md:w-[50vw] lg:w-[45vw] max-w-[800px] flex-shrink-0 order-2 md:order-1">
-            <div className="relative w-full h-[50vh] md:h-[85vh] max-h-[900px]">
+            <div className="relative w-full h-[50vh] md:h-[85vh] max-h-[900px] [container-type:size]">
               <Image
-                src="/images/contact_me.jpg"
+                src={contactPhoto}
                 alt="Contact"
                 fill
                 className="object-contain"
@@ -33,6 +37,17 @@ export default function ContactPage() {
                 fetchPriority="high"
                 sizes="(max-width: 768px) 100vw, 50vw"
               />
+              {/* Same box object-contain draws the photo into, so the
+                  postmark lands on the photo's corner, not the container's. */}
+              <div
+                className="pointer-events-none absolute inset-0 m-auto"
+                style={{
+                  width: `min(100cqw, ${photoRatio * 100}cqh)`,
+                  aspectRatio: photoRatio,
+                }}
+              >
+                <Postmark className="pointer-events-auto absolute -top-8 -right-3 md:-top-10 md:-right-8" />
+              </div>
             </div>
           </div>
 
