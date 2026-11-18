@@ -21,6 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/gallery",
     "/journal",
     "/contact",
+    "/passport",
   ].map((path) => ({
     url: `${baseUrl}${path}`,
     ...(path === "/journal" && newestPostDate
