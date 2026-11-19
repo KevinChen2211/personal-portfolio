@@ -418,8 +418,8 @@ function StampPage({
 // After the Australian R series cover: navy, everything in gold foil, an
 // emblem up top, AUSTRALIA, PASSPORT and the ePassport chip mark. The real
 // one carries the Commonwealth Coat of Arms, which private use isn't allowed
-// to reproduce, so the emblem here is the Commonwealth Star in a wreath of
-// wattle, over the Southern Cross.
+// to reproduce, so the emblem here is a kangaroo facing an emu in a wreath of
+// wattle, over the Southern Cross: no shield, crest or scroll.
 const COVER_NAVY = "#1C2254";
 const FOIL =
   "linear-gradient(170deg, #F3DE9C 0%, #C9A44E 38%, #E7CD84 55%, #A9812F 100%)";
@@ -430,7 +430,7 @@ const foilText: CSSProperties = {
   color: "transparent",
 };
 
-// A seven-pointed star, as on the flag: points every 360/7 degrees.
+// A star with the given number of points, seven for the Southern Cross on the flag.
 function starPoints(cx: number, cy: number, r: number, points = 7, inner = 0.45) {
   return Array.from({ length: points * 2 }, (_, i) => {
     const a = (i * Math.PI) / points - Math.PI / 2;
@@ -439,7 +439,7 @@ function starPoints(cx: number, cy: number, r: number, points = 7, inner = 0.45)
   }).join(" ");
 }
 
-// Two sprigs of wattle curving up either side of the star from its foot: a
+// Two sprigs of wattle curving up either side of the animals: a
 // leaf inside the stem and a puffball outside it at each step. Rounded, as
 // Math.cos can differ in the last digit between the server and the browser.
 const r2 = (v: number) => Math.round(v * 100) / 100;
@@ -476,11 +476,29 @@ const SOUTHERN_CROSS: [number, number, number, number][] = [
   [63.6, 92.6, 1.5, 5],
 ];
 
+// A kangaroo (facing right) and an emu (facing left), each drawn in a box
+// about 20 wide and 35 tall with its feet on y = 35.
+const KANGAROO =
+  "M11 0 L12.6 3.4 C14.4 3.4 16.6 4.6 17.4 6.2 C17.2 7.2 15.8 7.8 14.4 7.6 C13.8 8.8 14 10.2 14.6 11.4 C15.6 13 16 14.4 16.2 15.6 L18.4 17.4 L18 18.2 L15.8 17 C16.4 19.6 16.4 22.4 15.6 24.4 C15 25.8 14.6 27 14.6 28.2 C15.6 30 17.6 32.4 21 33.6 L21.4 35 L10.6 35 C9.8 34.6 9.2 33.8 9 33 C6.4 33.8 3 34.6 0 35 L0.4 33.8 C3.4 32.4 6.4 30.8 8.2 29.2 C6.6 27.4 6.2 24.6 7.2 22.2 C8 20 9.6 18.6 10.2 16.2 C10.8 13.4 11 10.6 11 8.4 C10.2 7.6 9.8 6.2 10.2 4.6 L9.2 0.8 Z";
+const EMU =
+  "M6.6 1.6 C7.8 1.2 8.8 2 8.6 3.2 C8.4 5 8.2 8 8.8 11 C9.4 13.4 11 14.6 13.4 14.8 C17 15 19.6 17.4 20 20.6 C20.2 23 18.8 25 16.8 26 C15 26.8 13 26.8 11.6 26.4 C9 26 6.4 24 5.6 21 C5 18.6 5.6 15.6 6.4 13.4 C6.4 10 5.8 6.4 5.6 4.4 L3 3.8 L3.2 3.2 C4 2.4 5.2 1.8 6.6 1.6 Z";
+const EMU_LEGS = "M12.6 26 L13.4 34.2 L11 35 M13.4 34.2 L15 35 M15.8 26 L17.4 34.2 L15.2 35 M17.4 34.2 L19 35";
+
 function CoverEmblem({ gold }: { gold: string }) {
   return (
     <svg viewBox="0 0 120 102" className="w-[44%]" aria-hidden="true">
       <g fill={`url(#${gold})`} stroke="none">
-        <polygon points={starPoints(60, 40, 15)} />
+        <path d={KANGAROO} transform="translate(38 24.6) scale(0.95)" />
+        <path d={EMU} transform="translate(60.8 24.6) scale(0.95)" />
+        <path
+          d={EMU_LEGS}
+          transform="translate(60.8 24.6) scale(0.95)"
+          fill="none"
+          stroke={`url(#${gold})`}
+          strokeWidth="1.1"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
         {WREATH.flat().map(({ leaf, puffs }, i) => (
           <g key={i}>
             <ellipse
