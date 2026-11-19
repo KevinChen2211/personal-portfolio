@@ -130,6 +130,57 @@ type Page =
 const UV_TAB_INK = "#3A2A78";
 const TOUCH_LIFT = 72;
 const SPREAD_SHADOW = "0 24px 50px -30px rgba(44,44,44,0.55)";
+// How far the passport leans towards the pointer at the edge of the window.
+const TILT_X_DEG = 5;
+const TILT_Y_DEG = 7;
+const FLOAT = "7s ease-in-out infinite";
+
+// A band of light across a glossy surface. It sits off towards the top-left
+// corner, where the light comes from, and slides across as the passport tilts
+// (--tilt-x and --tilt-y, -1 to 1, set on the book).
+function Sheen({ alpha, blend }: { alpha: number; blend?: CSSProperties["mixBlendMode"] }) {
+  return (
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
+      <div
+        className="absolute -left-full -top-full w-[300%] h-[300%]"
+        style={{
+          background: `linear-gradient(125deg, transparent 0 44%, rgba(255,255,255,${alpha}) 49%, rgba(255,255,255,${alpha * 0.35}) 52%, transparent 57%)`,
+          transform:
+            "translate3d(calc(-13% - var(--tilt-x, 0) * 11%), calc(-13% - var(--tilt-y, 0) * 11%), 0)",
+          mixBlendMode: blend,
+        }}
+      />
+    </div>
+  );
+}
+
+// The page block's thickness and the back cover under it, peeking out below
+// and around a page. They shift a little against the tilt, like real depth.
+const EDGES = [
+  { inset: 0, y: 1.6, color: "#E6D7BC" },
+  { inset: 0, y: 3.2, color: "#DCCBAD" },
+  { inset: -3, y: 5, color: "#1C2254" },
+];
+// `shown` overrides the hidden spread, so they also show under the shut cover.
+function PageEdges({ shown }: { shown: boolean }) {
+  return (
+    <>
+      {EDGES.map((edge, i) => (
+        <span
+          key={i}
+          aria-hidden="true"
+          className="pointer-events-none absolute z-[-1] rounded-[inherit]"
+          style={{
+            visibility: shown ? "visible" : "hidden",
+            inset: edge.inset,
+            backgroundColor: edge.color,
+            transform: `translate3d(calc(var(--tilt-x, 0) * ${-(i + 1) * 1.4}px), calc(${edge.y}px - var(--tilt-y, 0) * ${(i + 1) * 1.1}px), 0)`,
+          }}
+        />
+      ))}
+    </>
+  );
+}
 const UV_TAB_LABEL: [string, string] = ["MAP", "WORLD MAP"];
 
 // The world map in UV ink (across the first spread, or the first page on a
@@ -421,6 +472,10 @@ function StampPage({
 // to reproduce, so the emblem here is a kangaroo facing an emu in a wreath of
 // wattle, over the Southern Cross: no shield, crest or scroll.
 const COVER_NAVY = "#1C2254";
+// Fine pebbled grain, like the plastic board of the real cover.
+const COVER_GRAIN = `url("data:image/svg+xml,${encodeURIComponent(
+  "<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0.05  0 0 0 0.55 -0.12'/></filter><rect width='100%' height='100%' filter='url(#g)'/></svg>",
+)}")`;
 const FOIL =
   "linear-gradient(170deg, #F3DE9C 0%, #C9A44E 38%, #E7CD84 55%, #A9812F 100%)";
 const foilText: CSSProperties = {
@@ -547,10 +602,13 @@ function Cover() {
       style={{
         backgroundColor: COVER_NAVY,
         // Grained board, a little lighter where the light catches it.
-        backgroundImage:
-          "radial-gradient(120% 80% at 30% 20%, rgba(255,255,255,0.07), transparent 60%), repeating-radial-gradient(circle at 37% 61%, rgba(0,0,0,0.06) 0 1px, transparent 1px 3px)",
+        backgroundImage: `radial-gradient(120% 80% at 30% 20%, rgba(255,255,255,0.07), transparent 60%), ${COVER_GRAIN}`,
+        backgroundSize: "auto, 180px 180px",
       }}
     >
+      <Sheen alpha={0.13} />
+      {/* Catches the gold foil far more than the navy, like light on foil. */}
+      <Sheen alpha={0.55} blend="overlay" />
       <svg width="0" height="0" className="absolute" aria-hidden="true">
         <linearGradient id={gold} x1="0" y1="0" x2="0.35" y2="1">
           <stop offset="0" stopColor="#F3DE9C" />
@@ -650,8 +708,8 @@ function Corner({ side }: { side: "left" | "right" }) {
       style={{
         background:
           side === "right"
-            ? "linear-gradient(315deg, #FAF2E6 0 50%, #E6D6BB 50% 60%, #EADBC2 60%)"
-            : "linear-gradient(45deg, #FAF2E6 0 50%, #E6D6BB 50% 60%, #EADBC2 60%)",
+            ? "linear-gradient(315deg, #E6D7BC 0 50%, #D9C7A6 50% 60%, #EADBC2 60%)"
+            : "linear-gradient(45deg, #E6D7BC 0 50%, #D9C7A6 50% 60%, #EADBC2 60%)",
         boxShadow:
           side === "right"
             ? "-3px -3px 6px -4px rgba(44,44,44,0.35)"
@@ -727,6 +785,9 @@ export default function Passport({ countries }: { countries: Country[] }) {
   const [uvReady, setUvReady] = useState(false);
 
   const rootRef = useRef<HTMLDivElement>(null);
+  // The latest closeBook, for handlers set up before it's declared.
+  const closeBookRef = useRef<() => void>(() => {});
+  const stageRef = useRef<HTMLDivElement>(null);
   const bookRef = useRef<HTMLDivElement>(null);
   const leafRef = useRef<HTMLDivElement>(null);
   const shadeRef = useRef<HTMLDivElement>(null);
@@ -821,6 +882,71 @@ export default function Passport({ countries }: { countries: Country[] }) {
       pickUpAt.current = at ?? null;
     }
   }, []);
+  // The passport leans towards a mouse pointer, as if held up to the light,
+  // easing there a frame at a time. Written straight to the book's style so
+  // following the pointer never re-renders.
+  const tilt = useRef({ x: 0, y: 0, toX: 0, toY: 0, raf: 0 });
+  const uvRef = useRef(uv);
+  const applyTilt = useCallback(() => {
+    const book = bookRef.current;
+    if (!book) return;
+    const t = tilt.current;
+    book.style.setProperty("--tilt-x", t.x.toFixed(3));
+    book.style.setProperty("--tilt-y", t.y.toFixed(3));
+    book.style.transform = `rotateX(${(-t.y * TILT_X_DEG).toFixed(2)}deg) rotateY(${(t.x * TILT_Y_DEG).toFixed(2)}deg)`;
+  }, []);
+  useEffect(() => {
+    if (prefersReducedMotion || !hasFinePointer) return;
+    const t = tilt.current;
+    const ease = () => {
+      t.x += (t.toX - t.x) * 0.1;
+      t.y += (t.toY - t.y) * 0.1;
+      if (Math.abs(t.toX - t.x) < 0.002 && Math.abs(t.toY - t.y) < 0.002) {
+        t.x = t.toX;
+        t.y = t.toY;
+        t.raf = 0;
+      } else {
+        t.raf = requestAnimationFrame(ease);
+      }
+      applyTilt();
+    };
+    const lean = (x: number, y: number) => {
+      t.toX = Math.max(-1, Math.min(1, x));
+      t.toY = Math.max(-1, Math.min(1, y));
+      if (!t.raf) t.raf = requestAnimationFrame(ease);
+    };
+    const onMove = (e: PointerEvent) => {
+      // Flat while the torch shines, so the beam lands where it's pointed.
+      if (e.pointerType !== "mouse" || uvRef.current) return;
+      const stage = stageRef.current?.getBoundingClientRect();
+      if (!stage) return;
+      lean(
+        (e.clientX - stage.left - stage.width / 2) / (window.innerWidth / 2),
+        (e.clientY - stage.top - stage.height / 2) / (window.innerHeight / 2),
+      );
+    };
+    const settle = () => lean(0, 0);
+    window.addEventListener("pointermove", onMove, { passive: true });
+    document.documentElement.addEventListener("pointerleave", settle);
+    window.addEventListener("blur", settle);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      document.documentElement.removeEventListener("pointerleave", settle);
+      window.removeEventListener("blur", settle);
+      cancelAnimationFrame(t.raf);
+      t.raf = 0;
+    };
+  }, [prefersReducedMotion, hasFinePointer, applyTilt]);
+  // Snap flat as the torch comes up, before it's aimed below.
+  useLayoutEffect(() => {
+    uvRef.current = uv;
+    if (!uv) return;
+    const t = tilt.current;
+    cancelAnimationFrame(t.raf);
+    Object.assign(t, { x: 0, y: 0, toX: 0, toY: 0, raf: 0 });
+    applyTilt();
+  }, [uv, applyTilt]);
+
   // Aim in the same commit the beam and held torch appear, before paint.
   useLayoutEffect(() => {
     if (!uv) return;
@@ -889,9 +1015,11 @@ export default function Passport({ countries }: { countries: Country[] }) {
     [step, lastStart, prefersReducedMotion, stampIn, stampRange],
   );
 
+  // Turning back from the first spread shuts the cover, like closing a book.
   const turn = useCallback(
     (dir: 1 | -1) => {
       if (!isOpen || flip) return;
+      if (dir === -1 && page === 0) return closeBookRef.current();
       flipFrom(page, dir, FLIP_MS);
     },
     [isOpen, flip, page, flipFrom],
@@ -957,7 +1085,6 @@ export default function Passport({ countries }: { countries: Country[] }) {
       goTo(0);
     }
   };
-  const closeBookRef = useRef(closeBook);
   const finishOpeningRef = useRef(finishOpening);
   useLayoutEffect(() => {
     closeBookRef.current = closeBook;
@@ -965,15 +1092,23 @@ export default function Passport({ countries }: { countries: Country[] }) {
   });
 
   // Scrolling over the passport turns its pages: one notch turns one, a fast
-  // scroll flicks through a few. Past the first or last spread the page
-  // scrolls as normal, and scrolling down on the cover opens it.
+  // scroll flicks through a few. Scrolling down on the cover opens it, back
+  // past the first spread closes it, and past the last the page scrolls on.
   const wheelSum = useRef(0);
+  const lastWheelAt = useRef(0);
+  const lastLanding = useRef(0);
+  // Set while the momentum of a flick that reached the first spread runs out,
+  // so it doesn't carry on and shut the cover too.
+  const wheelHeld = useRef(false);
   const onWheel = (e: WheelEvent) => {
     if (e.ctrlKey) return;
     const raw = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
     const px = raw * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1);
     if (px === 0) return;
     const dir: 1 | -1 = px > 0 ? 1 : -1;
+    const now = performance.now();
+    const streaming = now - lastWheelAt.current < 250;
+    lastWheelAt.current = now;
     if (coverState === "closed") {
       if (dir === 1) {
         e.preventDefault();
@@ -989,7 +1124,21 @@ export default function Passport({ countries }: { countries: Country[] }) {
     const landing = flip
       ? flip.to + (queued ? queued.dir * queued.remaining * step : 0)
       : page;
-    if (dir === 1 ? landing >= lastStart : landing <= 0) return;
+    if (dir === 1 && landing >= lastStart) return;
+    if (dir === -1 && landing <= 0) {
+      e.preventDefault();
+      if (flip || now - lastLanding.current < 500 || (wheelHeld.current && streaming)) {
+        wheelHeld.current = true;
+        wheelSum.current = 0;
+        return;
+      }
+      wheelHeld.current = false;
+      wheelSum.current = Math.min(wheelSum.current, 0) + px;
+      if (wheelSum.current > -WHEEL_STEP_PX * 1.5) return;
+      wheelSum.current = 0;
+      closeBook();
+      return;
+    }
     e.preventDefault();
     if (Math.sign(wheelSum.current) !== dir) wheelSum.current = 0;
     wheelSum.current += px;
@@ -1051,6 +1200,7 @@ export default function Passport({ countries }: { countries: Country[] }) {
         return;
       }
       queue.current = null;
+      lastLanding.current = performance.now();
       setPage(flip.to);
       setFlip(null);
       setSeekSpread(null);
@@ -1236,6 +1386,14 @@ export default function Passport({ countries }: { countries: Country[] }) {
   // The tabs, torch and ribbon fade in as the cover settles, rather than
   // popping in the moment it lands, and leave as soon as it starts to close.
   const uiShown = coverState === "opening" || isOpen;
+  const floating = !prefersReducedMotion;
+  // Under just the cover while it's shut on a wide screen, else the spread.
+  const shadowInset =
+    isWide && (coverState === "closed" || coverState === "closing")
+      ? "calc(48px + (100% - 96px) * 0.28)"
+      : isWide
+        ? "calc(48px + (100% - 96px) * 0.04)"
+        : "5%";
   const uiFade: CSSProperties = {
     opacity: uiShown ? 1 : 0,
     transition: prefersReducedMotion
@@ -1325,6 +1483,7 @@ export default function Passport({ countries }: { countries: Country[] }) {
     <div ref={rootRef} style={{ color: INK }}>
       <div className="overflow-hidden pt-10 pb-10 md:pt-4">
         <div
+          ref={stageRef}
           // isolate, so the hidden torch can tuck in behind the book.
           className="relative isolate mx-auto w-full md:px-12"
           // Small enough that the whole book and its controls fit in the window.
@@ -1332,377 +1491,415 @@ export default function Passport({ countries }: { countries: Country[] }) {
             maxWidth: "min(940px, max(600px, calc((100svh - 400px) * 1.43 + 96px)))",
           }}
         >
+          {/* The passport's shadow on the table below it, as wide as what's showing. */}
           <div
-            ref={bookRef}
-            tabIndex={-1}
-            role="region"
-            aria-roledescription="passport"
-            aria-label="Kevin's passport. Tap a page or use the arrow keys to turn it; drag across it to flick through."
-            className={`relative w-full outline-none select-none ${coverState === "closed" || coverState === "closing" ? "md:[--book-shift:-25%]" : ""}`}
+            aria-hidden="true"
+            className="pointer-events-none absolute z-[-2] top-[calc(100%+6px)] h-9"
             style={{
-              perspective: "2400px",
-              transform: "translateX(var(--book-shift, 0%))",
-              transition: "transform var(--duration-slow) var(--ease-out)",
-              touchAction: "pan-y",
+              left: shadowInset,
+              right: shadowInset,
+              background:
+                "radial-gradient(closest-side, rgba(44,32,16,0.3), rgba(44,32,16,0.12) 60%, transparent)",
+              filter: "blur(5px)",
+              transition: "left 1400ms var(--ease-out), right 1400ms var(--ease-out)",
+              animation: floating ? `passport-float-shadow ${FLOAT}` : undefined,
+              animationPlayState: uv ? "paused" : undefined,
             }}
-            onPointerDown={(e) => {
-              // A swipe on touch, or a drag ending off the page, gets no click
-              // to clear this, so start each press afresh.
-              swiped.current = false;
-              drag.current = {
-                x0: e.clientX,
-                y0: e.clientY,
-                lastX: e.clientX,
-                riffling: false,
-              };
-            }}
-            onPointerMove={onPointerMove}
-            onPointerUp={(e) => {
-              const d = drag.current;
-              drag.current = null;
-              if (!d || !isOpen || d.riffling) return;
-              const dx = e.clientX - d.x0;
-              if (
-                Math.abs(dx) > 45 &&
-                Math.abs(dx) > Math.abs(e.clientY - d.y0)
-              ) {
-                swiped.current = true;
-                turn(dx < 0 ? 1 : -1);
-              }
-            }}
-            onPointerCancel={() => {
-              drag.current = null;
+          />
+          <div
+            // Hovers just above the page; it holds still while the torch shines.
+            style={{
+              perspective: "1800px",
+              animation: floating ? `passport-float ${FLOAT}` : undefined,
+              animationPlayState: uv ? "paused" : undefined,
             }}
           >
-            <nav
-              aria-label="Continents"
-              inert={!isOpen}
-              className="absolute z-[-1] flex gap-1 max-md:bottom-full max-md:left-3 max-md:flex-row max-md:items-end md:left-full md:top-[4%] md:flex-col"
-              style={uiFade}
-            >
-              <button
-                type="button"
-                onClick={() => goTo(worldStart)}
-                aria-current={onWorld ? "true" : undefined}
-                aria-label="World map"
-                className={`${tabClass} ${onWorld ? tabActive : tabIdle}`}
-                style={{
-                  ...tabStyle,
-                  backgroundColor: UV_TAB_INK,
-                  color: UV_GLOW,
-                }}
-              >
-                <span className="md:hidden">{UV_TAB_LABEL[0]}</span>
-                <span className="max-md:hidden">{UV_TAB_LABEL[1]}</span>
-              </button>
-              {sections.map((continent) => {
-                const active = continent === activeContinent;
-                return (
-                  <button
-                    key={continent}
-                    type="button"
-                    onClick={() => goTo(sectionStart.get(continent)!)}
-                    aria-current={active ? "true" : undefined}
-                    className={`${tabClass} ${active ? tabActive : tabIdle}`}
-                    style={{
-                      ...tabStyle,
-                      backgroundColor: TAB_INKS[continent],
-                      color: "#FAF2E6",
-                    }}
-                  >
-                    <span className="md:hidden">
-                      {TAB_LABEL[continent][0]}
-                    </span>
-                    <span className="max-md:hidden">
-                      {TAB_LABEL[continent][1]}
-                    </span>
-                  </button>
-                );
-              })}
-            </nav>
-
             <div
-              className="relative grid grid-cols-1 md:grid-cols-2 rounded-[6px]"
+              ref={bookRef}
+              tabIndex={-1}
+              role="region"
+              aria-roledescription="passport"
+              aria-label="Kevin's passport. Tap a page or use the arrow keys to turn it, and turn back past the first page to close it; drag across it to flick through."
+              className={`relative w-full outline-none select-none ${coverState === "closed" || coverState === "closing" ? "md:[--book-shift:-25%]" : ""}`}
               style={{
-                boxShadow: isOpen || !isWide ? SPREAD_SHADOW : undefined,
-                visibility: coverState === "closed" ? "hidden" : "visible",
-                transformStyle: "preserve-3d",
+                perspective: "2400px",
+                // The tilt is written to transform, so the slide uses translate.
+                translate: "var(--book-shift, 0%) 0",
+                transformOrigin: isWide && !isOpen ? "75% 50%" : "50% 50%",
+                transition:
+                  "translate var(--duration-slow) var(--ease-out), transform-origin var(--duration-slow) var(--ease-out)",
+                touchAction: "pan-y",
+              }}
+              onPointerDown={(e) => {
+                // A swipe on touch, or a drag ending off the page, gets no click
+                // to clear this, so start each press afresh.
+                swiped.current = false;
+                drag.current = {
+                  x0: e.clientX,
+                  y0: e.clientY,
+                  lastX: e.clientX,
+                  riffling: false,
+                };
+              }}
+              onPointerMove={onPointerMove}
+              onPointerUp={(e) => {
+                const d = drag.current;
+                drag.current = null;
+                if (!d || !isOpen || d.riffling) return;
+                const dx = e.clientX - d.x0;
+                if (
+                  Math.abs(dx) > 45 &&
+                  Math.abs(dx) > Math.abs(e.clientY - d.y0)
+                ) {
+                  swiped.current = true;
+                  turn(dx < 0 ? 1 : -1);
+                }
+              }}
+              onPointerCancel={() => {
+                drag.current = null;
               }}
             >
+              <nav
+                aria-label="Continents"
+                inert={!isOpen}
+                className="absolute z-[-1] flex gap-1 max-md:bottom-full max-md:left-3 max-md:flex-row max-md:items-end md:left-full md:top-[4%] md:flex-col"
+                style={uiFade}
+              >
+                <button
+                  type="button"
+                  onClick={() => goTo(worldStart)}
+                  aria-current={onWorld ? "true" : undefined}
+                  aria-label="World map"
+                  className={`${tabClass} ${onWorld ? tabActive : tabIdle}`}
+                  style={{
+                    ...tabStyle,
+                    backgroundColor: UV_TAB_INK,
+                    color: UV_GLOW,
+                  }}
+                >
+                  <span className="md:hidden">{UV_TAB_LABEL[0]}</span>
+                  <span className="max-md:hidden">{UV_TAB_LABEL[1]}</span>
+                </button>
+                {sections.map((continent) => {
+                  const active = continent === activeContinent;
+                  return (
+                    <button
+                      key={continent}
+                      type="button"
+                      onClick={() => goTo(sectionStart.get(continent)!)}
+                      aria-current={active ? "true" : undefined}
+                      className={`${tabClass} ${active ? tabActive : tabIdle}`}
+                      style={{
+                        ...tabStyle,
+                        backgroundColor: TAB_INKS[continent],
+                        color: "#FAF2E6",
+                      }}
+                    >
+                      <span className="md:hidden">
+                        {TAB_LABEL[continent][0]}
+                      </span>
+                      <span className="max-md:hidden">
+                        {TAB_LABEL[continent][1]}
+                      </span>
+                    </button>
+                  );
+                })}
+              </nav>
+
               <div
-                className="group relative aspect-[5/7] cursor-pointer rounded-l-[6px] max-md:rounded-[6px]"
+                className="relative grid grid-cols-1 md:grid-cols-2 rounded-[6px]"
                 style={{
-                  visibility: isWide && !isOpen ? "hidden" : undefined,
-                }}
-                onClick={(e) => {
-                  if (isWide) return pageClick(-1);
-                  // One page on screen: its left half goes back, its right half forward.
-                  const box = e.currentTarget.getBoundingClientRect();
-                  pageClick(e.clientX - box.left < box.width / 2 ? -1 : 1);
+                  boxShadow: isOpen || !isWide ? SPREAD_SHADOW : undefined,
+                  visibility: coverState === "closed" ? "hidden" : "visible",
+                  transformStyle: "preserve-3d",
                 }}
               >
-                {renderPage(
-                  baseLeft,
-                  isWide ? "left" : "single",
-                  isOpen && !flip,
-                )}
-                {canBack && !flip && <Corner side="left" />}
-                {!isWide && canForward && !flip && <Corner side="right" />}
-              </div>
-              {isWide && (
                 <div
-                  // Hidden by CSS too: the server renders the wide layout, and a
-                  // phone shouldn't show two pages stacked before hydrating.
-                  className="group relative aspect-[5/7] cursor-pointer rounded-r-[6px] max-md:hidden"
-                  style={{ boxShadow: isOpen ? undefined : SPREAD_SHADOW }}
-                  onClick={() => pageClick(1)}
+                  className="group relative aspect-[5/7] cursor-pointer rounded-l-[6px] max-md:rounded-[6px]"
+                  style={{
+                    visibility: isWide && !isOpen ? "hidden" : undefined,
+                  }}
+                  onClick={(e) => {
+                    if (isWide) return pageClick(-1);
+                    // One page on screen: its left half goes back, its right half forward.
+                    const box = e.currentTarget.getBoundingClientRect();
+                    pageClick(e.clientX - box.left < box.width / 2 ? -1 : 1);
+                  }}
                 >
-                  {renderPage(baseRight, "right", isOpen && !flip)}
-                  {canForward && !flip && <Corner side="right" />}
+                  <PageEdges shown={!isWide || isOpen} />
+                  {renderPage(
+                    baseLeft,
+                    isWide ? "left" : "single",
+                    isOpen && !flip,
+                  )}
+                  {canBack && !flip && <Corner side="left" />}
+                  {!isWide && canForward && !flip && <Corner side="right" />}
+                </div>
+                {isWide && (
+                  <div
+                    // Hidden by CSS too: the server renders the wide layout, and a
+                    // phone shouldn't show two pages stacked before hydrating.
+                    className="group relative aspect-[5/7] cursor-pointer rounded-r-[6px] max-md:hidden"
+                    style={{ boxShadow: isOpen ? undefined : SPREAD_SHADOW }}
+                    onClick={() => pageClick(1)}
+                  >
+                    <PageEdges shown />
+                    {renderPage(baseRight, "right", isOpen && !flip)}
+                    {canForward && !flip && <Corner side="right" />}
+                  </div>
+                )}
+
+                {flip && (
+                  <div
+                    ref={leafRef}
+                    aria-hidden="true"
+                    className={`absolute top-0 bottom-0 z-10 pointer-events-none ${
+                      isWide
+                        ? flip.dir === 1
+                          ? "left-1/2 right-0"
+                          : "left-0 right-1/2"
+                        : "inset-x-0"
+                    }`}
+                    style={{
+                      transformStyle: "preserve-3d",
+                      transformOrigin:
+                        isWide && flip.dir === -1
+                          ? "right center"
+                          : "left center",
+                    }}
+                  >
+                    <div
+                      className="absolute inset-0"
+                      style={{ backfaceVisibility: "hidden" }}
+                    >
+                      {renderPage(
+                        leafFront,
+                        isWide ? (flip.dir === 1 ? "right" : "left") : "single",
+                        false,
+                        true,
+                      )}
+                    </div>
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        backfaceVisibility: "hidden",
+                        transform: "rotateY(180deg)",
+                      }}
+                    >
+                      {leafBack >= 0 ? (
+                        renderPage(
+                          leafBack,
+                          flip.dir === 1 ? "left" : "right",
+                          false,
+                          true,
+                        )
+                      ) : (
+                        <div className="absolute inset-0" style={pagePaper} />
+                      )}
+                    </div>
+                    <div
+                      ref={shadeRef}
+                      className="absolute inset-0"
+                      style={{
+                        background: INK,
+                        opacity: 0,
+                        backfaceVisibility: "hidden",
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Light catching the open pages as the passport tilts. */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 rounded-[6px]"
+                style={{ visibility: isOpen ? "visible" : "hidden" }}
+              >
+                <Sheen alpha={0.17} />
+              </div>
+
+              {/* UV torch beam, clipped to the book. The clip must not form a
+                  stacking context, or the blend modes would stop reaching the pages. */}
+              {isOpen && uvReady && (
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 overflow-hidden rounded-[6px]"
+                >
+                  <div
+                    ref={beamHaloRef}
+                    className="absolute left-0 top-0 rounded-full"
+                    style={{
+                      ...beamLayer(uv && !flip),
+                      width: "calc(var(--tr) * 3.8)",
+                      height: "calc(var(--tr) * 3.8)",
+                      background:
+                        "radial-gradient(circle closest-side, rgba(110,86,220,0.3), rgba(110,86,220,0.14) 55%, transparent)",
+                      mixBlendMode: "multiply",
+                    }}
+                  />
+                  <div
+                    ref={beamDarkRef}
+                    className="absolute left-0 top-0 rounded-full"
+                    style={{
+                      ...beamLayer(uv && !flip),
+                      width: "calc(var(--tr) * 2)",
+                      height: "calc(var(--tr) * 2)",
+                      background:
+                        "radial-gradient(circle closest-side, #33207A, #140A33 60%, rgba(20,10,51,0.8) 80%, rgba(20,10,51,0))",
+                      mixBlendMode: "multiply",
+                    }}
+                  />
+                  <div
+                    ref={beamGlowRef}
+                    className="absolute left-0 top-0 overflow-hidden rounded-full"
+                    style={{
+                      ...beamLayer(uv && !flip),
+                      width: "calc(var(--tr) * 2)",
+                      height: "calc(var(--tr) * 2)",
+                      WebkitMaskImage: BEAM_MASK,
+                      maskImage: BEAM_MASK,
+                      mixBlendMode: "screen",
+                    }}
+                  >
+                    <div
+                      ref={beamPrintRef}
+                      className="absolute left-0 top-0 grid grid-cols-1 md:grid-cols-2"
+                      style={{
+                        width: "var(--bw)",
+                        height: "var(--bh)",
+                        willChange: "transform",
+                      }}
+                    >
+                      {uvPrint}
+                      {isWide && <UvStitch />}
+                    </div>
+                  </div>
                 </div>
               )}
 
-              {flip && (
-                <div
-                  ref={leafRef}
-                  aria-hidden="true"
-                  className={`absolute top-0 bottom-0 z-10 pointer-events-none ${
-                    isWide
-                      ? flip.dir === 1
-                        ? "left-1/2 right-0"
-                        : "left-0 right-1/2"
-                      : "inset-x-0"
-                  }`}
+              {coverState !== "open" && (
+                <button
+                  type="button"
+                  onClick={openCover}
+                  aria-label="Open Kevin's passport"
+                  className="absolute top-0 bottom-0 right-0 w-full md:w-1/2 cursor-pointer rounded-[6px] md:rounded-l-none"
                   style={{
                     transformStyle: "preserve-3d",
-                    transformOrigin:
-                      isWide && flip.dir === -1
-                        ? "right center"
-                        : "left center",
+                    transformOrigin: "left center",
+                    transform:
+                      coverState === "opening" ? "rotateY(-180deg)" : "none",
+                    // Eases to the pages' shadow while it swings, so nothing jumps
+                    // when the cover lands and the spread takes over.
+                    boxShadow:
+                      coverState === "closed"
+                        ? "0 24px 50px -30px rgba(44,44,44,0.7)"
+                        : SPREAD_SHADOW,
+                    transition: "box-shadow 1000ms var(--ease-out)",
                   }}
+                  ref={coverRef}
                 >
                   <div
-                    className="absolute inset-0"
+                    className="absolute inset-0 overflow-hidden rounded-[inherit]"
                     style={{ backfaceVisibility: "hidden" }}
                   >
-                    {renderPage(
-                      leafFront,
-                      isWide ? (flip.dir === 1 ? "right" : "left") : "single",
-                      false,
-                      true,
-                    )}
+                    <Cover />
                   </div>
                   <div
-                    className="absolute inset-0"
+                    className="absolute inset-0 overflow-hidden"
                     style={{
+                      ...pagePaper,
                       backfaceVisibility: "hidden",
                       transform: "rotateY(180deg)",
                     }}
                   >
-                    {leafBack >= 0 ? (
-                      renderPage(
-                        leafBack,
-                        flip.dir === 1 ? "left" : "right",
-                        false,
-                        true,
-                      )
-                    ) : (
-                      <div className="absolute inset-0" style={pagePaper} />
-                    )}
+                    {renderPage(0, "left", false, true)}
                   </div>
-                  <div
-                    ref={shadeRef}
-                    className="absolute inset-0"
+                </button>
+              )}
+
+              {selected && (
+                <div
+                  className="absolute inset-0 z-20 flex items-center justify-center p-4 cursor-pointer"
+                  style={{ backgroundColor: "rgba(250,242,230,0.6)" }}
+                  onClick={close}
+                >
+                  <figure
+                    ref={cardRef}
+                    role="dialog"
+                    aria-modal="false"
+                    aria-label={selected.name}
+                    onClick={(e) => e.stopPropagation()}
+                    className="relative w-[min(92%,440px)] cursor-default p-3 pb-5"
                     style={{
-                      background: INK,
-                      opacity: 0,
-                      backfaceVisibility: "hidden",
+                      backgroundColor: "#FBF7EF",
+                      transform: "rotate(-2deg)",
+                      boxShadow: "0 22px 40px -22px rgba(44,44,44,0.6)",
                     }}
-                  />
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="absolute -top-3 left-1/2 w-24 h-6 -translate-x-1/2 rotate-[3deg]"
+                      style={{ backgroundColor: "rgba(226,208,172,0.85)" }}
+                    />
+                    {selected.photo && (
+                      <div className="relative aspect-[4/3] w-full overflow-hidden">
+                        <Image
+                          key={selected.slug}
+                          src={selected.photo.src}
+                          alt={selected.photo.alt}
+                          fill
+                          sizes="440px"
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
+                    <figcaption className="pt-4 px-1">
+                      <div className="flex items-baseline justify-between gap-3 pr-6">
+                        <span
+                          className="text-2xl md:text-3xl"
+                          style={{
+                            fontFamily: "var(--font-serif)",
+                            fontWeight: 300,
+                          }}
+                        >
+                          {selected.name}
+                        </span>
+                        <span style={label}>
+                          {selected.home ? "Home" : selected.continent} ·{" "}
+                          {selected.code}
+                        </span>
+                      </div>
+                      {selected.note && (
+                        <p
+                          className="mt-2 text-sm leading-relaxed"
+                          style={{ fontFamily: "var(--font-serif)" }}
+                        >
+                          {selected.note}
+                        </p>
+                      )}
+                      {selected.photo?.credit && (
+                        <p
+                          className="mt-2 text-[11px] italic"
+                          style={{ opacity: 0.55 }}
+                        >
+                          Photo: {selected.photo.credit}
+                        </p>
+                      )}
+                    </figcaption>
+                    <button
+                      ref={closeRef}
+                      type="button"
+                      onClick={close}
+                      aria-label="Close"
+                      className="absolute top-1 right-2 text-xl leading-none px-2 py-1 cursor-pointer hover:opacity-60"
+                    >
+                      ×
+                    </button>
+                  </figure>
                 </div>
               )}
             </div>
-
-            {/* UV torch beam, clipped to the book. The clip must not form a
-                stacking context, or the blend modes would stop reaching the pages. */}
-            {isOpen && uvReady && (
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 overflow-hidden rounded-[6px]"
-              >
-                <div
-                  ref={beamHaloRef}
-                  className="absolute left-0 top-0 rounded-full"
-                  style={{
-                    ...beamLayer(uv && !flip),
-                    width: "calc(var(--tr) * 3.8)",
-                    height: "calc(var(--tr) * 3.8)",
-                    background:
-                      "radial-gradient(circle closest-side, rgba(110,86,220,0.3), rgba(110,86,220,0.14) 55%, transparent)",
-                    mixBlendMode: "multiply",
-                  }}
-                />
-                <div
-                  ref={beamDarkRef}
-                  className="absolute left-0 top-0 rounded-full"
-                  style={{
-                    ...beamLayer(uv && !flip),
-                    width: "calc(var(--tr) * 2)",
-                    height: "calc(var(--tr) * 2)",
-                    background:
-                      "radial-gradient(circle closest-side, #33207A, #140A33 60%, rgba(20,10,51,0.8) 80%, rgba(20,10,51,0))",
-                    mixBlendMode: "multiply",
-                  }}
-                />
-                <div
-                  ref={beamGlowRef}
-                  className="absolute left-0 top-0 overflow-hidden rounded-full"
-                  style={{
-                    ...beamLayer(uv && !flip),
-                    width: "calc(var(--tr) * 2)",
-                    height: "calc(var(--tr) * 2)",
-                    WebkitMaskImage: BEAM_MASK,
-                    maskImage: BEAM_MASK,
-                    mixBlendMode: "screen",
-                  }}
-                >
-                  <div
-                    ref={beamPrintRef}
-                    className="absolute left-0 top-0 grid grid-cols-1 md:grid-cols-2"
-                    style={{
-                      width: "var(--bw)",
-                      height: "var(--bh)",
-                      willChange: "transform",
-                    }}
-                  >
-                    {uvPrint}
-                    {isWide && <UvStitch />}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {coverState !== "open" && (
-              <button
-                type="button"
-                onClick={openCover}
-                aria-label="Open Kevin's passport"
-                className="absolute top-0 bottom-0 right-0 w-full md:w-1/2 cursor-pointer rounded-[6px] md:rounded-l-none"
-                style={{
-                  transformStyle: "preserve-3d",
-                  transformOrigin: "left center",
-                  transform:
-                    coverState === "opening" ? "rotateY(-180deg)" : "none",
-                  // Eases to the pages' shadow while it swings, so nothing jumps
-                  // when the cover lands and the spread takes over.
-                  boxShadow:
-                    coverState === "closed"
-                      ? "0 24px 50px -30px rgba(44,44,44,0.7)"
-                      : SPREAD_SHADOW,
-                  transition: "box-shadow 1000ms var(--ease-out)",
-                }}
-                ref={coverRef}
-              >
-                <div
-                  className="absolute inset-0 overflow-hidden rounded-[inherit]"
-                  style={{ backfaceVisibility: "hidden" }}
-                >
-                  <Cover />
-                </div>
-                <div
-                  className="absolute inset-0 overflow-hidden"
-                  style={{
-                    ...pagePaper,
-                    backfaceVisibility: "hidden",
-                    transform: "rotateY(180deg)",
-                  }}
-                >
-                  {renderPage(0, "left", false, true)}
-                </div>
-              </button>
-            )}
-
-            {selected && (
-              <div
-                className="absolute inset-0 z-20 flex items-center justify-center p-4 cursor-pointer"
-                style={{ backgroundColor: "rgba(250,242,230,0.6)" }}
-                onClick={close}
-              >
-                <figure
-                  ref={cardRef}
-                  role="dialog"
-                  aria-modal="false"
-                  aria-label={selected.name}
-                  onClick={(e) => e.stopPropagation()}
-                  className="relative w-[min(92%,440px)] cursor-default p-3 pb-5"
-                  style={{
-                    backgroundColor: "#FBF7EF",
-                    transform: "rotate(-2deg)",
-                    boxShadow: "0 22px 40px -22px rgba(44,44,44,0.6)",
-                  }}
-                >
-                  <span
-                    aria-hidden="true"
-                    className="absolute -top-3 left-1/2 w-24 h-6 -translate-x-1/2 rotate-[3deg]"
-                    style={{ backgroundColor: "rgba(226,208,172,0.85)" }}
-                  />
-                  {selected.photo && (
-                    <div className="relative aspect-[4/3] w-full overflow-hidden">
-                      <Image
-                        key={selected.slug}
-                        src={selected.photo.src}
-                        alt={selected.photo.alt}
-                        fill
-                        sizes="440px"
-                        className="object-cover"
-                      />
-                    </div>
-                  )}
-                  <figcaption className="pt-4 px-1">
-                    <div className="flex items-baseline justify-between gap-3 pr-6">
-                      <span
-                        className="text-2xl md:text-3xl"
-                        style={{
-                          fontFamily: "var(--font-serif)",
-                          fontWeight: 300,
-                        }}
-                      >
-                        {selected.name}
-                      </span>
-                      <span style={label}>
-                        {selected.home ? "Home" : selected.continent} ·{" "}
-                        {selected.code}
-                      </span>
-                    </div>
-                    {selected.note && (
-                      <p
-                        className="mt-2 text-sm leading-relaxed"
-                        style={{ fontFamily: "var(--font-serif)" }}
-                      >
-                        {selected.note}
-                      </p>
-                    )}
-                    {selected.photo?.credit && (
-                      <p
-                        className="mt-2 text-[11px] italic"
-                        style={{ opacity: 0.55 }}
-                      >
-                        Photo: {selected.photo.credit}
-                      </p>
-                    )}
-                  </figcaption>
-                  <button
-                    ref={closeRef}
-                    type="button"
-                    onClick={close}
-                    aria-label="Close"
-                    className="absolute top-1 right-2 text-xl leading-none px-2 py-1 cursor-pointer hover:opacity-60"
-                  >
-                    ×
-                  </button>
-                </figure>
-              </div>
-            )}
           </div>
 
           {/* The UV torch, tucked under the bottom of the passport with only its
@@ -1863,42 +2060,23 @@ export default function Passport({ countries }: { countries: Country[] }) {
                 </span>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={closeBook}
-              aria-label="Close the passport"
-              title="Close (Esc)"
-              className="group shrink-0 relative w-14 h-12 cursor-pointer"
-            >
-              <span
-                aria-hidden="true"
-                className="absolute left-1/2 top-[3px] -translate-x-1/2 transition-transform duration-300 ease-[var(--ease-out)] group-hover:-translate-y-0.5 group-hover:-rotate-3"
-              >
-                <svg viewBox="0 0 22 30" width="20" height="27">
-                  <rect x="1" y="1" width="20" height="28" rx="2.5" fill={COVER_NAVY} />
-                  <g fill="none" stroke="#D9BC6E" strokeWidth="0.8">
-                    <circle cx="11" cy="14" r="5" />
-                    <path d="M6 14h10M11 9c-2.4 3-2.4 7 0 10M11 9c2.4 3 2.4 7 0 10" />
-                  </g>
-                </svg>
-              </span>
-              <span className="absolute inset-x-0 bottom-0 text-center" style={label}>
-                Close
-              </span>
-            </button>
           </div>
           <span
             className="text-xs italic text-center transition-opacity duration-[900ms] px-6"
             style={{
               fontFamily: "var(--font-serif)",
-              opacity: uv || !turned ? 0.6 : 0,
+              opacity: uv || !turned || page === 0 ? 0.6 : 0,
             }}
           >
             {uv
               ? "Every page hides something under UV. Let go to put the torch back."
-              : hasFinePointer
-                ? "Scroll or click a page to turn it, or slide the ribbon to flick through."
-                : "Tap a page to turn it, or slide the ribbon to flick through."}
+              : turned && page === 0
+                ? hasFinePointer
+                  ? "Scroll back once more to close the passport."
+                  : "Turn back once more to close the passport."
+                : hasFinePointer
+                  ? "Scroll or click a page to turn it, or slide the ribbon to flick through."
+                  : "Tap a page to turn it, or slide the ribbon to flick through."}
           </span>
         </div>
       </div>
