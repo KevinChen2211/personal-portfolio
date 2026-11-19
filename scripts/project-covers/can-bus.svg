@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600" width="1200" height="1600">
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#2C2C2C" stroke-opacity="0.06" stroke-width="2"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="1600" fill="#EFE3CD"/>
+  <rect width="1200" height="1600" fill="url(#grid)"/>
+
+  <!-- Drops from each node to the bus -->
+  <g fill="none" stroke="#2C2C2C" stroke-width="5">
+    <path d="M370 600V780"/>
+    <path d="M430 600V820"/>
+    <path d="M770 1000V820"/>
+    <path d="M830 1000V780"/>
+  </g>
+
+  <!-- CAN_H and CAN_L, twisted, with 120 ohm terminators at both ends -->
+  <g fill="none" stroke-width="7" stroke-linecap="round">
+    <path d="M160 780C200 780 220 820 260 820S320 780 360 780 420 820 460 820 520 780 560 780 620 820 660 820 720 780 760 780 820 820 860 820 920 780 960 780 1020 820 1040 820" stroke="#3E5B47"/>
+    <path d="M160 820C200 820 220 780 260 780S320 820 360 820 420 780 460 780 520 820 560 820 620 780 660 780 720 820 760 820 820 780 860 780 920 820 960 820 1020 780 1040 780" stroke="#2C2C2C"/>
+  </g>
+  <g fill="none" stroke="#2C2C2C" stroke-width="5" stroke-linejoin="round">
+    <path d="M160 780H120V745L105 755L135 770L105 785L135 800L105 815L135 830L120 840V820H160"/>
+    <path d="M1040 780H1080V745L1065 755L1095 770L1065 785L1095 800L1065 815L1095 830L1080 840V820H1040"/>
+  </g>
+
+  <!-- Messages on the bus -->
+  <g fill="#3E5B47">
+    <rect x="560" y="700" width="120" height="44" rx="8"/>
+    <rect x="480" y="856" width="120" height="44" rx="8" opacity="0.55"/>
+  </g>
+  <g fill="#FAF2E6">
+    <rect x="576" y="716" width="30" height="12" rx="3"/>
+    <rect x="616" y="716" width="48" height="12" rx="3" opacity="0.6"/>
+    <rect x="496" y="872" width="30" height="12" rx="3"/>
+    <rect x="536" y="872" width="48" height="12" rx="3" opacity="0.6"/>
+  </g>
+
+  <!-- Node A: buttons and their LEDs -->
+  <rect x="200" y="260" width="400" height="340" rx="18" fill="#FAF2E6" stroke="#2C2C2C" stroke-width="5"/>
+  <rect x="300" y="330" width="200" height="140" rx="10" fill="#2C2C2C"/>
+  <g stroke="#2C2C2C" stroke-width="5">
+    <path d="M320 320V330M360 320V330M400 320V330M440 320V330M480 320V330"/>
+    <path d="M320 470V480M360 470V480M400 470V480M440 470V480M480 470V480"/>
+    <path d="M290 360H300M290 400H300M290 440H300M500 360H510M500 400H510M500 440H510"/>
+  </g>
+  <g fill="none" stroke="#2C2C2C" stroke-width="4">
+    <circle cx="270" cy="540" r="26"/>
+    <circle cx="350" cy="540" r="26"/>
+  </g>
+  <g fill="#2C2C2C">
+    <circle cx="270" cy="540" r="14"/>
+    <circle cx="350" cy="540" r="14"/>
+  </g>
+  <circle cx="470" cy="540" r="16" fill="#3E5B47"/>
+  <circle cx="530" cy="540" r="16" fill="none" stroke="#2C2C2C" stroke-width="4"/>
+
+  <!-- Node B: an analog reading and two LEDs set over CAN -->
+  <rect x="600" y="1000" width="400" height="340" rx="18" fill="#FAF2E6" stroke="#2C2C2C" stroke-width="5"/>
+  <rect x="700" y="1070" width="200" height="140" rx="10" fill="#2C2C2C"/>
+  <g stroke="#2C2C2C" stroke-width="5">
+    <path d="M720 1060V1070M760 1060V1070M800 1060V1070M840 1060V1070M880 1060V1070"/>
+    <path d="M720 1210V1220M760 1210V1220M800 1210V1220M840 1210V1220M880 1210V1220"/>
+    <path d="M690 1100H700M690 1140H700M690 1180H700M900 1100H910M900 1140H910M900 1180H910"/>
+  </g>
+  <path d="M640 1290C660 1250 680 1250 700 1290S740 1330 760 1290" fill="none" stroke="#3E5B47" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="880" cy="1282" r="18" fill="#3E5B47"/>
+  <circle cx="940" cy="1282" r="18" fill="#3E5B47" opacity="0.35"/>
+
+  <g font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle" letter-spacing="3">
+    <text x="400" y="412" font-size="32" fill="#FAF2E6">STM32</text>
+    <text x="800" y="1152" font-size="32" fill="#FAF2E6">STM32</text>
+    <text x="1080" y="715" font-size="26" fill="#2C2C2C" letter-spacing="1">120&#937;</text>
+    <text x="120" y="890" font-size="26" fill="#2C2C2C" letter-spacing="1">120&#937;</text>
+    <text x="955" y="745" font-size="28" fill="#3E5B47" letter-spacing="6">CAN_H</text>
+    <text x="955" y="880" font-size="28" fill="#2C2C2C" letter-spacing="6" opacity="0.7">CAN_L</text>
+  </g>
+</svg>
