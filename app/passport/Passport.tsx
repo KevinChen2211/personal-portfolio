@@ -135,19 +135,20 @@ const TILT_X_DEG = 5;
 const TILT_Y_DEG = 7;
 const FLOAT = "7s ease-in-out infinite";
 
-// A band of light across a glossy surface. It sits off towards the top-left
+// Light falling across the passport. It sits off towards the top-left
 // corner, where the light comes from, and slides across as the passport tilts
 // (--tilt-x and --tilt-y, -1 to 1, set on the book).
-function Sheen({ alpha, blend }: { alpha: number; blend?: CSSProperties["mixBlendMode"] }) {
+function Sheen({ alpha }: { alpha: number }) {
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
       <div
         className="absolute -left-full -top-full w-[300%] h-[300%]"
         style={{
-          background: `linear-gradient(125deg, transparent 0 44%, rgba(255,255,255,${alpha}) 49%, rgba(255,255,255,${alpha * 0.35}) 52%, transparent 57%)`,
+          // Broad and soft: the cover and pages are matte, so light spreads
+          // over them rather than glinting.
+          background: `linear-gradient(125deg, transparent 0 32%, rgba(255,255,255,${alpha}) 50%, transparent 68%)`,
           transform:
             "translate3d(calc(-13% - var(--tilt-x, 0) * 11%), calc(-13% - var(--tilt-y, 0) * 11%), 0)",
-          mixBlendMode: blend,
         }}
       />
     </div>
@@ -227,6 +228,10 @@ const label: CSSProperties = {
 };
 
 // Faint diagonal hairlines, like the security print on a real passport page.
+// Uncoated paper: faint flecks and stretched fibres, darker than the page.
+const PAPER_GRAIN = `url("data:image/svg+xml,${encodeURIComponent(
+  "<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='f' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='2' seed='3' stitchTiles='stitch' result='fleck'/><feTurbulence type='fractalNoise' baseFrequency='0.012 0.4' numOctaves='2' seed='9' stitchTiles='stitch' result='fibre'/><feBlend in='fleck' in2='fibre' mode='multiply'/><feColorMatrix values='0 0 0 0 0.35  0 0 0 0 0.27  0 0 0 0 0.16  0 0 0 -0.75 0.5'/></filter><rect width='100%' height='100%' filter='url(#f)'/></svg>",
+)}")`;
 const pagePaper: CSSProperties = {
   backgroundColor: PAGE,
   backgroundImage:
@@ -267,6 +272,11 @@ function PageFrame({
       className="absolute inset-0 overflow-hidden"
       style={{ ...pagePaper, ...sheet }}
     >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{ backgroundImage: PAPER_GRAIN, backgroundSize: "240px 240px" }}
+      />
       {heading && (
         <div className="absolute top-4 left-5" style={label}>
           {heading}
@@ -472,14 +482,20 @@ function StampPage({
 // to reproduce, so the emblem here is a kangaroo facing an emu in a wreath of
 // wattle, over the Southern Cross: no shield, crest or scroll.
 const COVER_NAVY = "#1C2254";
-// Fine pebbled grain, like the plastic board of the real cover.
+// The pebbled grain of the real cover's textured board: noise turned into
+// relief and lit from the top-left, then soft-lit onto the navy. Lit so a
+// flat patch comes out mid-grey, which soft-light leaves unchanged.
 const COVER_GRAIN = `url("data:image/svg+xml,${encodeURIComponent(
-  "<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0.05  0 0 0 0.55 -0.12'/></filter><rect width='100%' height='100%' filter='url(#g)'/></svg>",
+  "<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='g' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='2' seed='7' stitchTiles='stitch'/><feDiffuseLighting surfaceScale='1.3' diffuseConstant='0.54' lighting-color='#fff'><feDistantLight azimuth='225' elevation='52'/></feDiffuseLighting></filter><rect width='100%' height='100%' filter='url(#g)'/></svg>",
 )}")`;
+// Foil with a bright band that slides across as the passport tilts, so only
+// the gold catches the light.
 const FOIL =
-  "linear-gradient(170deg, #F3DE9C 0%, #C9A44E 38%, #E7CD84 55%, #A9812F 100%)";
+  "linear-gradient(115deg, #A9812F 0%, #C9A44E 32%, #F7E6AC 50%, #C9A44E 68%, #A9812F 100%)";
 const foilText: CSSProperties = {
   backgroundImage: FOIL,
+  backgroundSize: "300% 100%",
+  backgroundPosition: "calc(50% - var(--tilt-x, 0) * 60%) 50%",
   WebkitBackgroundClip: "text",
   backgroundClip: "text",
   color: "transparent",
@@ -581,15 +597,20 @@ function CoverEmblem({ gold }: { gold: string }) {
   );
 }
 
-// The ICAO ePassport mark: a chip outline with a lens across its middle band.
+// The ICAO Chip Inside mark, to Doc 9303's proportions (9 x 5.25 mm, here
+// x10/3): two solid bars 2.25 tall with a 0.75 gap between them, a 3.75
+// circle cut from their middle, and a solid 2.25 dot in it, for the chip.
 function ChipMark({ gold }: { gold: string }) {
+  const cut = `${gold}-chip-cut`;
   return (
-    <svg viewBox="0 0 30 20" className="w-[9%]" aria-hidden="true">
-      <g fill="none" stroke={`url(#${gold})`} strokeWidth="1.5">
-        <rect x="1" y="1" width="28" height="18" rx="1.5" />
-        <path d="M1 7.2h8.5M20.5 7.2H29M1 12.8h8.5M20.5 12.8H29" />
-        <circle cx="15" cy="10" r="4.6" />
-      </g>
+    <svg viewBox="0 0 30 17.5" className="w-[9%]" aria-hidden="true">
+      <mask id={cut}>
+        <rect width="30" height="17.5" fill="white" />
+        <rect y="7.5" width="30" height="2.5" fill="black" />
+        <circle cx="15" cy="8.75" r="6.25" fill="black" />
+        <circle cx="15" cy="8.75" r="3.75" fill="white" />
+      </mask>
+      <rect width="30" height="17.5" fill={`url(#${gold})`} mask={`url(#${cut})`} />
     </svg>
   );
 }
@@ -603,17 +624,18 @@ function Cover() {
         backgroundColor: COVER_NAVY,
         // Grained board, a little lighter where the light catches it.
         backgroundImage: `radial-gradient(120% 80% at 30% 20%, rgba(255,255,255,0.07), transparent 60%), ${COVER_GRAIN}`,
-        backgroundSize: "auto, 180px 180px",
+        backgroundSize: "auto, 200px 200px",
+        backgroundBlendMode: "normal, soft-light",
       }}
     >
-      <Sheen alpha={0.13} />
-      {/* Catches the gold foil far more than the navy, like light on foil. */}
-      <Sheen alpha={0.55} blend="overlay" />
+      <Sheen alpha={0.07} />
       <svg width="0" height="0" className="absolute" aria-hidden="true">
-        <linearGradient id={gold} x1="0" y1="0" x2="0.35" y2="1">
-          <stop offset="0" stopColor="#F3DE9C" />
-          <stop offset="0.38" stopColor="#C9A44E" />
-          <stop offset="0.55" stopColor="#E7CD84" />
+        {/* data-foil: the tilt slides this along, like the lettering's foil. */}
+        <linearGradient data-foil id={gold} x1="0" y1="0" x2="1" y2="0.55">
+          <stop offset="0" stopColor="#A9812F" />
+          <stop offset="0.32" stopColor="#C9A44E" />
+          <stop offset="0.5" stopColor="#F7E6AC" />
+          <stop offset="0.68" stopColor="#C9A44E" />
           <stop offset="1" stopColor="#A9812F" />
         </linearGradient>
       </svg>
@@ -894,6 +916,9 @@ export default function Passport({ countries }: { countries: Country[] }) {
     book.style.setProperty("--tilt-x", t.x.toFixed(3));
     book.style.setProperty("--tilt-y", t.y.toFixed(3));
     book.style.transform = `rotateX(${(-t.y * TILT_X_DEG).toFixed(2)}deg) rotateY(${(t.x * TILT_Y_DEG).toFixed(2)}deg)`;
+    // SVG gradients can't read CSS variables, so slide the foil's highlight here.
+    const slide = `translate(${(-t.x * 0.35).toFixed(3)} ${(-t.y * 0.2).toFixed(3)})`;
+    book.querySelectorAll("[data-foil]").forEach((g) => g.setAttribute("gradientTransform", slide));
   }, []);
   useEffect(() => {
     if (prefersReducedMotion || !hasFinePointer) return;
@@ -1716,7 +1741,7 @@ export default function Passport({ countries }: { countries: Country[] }) {
                 className="pointer-events-none absolute inset-0 rounded-[6px]"
                 style={{ visibility: isOpen ? "visible" : "hidden" }}
               >
-                <Sheen alpha={0.17} />
+                <Sheen alpha={0.09} />
               </div>
 
               {/* UV torch beam, clipped to the book. The clip must not form a
