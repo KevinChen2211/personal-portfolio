@@ -415,40 +415,164 @@ function StampPage({
   );
 }
 
+// After the Australian R series cover: navy, everything in gold foil, an
+// emblem up top, AUSTRALIA, PASSPORT and the ePassport chip mark. The real
+// one carries the Commonwealth Coat of Arms, which private use isn't allowed
+// to reproduce, so the emblem here is the Commonwealth Star in a wreath of
+// wattle, over the Southern Cross.
+const COVER_NAVY = "#1C2254";
+const FOIL =
+  "linear-gradient(170deg, #F3DE9C 0%, #C9A44E 38%, #E7CD84 55%, #A9812F 100%)";
+const foilText: CSSProperties = {
+  backgroundImage: FOIL,
+  WebkitBackgroundClip: "text",
+  backgroundClip: "text",
+  color: "transparent",
+};
+
+// A seven-pointed star, as on the flag: points every 360/7 degrees.
+function starPoints(cx: number, cy: number, r: number, points = 7, inner = 0.45) {
+  return Array.from({ length: points * 2 }, (_, i) => {
+    const a = (i * Math.PI) / points - Math.PI / 2;
+    const d = i % 2 ? r * inner : r;
+    return `${(cx + d * Math.cos(a)).toFixed(2)},${(cy + d * Math.sin(a)).toFixed(2)}`;
+  }).join(" ");
+}
+
+// Two sprigs of wattle curving up either side of the star from its foot: a
+// leaf inside the stem and a puffball outside it at each step. Rounded, as
+// Math.cos can differ in the last digit between the server and the browser.
+const r2 = (v: number) => Math.round(v * 100) / 100;
+const WREATH = [-1, 1].map((side) =>
+  Array.from({ length: 9 }, (_, i) => {
+    const t = i / 8;
+    const a = ((90 + side * (24 + t * 118)) * Math.PI) / 180;
+    const tangent = a + (side * Math.PI) / 2;
+    const [ox, oy] = [Math.cos(a), Math.sin(a)];
+    const x = 60 + 30 * ox;
+    const y = 42 + 30 * oy;
+    const big = i % 2 === 0;
+    const puffOut = big ? 3.4 : 5.6;
+    return {
+      x: r2(x),
+      y: r2(y),
+      leaf: { x: r2(x - ox * 3), y: r2(y - oy * 3), angle: r2((tangent * 180) / Math.PI + 30) },
+      puffs: [
+        { x: r2(x + ox * puffOut), y: r2(y + oy * puffOut), r: big ? 2.6 : 1.9 },
+        ...(big
+          ? [{ x: r2(x + ox * 2 + Math.cos(tangent) * 3), y: r2(y + oy * 2 + Math.sin(tangent) * 3), r: 1.5 }]
+          : []),
+      ],
+    };
+  }),
+);
+
+// Gamma, Beta, Delta, Alpha and the small Epsilon, laid out as on the flag.
+const SOUTHERN_CROSS: [number, number, number, number][] = [
+  [60, 84, 2.6, 7],
+  [53, 90.5, 2.6, 7],
+  [67, 89, 2.6, 7],
+  [60, 98, 2.6, 7],
+  [63.6, 92.6, 1.5, 5],
+];
+
+function CoverEmblem({ gold }: { gold: string }) {
+  return (
+    <svg viewBox="0 0 120 102" className="w-[44%]" aria-hidden="true">
+      <g fill={`url(#${gold})`} stroke="none">
+        <polygon points={starPoints(60, 40, 15)} />
+        {WREATH.flat().map(({ leaf, puffs }, i) => (
+          <g key={i}>
+            <ellipse
+              cx={leaf.x}
+              cy={leaf.y}
+              rx="5.2"
+              ry="1.3"
+              transform={`rotate(${leaf.angle} ${leaf.x} ${leaf.y})`}
+            />
+            {puffs.map((p, j) => (
+              <circle key={j} cx={p.x} cy={p.y} r={p.r} />
+            ))}
+          </g>
+        ))}
+        {SOUTHERN_CROSS.map(([x, y, r, points]) => (
+          <polygon key={`${x}-${y}`} points={starPoints(x, y, r, points)} />
+        ))}
+      </g>
+      <g fill="none" stroke={`url(#${gold})`} strokeWidth="0.9" strokeLinecap="round">
+        {WREATH.map((sprig, side) => (
+          <polyline key={side} points={sprig.map((p) => `${p.x},${p.y}`).join(" ")} />
+        ))}
+      </g>
+    </svg>
+  );
+}
+
+// The ICAO ePassport mark: a chip outline with a lens across its middle band.
+function ChipMark({ gold }: { gold: string }) {
+  return (
+    <svg viewBox="0 0 30 20" className="w-[9%]" aria-hidden="true">
+      <g fill="none" stroke={`url(#${gold})`} strokeWidth="1.5">
+        <rect x="1" y="1" width="28" height="18" rx="1.5" />
+        <path d="M1 7.2h8.5M20.5 7.2H29M1 12.8h8.5M20.5 12.8H29" />
+        <circle cx="15" cy="10" r="4.6" />
+      </g>
+    </svg>
+  );
+}
+
 function Cover() {
+  const gold = `cover-foil-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
   return (
     <div
-      className="absolute inset-0 flex flex-col items-center justify-between py-[14%] text-center"
-      style={{ backgroundColor: INK, color: "#E9D9B8" }}
+      className="absolute inset-0 flex flex-col items-center text-center [container-type:size]"
+      style={{
+        backgroundColor: COVER_NAVY,
+        // Grained board, a little lighter where the light catches it.
+        backgroundImage:
+          "radial-gradient(120% 80% at 30% 20%, rgba(255,255,255,0.07), transparent 60%), repeating-radial-gradient(circle at 37% 61%, rgba(0,0,0,0.06) 0 1px, transparent 1px 3px)",
+      }}
     >
+      <svg width="0" height="0" className="absolute" aria-hidden="true">
+        <linearGradient id={gold} x1="0" y1="0" x2="0.35" y2="1">
+          <stop offset="0" stopColor="#F3DE9C" />
+          <stop offset="0.38" stopColor="#C9A44E" />
+          <stop offset="0.55" stopColor="#E7CD84" />
+          <stop offset="1" stopColor="#A9812F" />
+        </linearGradient>
+      </svg>
+      <div className="mt-[18%] flex w-full justify-center">
+        <CoverEmblem gold={gold} />
+      </div>
       <span
+        className="mt-[9%]"
         style={{
+          ...foilText,
+          fontFamily: "var(--font-serif)",
+          fontWeight: 500,
+          fontSize: "8.4cqw",
+          letterSpacing: "0.3em",
+          paddingLeft: "0.3em",
+        }}
+      >
+        AUSTRALIA
+      </span>
+      <span
+        className="mt-[2.5%]"
+        style={{
+          ...foilText,
           fontFamily: "var(--font-sweet), var(--font-sans), sans-serif",
-          letterSpacing: "0.5em",
-          fontSize: "13px",
-          paddingLeft: "0.5em",
+          fontSize: "4.6cqw",
+          letterSpacing: "0.32em",
+          paddingLeft: "0.32em",
         }}
       >
         PASSPORT
       </span>
-      <svg viewBox="0 0 100 100" className="w-[34%]" aria-hidden="true">
-        <g fill="none" stroke="currentColor" strokeWidth="1.1">
-          <circle cx="50" cy="50" r="40" />
-          <ellipse cx="50" cy="50" rx="16" ry="40" />
-          <ellipse cx="50" cy="50" rx="30" ry="40" />
-          <line x1="10" y1="50" x2="90" y2="50" />
-          <path d="M16 32 Q50 40 84 32 M16 68 Q50 60 84 68" />
-        </g>
-      </svg>
-      <div className="flex flex-col items-center gap-2">
-        <span
-          className="text-xl md:text-2xl"
-          style={{ fontFamily: "var(--font-serif)", letterSpacing: "0.12em" }}
-        >
-          Kevin Chen
-        </span>
-        <span style={{ ...label, opacity: 0.6 }}>
-          {pad2(countriesVisited)} places · Tap to open
+      <div className="mt-auto mb-[10%] flex w-full flex-col items-center gap-[1.6cqh]">
+        <ChipMark gold={gold} />
+        <span style={{ ...label, ...foilText, fontSize: "2.3cqw", opacity: 0.75 }}>
+          Kevin Chen · {pad2(countriesVisited)} places
         </span>
       </div>
     </div>
@@ -1733,8 +1857,8 @@ export default function Passport({ countries }: { countries: Country[] }) {
                 className="absolute left-1/2 top-[3px] -translate-x-1/2 transition-transform duration-300 ease-[var(--ease-out)] group-hover:-translate-y-0.5 group-hover:-rotate-3"
               >
                 <svg viewBox="0 0 22 30" width="20" height="27">
-                  <rect x="1" y="1" width="20" height="28" rx="2.5" fill={INK} />
-                  <g fill="none" stroke="#E9D9B8" strokeWidth="0.8">
+                  <rect x="1" y="1" width="20" height="28" rx="2.5" fill={COVER_NAVY} />
+                  <g fill="none" stroke="#D9BC6E" strokeWidth="0.8">
                     <circle cx="11" cy="14" r="5" />
                     <path d="M6 14h10M11 9c-2.4 3-2.4 7 0 10M11 9c2.4 3 2.4 7 0 10" />
                   </g>
