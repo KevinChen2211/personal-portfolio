@@ -1087,8 +1087,19 @@ export default function Passport({ countries }: { countries: Country[] }) {
     leafFront = flip.dir === 1 ? flip.from : flip.to;
   }
 
-  const canBack = isOpen && page > 0;
-  const canForward = isOpen && page < lastStart;
+  // Folded corners are on the pages already, so the cover uncovers them.
+  const pagesOut = isOpen || coverState === "opening";
+  const canBack = pagesOut && page > 0;
+  const canForward = pagesOut && page < lastStart;
+  // The tabs, torch and ribbon fade in as the cover settles, rather than
+  // popping in the moment it lands, and leave as soon as it starts to close.
+  const uiShown = coverState === "opening" || isOpen;
+  const uiFade: CSSProperties = {
+    opacity: uiShown ? 1 : 0,
+    transition: prefersReducedMotion
+      ? undefined
+      : `opacity 600ms var(--ease-out) ${uiShown ? "800ms" : "0ms"}`,
+  };
 
   const pageClick = (dir: 1 | -1) => {
     if (swiped.current) {
@@ -1221,52 +1232,52 @@ export default function Passport({ countries }: { countries: Country[] }) {
               drag.current = null;
             }}
           >
-            {isOpen && (
-              <nav
-                aria-label="Continents"
-                className="absolute z-[-1] flex gap-1 max-md:bottom-full max-md:left-3 max-md:flex-row max-md:items-end md:left-full md:top-[4%] md:flex-col"
+            <nav
+              aria-label="Continents"
+              inert={!isOpen}
+              className="absolute z-[-1] flex gap-1 max-md:bottom-full max-md:left-3 max-md:flex-row max-md:items-end md:left-full md:top-[4%] md:flex-col"
+              style={uiFade}
+            >
+              <button
+                type="button"
+                onClick={() => goTo(worldStart)}
+                aria-current={onWorld ? "true" : undefined}
+                aria-label="World map"
+                className={`${tabClass} ${onWorld ? tabActive : tabIdle}`}
+                style={{
+                  ...tabStyle,
+                  backgroundColor: UV_TAB_INK,
+                  color: UV_GLOW,
+                }}
               >
-                <button
-                  type="button"
-                  onClick={() => goTo(worldStart)}
-                  aria-current={onWorld ? "true" : undefined}
-                  aria-label="World map"
-                  className={`${tabClass} ${onWorld ? tabActive : tabIdle}`}
-                  style={{
-                    ...tabStyle,
-                    backgroundColor: UV_TAB_INK,
-                    color: UV_GLOW,
-                  }}
-                >
-                  <span className="md:hidden">{UV_TAB_LABEL[0]}</span>
-                  <span className="max-md:hidden">{UV_TAB_LABEL[1]}</span>
-                </button>
-                {sections.map((continent) => {
-                  const active = continent === activeContinent;
-                  return (
-                    <button
-                      key={continent}
-                      type="button"
-                      onClick={() => goTo(sectionStart.get(continent)!)}
-                      aria-current={active ? "true" : undefined}
-                      className={`${tabClass} ${active ? tabActive : tabIdle}`}
-                      style={{
-                        ...tabStyle,
-                        backgroundColor: TAB_INKS[continent],
-                        color: "#FAF2E6",
-                      }}
-                    >
-                      <span className="md:hidden">
-                        {TAB_LABEL[continent][0]}
-                      </span>
-                      <span className="max-md:hidden">
-                        {TAB_LABEL[continent][1]}
-                      </span>
-                    </button>
-                  );
-                })}
-              </nav>
-            )}
+                <span className="md:hidden">{UV_TAB_LABEL[0]}</span>
+                <span className="max-md:hidden">{UV_TAB_LABEL[1]}</span>
+              </button>
+              {sections.map((continent) => {
+                const active = continent === activeContinent;
+                return (
+                  <button
+                    key={continent}
+                    type="button"
+                    onClick={() => goTo(sectionStart.get(continent)!)}
+                    aria-current={active ? "true" : undefined}
+                    className={`${tabClass} ${active ? tabActive : tabIdle}`}
+                    style={{
+                      ...tabStyle,
+                      backgroundColor: TAB_INKS[continent],
+                      color: "#FAF2E6",
+                    }}
+                  >
+                    <span className="md:hidden">
+                      {TAB_LABEL[continent][0]}
+                    </span>
+                    <span className="max-md:hidden">
+                      {TAB_LABEL[continent][1]}
+                    </span>
+                  </button>
+                );
+              })}
+            </nav>
 
             <div
               className="relative grid grid-cols-1 md:grid-cols-2 rounded-[6px]"
@@ -1440,7 +1451,13 @@ export default function Passport({ countries }: { countries: Country[] }) {
                   transformOrigin: "left center",
                   transform:
                     coverState === "opening" ? "rotateY(-180deg)" : "none",
-                  boxShadow: "0 24px 50px -30px rgba(44,44,44,0.7)",
+                  // Eases to the pages' shadow while it swings, so nothing jumps
+                  // when the cover lands and the spread takes over.
+                  boxShadow:
+                    coverState === "closed"
+                      ? "0 24px 50px -30px rgba(44,44,44,0.7)"
+                      : SPREAD_SHADOW,
+                  transition: "box-shadow 1000ms var(--ease-out)",
                 }}
                 ref={coverRef}
               >
@@ -1548,193 +1565,200 @@ export default function Passport({ countries }: { countries: Country[] }) {
 
           {/* The UV torch, tucked under the bottom of the passport with only its
               tail showing. It shines only while held down. */}
-          {isOpen && (
-            <button
-              type="button"
-              aria-label="UV torch: press and hold to shine it on the pages"
-              className="group absolute z-[-1] top-[calc(100%-24px)] left-[9%] md:left-[calc(48px+7%)] w-[100px] h-[60px] cursor-grab touch-none select-none"
+          <button
+            type="button"
+            aria-label="UV torch: press and hold to shine it on the pages"
+            inert={!isOpen}
+            className="group absolute z-[-1] top-[calc(100%-24px)] left-[9%] md:left-[calc(48px+7%)] w-[100px] h-[60px] cursor-grab touch-none select-none"
+            style={{
+              ...uiFade,
+              minWidth: 0,
+              minHeight: 0,
+              cursor: uv ? "none" : undefined,
+              WebkitTouchCallout: "none",
+            }}
+            onContextMenu={(e) => e.preventDefault()}
+            onPointerDown={(e) => {
+              e.preventDefault();
+              // Captured, so every move goes to the torch wherever it's dragged.
+              try {
+                e.currentTarget.setPointerCapture(e.pointerId);
+              } catch {}
+              holdTorch(true, torchPoint(e));
+            }}
+            onPointerMove={(e) => {
+              if (uv && e.buttons !== 0) {
+                const at = torchPoint(e);
+                aimTorch(at.x, at.y);
+              }
+            }}
+            onPointerUp={() => holdTorch(false)}
+            onPointerCancel={() => holdTorch(false)}
+            onLostPointerCapture={() => holdTorch(false)}
+            onKeyDown={(e) => {
+              if (e.key !== " " && e.key !== "Enter") return;
+              e.preventDefault();
+              if (!e.repeat) holdTorch(true);
+            }}
+            onKeyUp={(e) => {
+              if (e.key === " " || e.key === "Enter") holdTorch(false);
+            }}
+            onBlur={() => {
+              if (uv) holdTorch(false);
+            }}
+          >
+            <span
+              aria-hidden="true"
+              className="absolute left-0 top-0 origin-top-left transition-[transform,opacity] duration-500 ease-[var(--ease-out)] group-hover:translate-x-1 group-hover:translate-y-1.5 group-focus-visible:translate-y-1.5"
               style={{
-                minWidth: 0,
-                minHeight: 0,
-                cursor: uv ? "none" : undefined,
-                WebkitTouchCallout: "none",
-              }}
-              onContextMenu={(e) => e.preventDefault()}
-              onPointerDown={(e) => {
-                e.preventDefault();
-                // Captured, so every move goes to the torch wherever it's dragged.
-                try {
-                  e.currentTarget.setPointerCapture(e.pointerId);
-                } catch {}
-                holdTorch(true, torchPoint(e));
-              }}
-              onPointerMove={(e) => {
-                if (uv && e.buttons !== 0) {
-                  const at = torchPoint(e);
-                  aimTorch(at.x, at.y);
-                }
-              }}
-              onPointerUp={() => holdTorch(false)}
-              onPointerCancel={() => holdTorch(false)}
-              onLostPointerCapture={() => holdTorch(false)}
-              onKeyDown={(e) => {
-                if (e.key !== " " && e.key !== "Enter") return;
-                e.preventDefault();
-                if (!e.repeat) holdTorch(true);
-              }}
-              onKeyUp={(e) => {
-                if (e.key === " " || e.key === "Enter") holdTorch(false);
-              }}
-              onBlur={() => {
-                if (uv) holdTorch(false);
+                // Lens end under the book, tail sticking out below it.
+                transform: uv ? "translate(24px, 26px) rotate(15deg)" : "rotate(15deg)",
+                opacity: uv ? 0 : 1,
               }}
             >
               <span
-                aria-hidden="true"
-                className="absolute left-0 top-0 origin-top-left transition-[transform,opacity] duration-500 ease-[var(--ease-out)] group-hover:translate-x-1 group-hover:translate-y-1.5 group-focus-visible:translate-y-1.5"
+                className="block"
                 style={{
-                  // Lens end under the book, tail sticking out below it.
-                  transform: uv ? "translate(24px, 26px) rotate(15deg)" : "rotate(15deg)",
-                  opacity: uv ? 0 : 1,
+                  transform: "translate(0, 4px)",
+                  filter: "drop-shadow(0 6px 5px rgba(44,44,44,0.3))",
                 }}
               >
-                <span
-                  className="block"
-                  style={{
-                    transform: "translate(0, 4px)",
-                    filter: "drop-shadow(0 6px 5px rgba(44,44,44,0.3))",
-                  }}
-                >
-                  <TorchArt lit={false} />
-                </span>
+                <TorchArt lit={false} />
               </span>
-            </button>
-          )}
+            </span>
+          </button>
         </div>
       </div>
 
-      <div className="mt-6 flex flex-col items-center gap-1 min-h-[52px]">
-        {isOpen ? (
-          <>
-            <div className="w-full max-w-[520px] px-6 flex items-end gap-4">
-              {/* Ribbon slider: the book's fore-edge, one notch per spread */}
-              <div className="flex-1 min-w-0">
-                <div className="flex justify-between mb-1" style={label}>
-                  <span>{ribbonLabel}</span>
-                  <span style={{ fontVariantNumeric: "tabular-nums" }}>
-                    {pad2(ribbonSpread + 1)} / {pad2(spreadCount)}
-                  </span>
-                </div>
-                <div className="relative h-11">
-                  <div
-                    aria-hidden="true"
-                    className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex gap-[2px]"
-                  >
-                    {Array.from({ length: spreadCount }, (_, spread) => (
-                      <span
-                        key={spread}
-                        className="h-3 flex-1 transition-opacity duration-[600ms]"
-                        style={{
-                          background:
-                            "repeating-linear-gradient(90deg, #DCC9A8 0 1px, #F7EEDF 1px 3px)",
-                          borderBottom: `3px solid ${spreadInk(spread)}`,
-                          opacity: spread === ribbonSpread ? 1 : 0.6,
-                        }}
-                      />
-                    ))}
-                  </div>
-                  {/* Arrow keys already turn pages globally, so only Home/End are handled here. */}
-                  <div
-                    role="slider"
-                    tabIndex={0}
-                    aria-label="Page through the passport"
-                    aria-valuemin={1}
-                    aria-valuemax={spreadCount}
-                    aria-valuenow={ribbonSpread + 1}
-                    aria-valuetext={`Spread ${ribbonSpread + 1} of ${spreadCount}, ${ribbonLabel}`}
-                    className="peer absolute inset-0 cursor-grab outline-none active:cursor-grabbing"
-                    style={{ touchAction: "none" }}
-                    onPointerDown={(e) => {
-                      e.currentTarget.setPointerCapture(e.pointerId);
-                      scrubTo(e.clientX, e.currentTarget);
-                    }}
-                    onPointerMove={(e) => {
-                      if (e.currentTarget.hasPointerCapture(e.pointerId))
-                        scrubTo(e.clientX, e.currentTarget);
-                    }}
-                    onPointerUp={(e) => scrubTo(e.clientX, e.currentTarget)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Home") seek(0);
-                      else if (e.key === "End") seek(spreadCount - 1);
-                      else return;
-                      e.preventDefault();
-                    }}
-                  />
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute top-0 h-9 w-3 -translate-x-1/2 transition-[left] duration-300 ease-[var(--ease-out)] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-4"
-                    style={{
-                      left: `${((ribbonSpread + 0.5) / spreadCount) * 100}%`,
-                      filter: "drop-shadow(0 3px 3px rgba(44,44,44,0.35))",
-                    }}
-                  >
+      {/* The ribbon and the "open it" hint share a spot and cross-fade. */}
+      <div className="mt-6 grid w-full min-h-[52px] justify-items-center">
+        <span
+          aria-hidden={coverState !== "closed"}
+          className="[grid-area:1/1] text-sm italic"
+          style={{
+            fontFamily: "var(--font-serif)",
+            opacity: coverState === "closed" ? 0.6 : 0,
+            transition: prefersReducedMotion ? undefined : "opacity 400ms var(--ease-out)",
+          }}
+        >
+          {hasFinePointer ? "Click or scroll to open it." : "Tap to open it."}
+        </span>
+        <div
+          inert={!isOpen}
+          className="[grid-area:1/1] w-full flex flex-col items-center gap-1"
+          style={uiFade}
+        >
+          <div className="w-full max-w-[520px] px-6 flex items-end gap-4">
+            {/* Ribbon slider: the book's fore-edge, one notch per spread */}
+            <div className="flex-1 min-w-0">
+              <div className="flex justify-between mb-1" style={label}>
+                <span>{ribbonLabel}</span>
+                <span style={{ fontVariantNumeric: "tabular-nums" }}>
+                  {pad2(ribbonSpread + 1)} / {pad2(spreadCount)}
+                </span>
+              </div>
+              <div className="relative h-11">
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex gap-[2px]"
+                >
+                  {Array.from({ length: spreadCount }, (_, spread) => (
                     <span
-                      className="block h-full w-full"
+                      key={spread}
+                      className="h-3 flex-1 transition-opacity duration-[600ms]"
                       style={{
-                        backgroundColor: "#A8402F",
-                        clipPath:
-                          "polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%)",
+                        background:
+                          "repeating-linear-gradient(90deg, #DCC9A8 0 1px, #F7EEDF 1px 3px)",
+                        borderBottom: `3px solid ${spreadInk(spread)}`,
+                        opacity: spread === ribbonSpread ? 1 : 0.6,
                       }}
                     />
-                  </span>
+                  ))}
                 </div>
-              </div>
-              <button
-                type="button"
-                onClick={closeBook}
-                aria-label="Close the passport"
-                title="Close (Esc)"
-                className="group shrink-0 relative w-14 h-12 cursor-pointer"
-              >
+                {/* Arrow keys already turn pages globally, so only Home/End are handled here. */}
+                <div
+                  role="slider"
+                  tabIndex={0}
+                  aria-label="Page through the passport"
+                  aria-valuemin={1}
+                  aria-valuemax={spreadCount}
+                  aria-valuenow={ribbonSpread + 1}
+                  aria-valuetext={`Spread ${ribbonSpread + 1} of ${spreadCount}, ${ribbonLabel}`}
+                  className="peer absolute inset-0 cursor-grab outline-none active:cursor-grabbing"
+                  style={{ touchAction: "none" }}
+                  onPointerDown={(e) => {
+                    e.currentTarget.setPointerCapture(e.pointerId);
+                    scrubTo(e.clientX, e.currentTarget);
+                  }}
+                  onPointerMove={(e) => {
+                    if (e.currentTarget.hasPointerCapture(e.pointerId))
+                      scrubTo(e.clientX, e.currentTarget);
+                  }}
+                  onPointerUp={(e) => scrubTo(e.clientX, e.currentTarget)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Home") seek(0);
+                    else if (e.key === "End") seek(spreadCount - 1);
+                    else return;
+                    e.preventDefault();
+                  }}
+                />
                 <span
                   aria-hidden="true"
-                  className="absolute left-1/2 top-[3px] -translate-x-1/2 transition-transform duration-300 ease-[var(--ease-out)] group-hover:-translate-y-0.5 group-hover:-rotate-3"
+                  className="pointer-events-none absolute top-0 h-9 w-3 -translate-x-1/2 transition-[left] duration-300 ease-[var(--ease-out)] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-4"
+                  style={{
+                    left: `${((ribbonSpread + 0.5) / spreadCount) * 100}%`,
+                    filter: "drop-shadow(0 3px 3px rgba(44,44,44,0.35))",
+                  }}
                 >
-                  <svg viewBox="0 0 22 30" width="20" height="27">
-                    <rect x="1" y="1" width="20" height="28" rx="2.5" fill={INK} />
-                    <g fill="none" stroke="#E9D9B8" strokeWidth="0.8">
-                      <circle cx="11" cy="14" r="5" />
-                      <path d="M6 14h10M11 9c-2.4 3-2.4 7 0 10M11 9c2.4 3 2.4 7 0 10" />
-                    </g>
-                  </svg>
+                  <span
+                    className="block h-full w-full"
+                    style={{
+                      backgroundColor: "#A8402F",
+                      clipPath:
+                        "polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%)",
+                    }}
+                  />
                 </span>
-                <span className="absolute inset-x-0 bottom-0 text-center" style={label}>
-                  Close
-                </span>
-              </button>
+              </div>
             </div>
-            <span
-              className="text-xs italic text-center transition-opacity duration-[900ms] px-6"
-              style={{
-                fontFamily: "var(--font-serif)",
-                opacity: uv || !turned ? 0.6 : 0,
-              }}
+            <button
+              type="button"
+              onClick={closeBook}
+              aria-label="Close the passport"
+              title="Close (Esc)"
+              className="group shrink-0 relative w-14 h-12 cursor-pointer"
             >
-              {uv
-                ? "Every page hides something under UV. Let go to put the torch back."
-                : hasFinePointer
-                  ? "Scroll or click a page to turn it, or slide the ribbon to flick through."
-                  : "Tap a page to turn it, or slide the ribbon to flick through."}
-            </span>
-          </>
-        ) : (
+              <span
+                aria-hidden="true"
+                className="absolute left-1/2 top-[3px] -translate-x-1/2 transition-transform duration-300 ease-[var(--ease-out)] group-hover:-translate-y-0.5 group-hover:-rotate-3"
+              >
+                <svg viewBox="0 0 22 30" width="20" height="27">
+                  <rect x="1" y="1" width="20" height="28" rx="2.5" fill={INK} />
+                  <g fill="none" stroke="#E9D9B8" strokeWidth="0.8">
+                    <circle cx="11" cy="14" r="5" />
+                    <path d="M6 14h10M11 9c-2.4 3-2.4 7 0 10M11 9c2.4 3 2.4 7 0 10" />
+                  </g>
+                </svg>
+              </span>
+              <span className="absolute inset-x-0 bottom-0 text-center" style={label}>
+                Close
+              </span>
+            </button>
+          </div>
           <span
-            className="text-sm italic"
-            style={{ fontFamily: "var(--font-serif)", opacity: 0.6 }}
+            className="text-xs italic text-center transition-opacity duration-[900ms] px-6"
+            style={{
+              fontFamily: "var(--font-serif)",
+              opacity: uv || !turned ? 0.6 : 0,
+            }}
           >
-            {hasFinePointer ? "Click or scroll to open it." : "Tap to open it."}
+            {uv
+              ? "Every page hides something under UV. Let go to put the torch back."
+              : hasFinePointer
+                ? "Scroll or click a page to turn it, or slide the ribbon to flick through."
+                : "Tap a page to turn it, or slide the ribbon to flick through."}
           </span>
-        )}
+        </div>
       </div>
       <StampInk />
       <UvDefs />
