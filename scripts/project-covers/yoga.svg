@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600" width="1200" height="1600">
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#2C2C2C" stroke-opacity="0.06" stroke-width="2"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="1600" fill="#EFE3CD"/>
+  <rect width="1200" height="1600" fill="url(#grid)"/>
+
+  <!-- A phone playing a guided meditation -->
+  <rect x="330" y="200" width="540" height="1200" rx="80" fill="#FAF2E6" stroke="#2C2C2C" stroke-width="6"/>
+  <rect x="530" y="232" width="140" height="30" rx="15" fill="#2C2C2C"/>
+
+  <!-- Breathing rings -->
+  <g fill="#5B3F5E">
+    <circle cx="600" cy="620" r="220" opacity="0.12"/>
+    <circle cx="600" cy="620" r="165" opacity="0.2"/>
+    <circle cx="600" cy="620" r="110" opacity="0.4"/>
+    <circle cx="600" cy="620" r="60"/>
+  </g>
+
+  <!-- Seated figure -->
+  <g fill="#FAF2E6">
+    <circle cx="600" cy="585" r="15"/>
+    <path d="M583 606H617L628 640L660 652C668 655 666 666 657 666H543C534 666 532 655 540 652L572 640Z"/>
+  </g>
+
+  <!-- Track title and artist -->
+  <g fill="#2C2C2C">
+    <rect x="420" y="920" width="360" height="26" rx="13" opacity="0.75"/>
+    <rect x="480" y="964" width="240" height="20" rx="10" opacity="0.3"/>
+  </g>
+
+  <!-- Progress -->
+  <rect x="410" y="1050" width="380" height="8" rx="4" fill="#2C2C2C" opacity="0.15"/>
+  <rect x="410" y="1050" width="150" height="8" rx="4" fill="#5B3F5E"/>
+  <circle cx="560" cy="1054" r="14" fill="#5B3F5E"/>
+
+  <!-- Controls -->
+  <g fill="#2C2C2C">
+    <path d="M438 1180L478 1155V1205Z"/>
+    <rect x="428" y="1155" width="8" height="50" rx="2"/>
+    <path d="M762 1180L722 1155V1205Z"/>
+    <rect x="764" y="1155" width="8" height="50" rx="2"/>
+  </g>
+  <circle cx="600" cy="1180" r="62" fill="#5B3F5E"/>
+  <g fill="#FAF2E6">
+    <rect x="578" y="1152" width="14" height="56" rx="4"/>
+    <rect x="608" y="1152" width="14" height="56" rx="4"/>
+  </g>
+
+  <!-- Tab bar -->
+  <g fill="#2C2C2C" opacity="0.3">
+    <circle cx="460" cy="1320" r="12"/>
+    <circle cx="555" cy="1320" r="12"/>
+    <circle cx="645" cy="1320" r="12"/>
+    <circle cx="740" cy="1320" r="12"/>
+  </g>
+  <circle cx="555" cy="1320" r="12" fill="#5B3F5E"/>
+</svg>

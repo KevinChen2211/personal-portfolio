@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600" width="1200" height="1600">
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#2C2C2C" stroke-opacity="0.06" stroke-width="2"/>
+    </pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#2C2C2C"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="1600" fill="#EFE3CD"/>
+  <rect width="1200" height="1600" fill="url(#grid)"/>
+
+  <!-- Request path, browser to database -->
+  <g fill="none" stroke="#2C2C2C" stroke-width="5">
+    <path d="M480 430V500" marker-end="url(#arrow)"/>
+    <path d="M480 680V750" marker-end="url(#arrow)"/>
+    <path d="M480 890V960" marker-end="url(#arrow)"/>
+    <path d="M480 1140V1210" marker-end="url(#arrow)"/>
+  </g>
+  <path d="M690 590H800" fill="none" stroke="#2C2C2C" stroke-width="5" stroke-dasharray="14 10" marker-end="url(#arrow)"/>
+
+  <!-- Browser -->
+  <rect x="270" y="230" width="420" height="200" rx="18" fill="#FAF2E6" stroke="#2C2C2C" stroke-width="5"/>
+  <path d="M270 290H690" stroke="#2C2C2C" stroke-width="5"/>
+  <g fill="#2C2C2C">
+    <circle cx="305" cy="260" r="9"/>
+    <circle cx="335" cy="260" r="9"/>
+    <circle cx="365" cy="260" r="9"/>
+  </g>
+  <!-- A song playing -->
+  <g fill="#8A3B32">
+    <path d="M330 395V330L380 318V383" fill="none" stroke="#8A3B32" stroke-width="6"/>
+    <ellipse cx="318" cy="396" rx="16" ry="12"/>
+    <ellipse cx="368" cy="384" rx="16" ry="12"/>
+  </g>
+  <g fill="#2C2C2C" opacity="0.2">
+    <rect x="420" y="330" width="220" height="16" rx="4"/>
+    <rect x="420" y="362" width="160" height="16" rx="4"/>
+  </g>
+  <rect x="420" y="394" width="230" height="8" rx="4" fill="#2C2C2C" opacity="0.15"/>
+  <rect x="420" y="394" width="110" height="8" rx="4" fill="#8A3B32"/>
+
+  <!-- EC2 server -->
+  <rect x="270" y="500" width="420" height="180" rx="14" fill="#FAF2E6" stroke="#2C2C2C" stroke-width="5"/>
+  <g fill="none" stroke="#2C2C2C" stroke-width="4">
+    <rect x="300" y="530" width="160" height="34" rx="6"/>
+    <rect x="300" y="578" width="160" height="34" rx="6"/>
+    <rect x="300" y="626" width="160" height="34" rx="6"/>
+  </g>
+  <g fill="#8A3B32">
+    <circle cx="436" cy="547" r="7"/>
+    <circle cx="436" cy="595" r="7"/>
+    <circle cx="436" cy="643" r="7"/>
+  </g>
+
+  <!-- API Gateway -->
+  <rect x="270" y="750" width="420" height="140" rx="70" fill="#FAF2E6" stroke="#2C2C2C" stroke-width="5"/>
+  <g fill="none" stroke="#2C2C2C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M330 800L300 820L330 840"/>
+    <path d="M630 800L660 820L630 840"/>
+  </g>
+
+  <!-- Lambda -->
+  <circle cx="480" cy="1050" r="90" fill="#8A3B32"/>
+
+  <!-- DynamoDB -->
+  <g fill="#FAF2E6" stroke="#2C2C2C" stroke-width="5">
+    <path d="M300 1240V1400A180 40 0 0 0 660 1400V1240"/>
+    <ellipse cx="480" cy="1240" rx="180" ry="40"/>
+  </g>
+  <g fill="none" stroke="#2C2C2C" stroke-width="4" opacity="0.5">
+    <path d="M300 1295A180 40 0 0 0 660 1295"/>
+    <path d="M300 1350A180 40 0 0 0 660 1350"/>
+  </g>
+
+  <!-- S3 bucket of artist images -->
+  <g fill="#FAF2E6" stroke="#2C2C2C" stroke-width="5">
+    <path d="M800 520L830 700A80 22 0 0 0 990 700L1020 520"/>
+    <ellipse cx="910" cy="520" rx="110" ry="30"/>
+  </g>
+  <rect x="860" y="580" width="100" height="80" rx="6" fill="#FAF2E6" stroke="#8A3B32" stroke-width="4"/>
+  <path d="M866 652L892 620L912 640L930 618L954 652Z" fill="#8A3B32"/>
+  <circle cx="938" cy="600" r="8" fill="#8A3B32"/>
+
+  <g font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle" fill="#2C2C2C" letter-spacing="3">
+    <text x="575" y="622" font-size="40">EC2</text>
+    <text x="480" y="836" font-size="34">API GATEWAY</text>
+    <text x="480" y="1082" font-size="96" fill="#FAF2E6" font-family="Georgia, serif" font-style="italic" letter-spacing="0">&#955;</text>
+    <text x="635" y="1060" font-size="34" text-anchor="start">LAMBDA</text>
+    <text x="480" y="1500" font-size="34">DYNAMODB</text>
+    <text x="910" y="776" font-size="40">S3</text>
+  </g>
+</svg>

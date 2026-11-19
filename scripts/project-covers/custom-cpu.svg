@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600" width="1200" height="1600">
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#2C2C2C" stroke-opacity="0.06" stroke-width="2"/>
+    </pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#2C2C2C"/>
+    </marker>
+    <marker id="arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#2F4A6B"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="1600" fill="#EFE3CD"/>
+  <rect width="1200" height="1600" fill="url(#grid)"/>
+
+  <!-- Wires -->
+  <g fill="none" stroke="#2C2C2C" stroke-width="5" stroke-linejoin="round">
+    <path d="M260 430V510" marker-end="url(#arrow)"/>
+    <path d="M260 820V930" marker-end="url(#arrow)"/>
+    <path d="M400 600H460" marker-end="url(#arrow)"/>
+    <path d="M525 640V750" marker-end="url(#arrow)"/>
+    <path d="M675 640V750" marker-end="url(#arrow)"/>
+    <path d="M600 1040V1110H940V870" marker-end="url(#arrow)"/>
+    <path d="M1080 690H1130V240H600V290" marker-end="url(#arrow)"/>
+  </g>
+  <!-- Control lines -->
+  <g fill="none" stroke="#2F4A6B" stroke-width="4" stroke-dasharray="14 10">
+    <path d="M400 1130H1010V870" marker-end="url(#arrow-accent)"/>
+    <path d="M400 1075H560V1048" marker-end="url(#arrow-accent)"/>
+    <path d="M400 990H440V670H500V648" marker-end="url(#arrow-accent)"/>
+  </g>
+  <!-- Bus width -->
+  <g stroke="#2C2C2C" stroke-width="4">
+    <path d="M424 616L440 584"/>
+  </g>
+
+  <!-- Blocks -->
+  <g fill="#FAF2E6" stroke="#2C2C2C" stroke-width="5">
+    <rect x="120" y="300" width="280" height="130" rx="14"/>
+    <rect x="120" y="520" width="280" height="300" rx="14"/>
+    <rect x="470" y="300" width="260" height="340" rx="14"/>
+    <polygon points="470,760 580,760 600,792 620,760 730,760 682,1040 518,1040"/>
+    <rect x="800" y="520" width="280" height="340" rx="14"/>
+  </g>
+  <rect x="120" y="940" width="280" height="220" rx="14" fill="#2F4A6B"/>
+  <!-- Register rows -->
+  <g fill="none" stroke="#2C2C2C" stroke-width="3" opacity="0.7">
+    <rect x="505" y="510" width="190" height="20" rx="3"/>
+    <rect x="505" y="542" width="190" height="20" rx="3"/>
+    <rect x="505" y="574" width="190" height="20" rx="3"/>
+    <rect x="505" y="606" width="190" height="20" rx="3" opacity="0.5"/>
+  </g>
+  <!-- Instruction memory and RAM cells -->
+  <g fill="#2C2C2C" opacity="0.18">
+    <rect x="160" y="740" width="200" height="14" rx="3"/>
+    <rect x="160" y="766" width="150" height="14" rx="3"/>
+    <rect x="840" y="760" width="200" height="14" rx="3"/>
+    <rect x="840" y="786" width="120" height="14" rx="3"/>
+  </g>
+
+  <g font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle" fill="#2C2C2C" letter-spacing="3">
+    <text x="260" y="380" font-size="44">PC</text>
+    <text x="260" y="650" font-size="30" letter-spacing="1">INSTRUCTION</text>
+    <text x="260" y="694" font-size="30" letter-spacing="1">MEMORY</text>
+    <text x="260" y="1066" font-size="36" fill="#FAF2E6">CONTROL</text>
+    <text x="600" y="400" font-size="34">REGISTERS</text>
+    <text x="600" y="450" font-size="30" font-weight="400">16 &#215; 8</text>
+    <text x="600" y="935" font-size="44">ALU</text>
+    <text x="940" y="660" font-size="36">DATA</text>
+    <text x="940" y="706" font-size="36">MEMORY</text>
+    <text x="456" y="570" font-size="26" font-weight="400">8</text>
+  </g>
+
+  <!-- An 8-bit word -->
+  <g font-family="Courier New, monospace" font-weight="700" font-size="52" text-anchor="middle">
+    <g stroke="#2C2C2C" stroke-width="4">
+      <rect x="160" y="1300" width="90" height="100" rx="8" fill="#2F4A6B"/>
+      <rect x="270" y="1300" width="90" height="100" rx="8" fill="#FAF2E6"/>
+      <rect x="380" y="1300" width="90" height="100" rx="8" fill="#2F4A6B"/>
+      <rect x="490" y="1300" width="90" height="100" rx="8" fill="#2F4A6B"/>
+      <rect x="620" y="1300" width="90" height="100" rx="8" fill="#FAF2E6"/>
+      <rect x="730" y="1300" width="90" height="100" rx="8" fill="#FAF2E6"/>
+      <rect x="840" y="1300" width="90" height="100" rx="8" fill="#2F4A6B"/>
+      <rect x="950" y="1300" width="90" height="100" rx="8" fill="#FAF2E6"/>
+    </g>
+    <text x="205" y="1368" fill="#FAF2E6">1</text>
+    <text x="315" y="1368" fill="#2C2C2C">0</text>
+    <text x="425" y="1368" fill="#FAF2E6">1</text>
+    <text x="535" y="1368" fill="#FAF2E6">1</text>
+    <text x="665" y="1368" fill="#2C2C2C">0</text>
+    <text x="775" y="1368" fill="#2C2C2C">0</text>
+    <text x="885" y="1368" fill="#FAF2E6">1</text>
+    <text x="995" y="1368" fill="#2C2C2C">0</text>
+  </g>
+</svg>

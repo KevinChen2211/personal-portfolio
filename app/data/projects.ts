@@ -102,7 +102,7 @@ In the end the club was about building engineers, not just robots. Running multi
       "Advocated for official university recognition and a dedicated academic advisor for long-term club sustainability",
       "Visit the website: https://rmitbattlebots.com/",
     ],
-    image: "/projects-images/combatrobots.jpg",
+    image: "/projects-images/competition-bot.png",
     slug: "rmit-battlebots",
   },
   {
@@ -131,7 +131,7 @@ https://www.youtube.com/watch?v=VAfr-Zdzpp8
       "Designed control unit to interpret opcodes and generate control signals for CPU operation",
       "Validated entire system using Intel Quartus Prime simulation and waveform analysis",
     ],
-    image: "/projects-images/custom-cpu.png",
+    image: "/projects-images/custom-cpu-cover.png",
     slug: "custom-cpu",
   },
   {
@@ -165,7 +165,7 @@ That gives me instant feedback on how the oxidation is going without having to d
       "Successfully observed and correlated silicon dioxide layer colors with oxidation conditions (temperature and time)",
       "Demonstrated understanding of thin-film interference effects and oxidation kinetics",
     ],
-    image: "/projects-images/tube-furnace-setup.png",
+    image: "/projects-images/hot_tube_furnace.png",
     slug: "tube-furnace-silicon-oxidation",
   },
   {
@@ -199,7 +199,7 @@ https://www.youtube.com/watch?v=oIH_J6MM7_o
       "Implemented RESTful APIs using API Gateway and Lambda for data operations",
       "Designed intuitive user interface for login, registration, and music subscription management",
     ],
-    image: "/projects-images/aws.png",
+    image: "/projects-images/aws-cover.png",
     slug: "aws-web-application",
   },
   {
@@ -225,7 +225,7 @@ https://www.youtube.com/watch?v=NtcbJck8bWE
       "Designed robust error handling and message filtering systems",
       "Optimized for low-latency communication in automotive applications",
     ],
-    image: "/projects-images/can_bus.png",
+    image: "/projects-images/can-bus-cover.png",
     slug: "can-bus",
   },
   {
@@ -248,7 +248,7 @@ The main technical pieces were user authentication, profile management, and stre
       "Delivered polished UI/UX with smooth animations and intuitive navigation",
       "Ensured cross-platform compatibility for iOS and Android",
     ],
-    image: "/projects-images/yoga.png",
+    image: "/projects-images/yoga-cover.png",
     slug: "yoga-meditation-app",
   },
 ];
